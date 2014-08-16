@@ -1,10 +1,10 @@
 angular.module("risevision.common.header", [
   "risevision.common.config",
-  "risevison.common.auth",
+  "risevision.common.auth",
   "risevision.common.gapi",
   "risevision.common.cache",
   "risevision.common.company",
-  "risevison.common.localstorage",
+  "risevision.common.localstorage",
   'ui.bootstrap'
 ])
 .directive('commonHeader', ['$modal', '$rootScope', '$q', 'apiAuth', '$loading',

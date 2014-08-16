@@ -1,8 +1,8 @@
 (function(angular) {
   "use strict";
 
-  angular.module("risevison.common.auth",
-    ["risevision.common.gapi", "risevison.common.localstorage"])
+  angular.module("risevision.common.auth",
+    ["risevision.common.gapi", "risevision.common.localstorage"])
 
     // Some constants
     .value("DEFAULT_PROFILE_PICTURE", "img/user-icon.png")
@@ -11,10 +11,10 @@
     .factory("apiAuth", ["$interval", "$rootScope", "$q", "$http",
       "gapiLoader", "storeAPILoader", "oauthAPILoader", "CLIENT_ID",
       "SCOPES", "DEFAULT_PROFILE_PICTURE", "$log", "localStorageService", "$location",
-      function($interval, $rootScope, $q, $http, gapiLoader, storeAPILoader, 
-        oauthAPILoader, CLIENT_ID, SCOPES, DEFAULT_PROFILE_PICTURE, $log, 
+      function($interval, $rootScope, $q, $http, gapiLoader, storeAPILoader,
+        oauthAPILoader, CLIENT_ID, SCOPES, DEFAULT_PROFILE_PICTURE, $log,
         localStorageService, $location) {
-        
+
         var that = this;
         var factory = {};
         var userState = {};
@@ -42,11 +42,11 @@
         };
 
         /**
-        * The entry point for an app. 
+        * The entry point for an app.
         * This may or may not result in a valid authentication.
-        * 
-        * If forceAuth is true, then this is a login request. 
-        * If not, then it's the app init auth check which will 
+        *
+        * If forceAuth is true, then this is a login request.
+        * If not, then it's the app init auth check which will
         * setup an already existinguser "session".
         */
         factory.$authenticate = function(forceAuth) {
@@ -56,14 +56,14 @@
           /**
           * This event is designed to be clearer about the auth flow.
           * It returns a promise that will resolve upon successful authentication,
-          * or otherwise be 'reject'ed. 
-          * 
-          * This allows a UI to respond to the attempt (by locking the UI for example), 
+          * or otherwise be 'reject'ed.
+          *
+          * This allows a UI to respond to the attempt (by locking the UI for example),
           * and also allow better handling of the failure case.
           *
           */
-          $rootScope.$broadcast("rvAuth.$authenticate", { 
-            isImmediate: !forceAuth, 
+          $rootScope.$broadcast("rvAuth.$authenticate", {
+            isImmediate: !forceAuth,
             promise: authenticateDeferred.promise,
             userState: userState
           });
@@ -135,7 +135,7 @@
           var authorizeDeferred = $q.defer();
 
           var opts = {
-            client_id: CLIENT_ID, 
+            client_id: CLIENT_ID,
             scope: SCOPES,
             cookie_policy: $location.protocol() + "://" + $location.host() + ($location.port() ? ":" + $location.port() : "")
           };
@@ -183,8 +183,8 @@
         };
 
         /**
-        * A Convenience method for the app to 
-        * get the userState object. 
+        * A Convenience method for the app to
+        * get the userState object.
         *
         */
         factory.getUserState = function() {
@@ -192,14 +192,14 @@
         };
 
         /**
-        * This would be called from the common header (sign out button), 
-        * or elsewhere in the app (ad-hoc signout). It's responsible 
-        * for immediately flushing all state and broadcasting 
+        * This would be called from the common header (sign out button),
+        * or elsewhere in the app (ad-hoc signout). It's responsible
+        * for immediately flushing all state and broadcasting
         * an event that the header or app uses to update itself.
         */
         factory.$signOut = function() {
 
-          // The flag the indicates a user is potentially 
+          // The flag the indicates a user is potentially
           // authenticated already, must be destroyed.
           localStorageService.removeItemImmediate("rvAuth.userAuthed");
 
