@@ -6,18 +6,18 @@
 </div>
 <div class="modal-body company-users-modal">
   <div class="row action-bar">
-    <div class="col-md-8 sort">
-    <ul class="nav nav-pills nav-justified">
-      <li ng-class="{active: sort.field === 'username'}">
-        <a href="" ng-click="changeSorting('username')">Username
-          <span ng-class="{caret: sort.descending, }" ng-show="sort.field === 'username'"></span></a></li>
-      <li ng-class="{active: sort.field === 'firstName'}">
-        <a href="" ng-click="changeSorting('firstName')">Name
-          <span ng-class="caret" ng-show="sort.field === 'firstName'"></span></a></li>
-      <li ng-class="{active: sort.field === 'lastLogin'}">
-        <a href="" ng-click="changeSorting('lastLogin')">Last Login
-          <span ng-class="caret" ng-show="sort.field === 'lastLogin'"></span></a></li>
-    </ul>
+    <div class="col-md-8 sort add-bottom">
+      <ul class="nav nav-pills nav-justified">
+        <li ng-class="{active: sort.field === 'username'}">
+          <a href="" ng-click="changeSorting('username')">Username
+            <span ng-class="{caret: sort.descending, }" ng-show="sort.field === 'username'"></span></a></li>
+        <li ng-class="{active: sort.field === 'firstName'}">
+          <a href="" ng-click="changeSorting('firstName')">Name
+            <span ng-class="caret" ng-show="sort.field === 'firstName'"></span></a></li>
+        <li ng-class="{active: sort.field === 'lastLogin'}">
+          <a href="" ng-click="changeSorting('lastLogin')">Last Login
+            <span ng-class="caret" ng-show="sort.field === 'lastLogin'"></span></a></li>
+      </ul>
     </div>
     <div class="col-md-4 text-right">
       <button class="btn btn-secondary" ng-csv="users"
@@ -25,26 +25,16 @@
     </div>
   </div>
   <div class="list-group scrollable-list">
-    <div class="list-group-item" ng-repeat="user in users | orderBy:sort.field:sort.descending">
-      <div class="row">
-        <div class="col-sm-10">
-          <h3 class="list-group-item-heading">
-            <a href=""  ng-click="editUser(user.username)">
-              {{user.email}}
-            </a>
-          </h3>
-        </div>
-        <div class="col-sm-2 edit">
-          <a href="" ng-click="editUser(user.username)">
-            Edit
-          </a>
-        </div>
-      </div>
-      <div class="list-group-item-text">
-        <h5>{{user.firstName}} {{user.lastName}}</h5>
-        <span ng-repeat="role in user.roles">{{role | roleLabel}},&nbsp;</span>
-        Last Logged In {{user.lastLogin}}
-      </div>
+    <div class="list-group-item" ng-repeat="user in users | orderBy:sort.field:sort.descending" ng-click="editUser(user.username)">
+      <h3 class="list-group-item-heading">
+        <small class="pull-right">Edit</small>
+        {{user.firstName}} {{user.lastName}}
+        <small class="text-muted"><strong>{{user.email}}</strong></small>
+      </h3>
+      <p class="list-group-item-text">
+        <span ng-repeat="role in user.roles">{{role | roleLabel}}<span ng-if="!$last">,&nbsp;</span></span><br/>
+        <small class="text-muted">Last Logged In <em>{{user.lastLogin | date:'medium'}}</em></small>
+      </p>
     </div>
   </div>
 </div>

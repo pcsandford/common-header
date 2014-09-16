@@ -643,18 +643,18 @@ app.run(["$templateCache", function($templateCache) {
     "</div>\n" +
     "<div class=\"modal-body company-users-modal\">\n" +
     "  <div class=\"row action-bar\">\n" +
-    "    <div class=\"col-md-8 sort\">\n" +
-    "    <ul class=\"nav nav-pills nav-justified\">\n" +
-    "      <li ng-class=\"{active: sort.field === 'username'}\">\n" +
-    "        <a href=\"\" ng-click=\"changeSorting('username')\">Username\n" +
-    "          <span ng-class=\"{caret: sort.descending, }\" ng-show=\"sort.field === 'username'\"></span></a></li>\n" +
-    "      <li ng-class=\"{active: sort.field === 'firstName'}\">\n" +
-    "        <a href=\"\" ng-click=\"changeSorting('firstName')\">Name\n" +
-    "          <span ng-class=\"caret\" ng-show=\"sort.field === 'firstName'\"></span></a></li>\n" +
-    "      <li ng-class=\"{active: sort.field === 'lastLogin'}\">\n" +
-    "        <a href=\"\" ng-click=\"changeSorting('lastLogin')\">Last Login\n" +
-    "          <span ng-class=\"caret\" ng-show=\"sort.field === 'lastLogin'\"></span></a></li>\n" +
-    "    </ul>\n" +
+    "    <div class=\"col-md-8 sort add-bottom\">\n" +
+    "      <ul class=\"nav nav-pills nav-justified\">\n" +
+    "        <li ng-class=\"{active: sort.field === 'username'}\">\n" +
+    "          <a href=\"\" ng-click=\"changeSorting('username')\">Username\n" +
+    "            <span ng-class=\"{caret: sort.descending, }\" ng-show=\"sort.field === 'username'\"></span></a></li>\n" +
+    "        <li ng-class=\"{active: sort.field === 'firstName'}\">\n" +
+    "          <a href=\"\" ng-click=\"changeSorting('firstName')\">Name\n" +
+    "            <span ng-class=\"caret\" ng-show=\"sort.field === 'firstName'\"></span></a></li>\n" +
+    "        <li ng-class=\"{active: sort.field === 'lastLogin'}\">\n" +
+    "          <a href=\"\" ng-click=\"changeSorting('lastLogin')\">Last Login\n" +
+    "            <span ng-class=\"caret\" ng-show=\"sort.field === 'lastLogin'\"></span></a></li>\n" +
+    "      </ul>\n" +
     "    </div>\n" +
     "    <div class=\"col-md-4 text-right\">\n" +
     "      <button class=\"btn btn-secondary\" ng-csv=\"users\"\n" +
@@ -662,26 +662,16 @@ app.run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "  </div>\n" +
     "  <div class=\"list-group scrollable-list\">\n" +
-    "    <div class=\"list-group-item\" ng-repeat=\"user in users | orderBy:sort.field:sort.descending\">\n" +
-    "      <div class=\"row\">\n" +
-    "        <div class=\"col-sm-10\">\n" +
-    "          <h3 class=\"list-group-item-heading\">\n" +
-    "            <a href=\"\"  ng-click=\"editUser(user.username)\">\n" +
-    "              {{user.email}}\n" +
-    "            </a>\n" +
-    "          </h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"col-sm-2 edit\">\n" +
-    "          <a href=\"\" ng-click=\"editUser(user.username)\">\n" +
-    "            Edit\n" +
-    "          </a>\n" +
-    "        </div>\n" +
-    "      </div>\n" +
-    "      <div class=\"list-group-item-text\">\n" +
-    "        <h5>{{user.firstName}} {{user.lastName}}</h5>\n" +
-    "        <span ng-repeat=\"role in user.roles\">{{role | roleLabel}},&nbsp;</span>\n" +
-    "        Last Logged In {{user.lastLogin}}\n" +
-    "      </div>\n" +
+    "    <div class=\"list-group-item\" ng-repeat=\"user in users | orderBy:sort.field:sort.descending\" ng-click=\"editUser(user.username)\">\n" +
+    "      <h3 class=\"list-group-item-heading\">\n" +
+    "        <small class=\"pull-right\">Edit</small>\n" +
+    "        {{user.firstName}} {{user.lastName}}\n" +
+    "        <small class=\"text-muted\"><strong>{{user.email}}</strong></small>\n" +
+    "      </h3>\n" +
+    "      <p class=\"list-group-item-text\">\n" +
+    "        <span ng-repeat=\"role in user.roles\">{{role | roleLabel}}<span ng-if=\"!$last\">,&nbsp;</span></span><br/>\n" +
+    "        <small class=\"text-muted\">Last Logged In <em>{{user.lastLogin | date:'medium'}}</em></small>\n" +
+    "      </p>\n" +
     "    </div>\n" +
     "  </div>\n" +
     "</div>\n" +
