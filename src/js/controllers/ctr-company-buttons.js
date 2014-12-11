@@ -32,8 +32,8 @@ angular.module("risevision.common.header")
     $scope.$watch(function () {return userState.isRiseAdmin(); },
     function (isRvAdmin) { $scope.isRiseVisionAdmin = isRvAdmin; });
 
-    $scope.$on("risevision.user.authorized", function () {
-      selectedCompanyUrlHandler.init();
+    $scope.$watch(function () { return userState.getUserCompanyId();}, function (is) {
+      if(is) { selectedCompanyUrlHandler.init(); }
     });
 
     //detect selectCompany changes on route UI
