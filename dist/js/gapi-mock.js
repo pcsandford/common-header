@@ -3193,7 +3193,7 @@ gapiMockData.companies = [
   else {
 
     window.gapiLoadingStatus = "loaded"; //surpress the loading of real gapi
-    window.gapi = {};
+    window.gapi = {isFake: true};
 
     var delayed = function () {
       if(arguments) {
@@ -3755,6 +3755,46 @@ gapiMockData.companies = [
               }
             }
           };
+        },
+        regenerateField: function (obj) {
+          var guid = (function() {
+            function s4() {
+              return Math.floor((1 + Math.random()) * 0x10000)
+              .toString(16)
+              .substring(1);
+            }
+            return function() {
+              return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+              s4() + '-' + s4() + s4() + s4();
+            };
+          })();
+
+          return {
+            execute: function (cb) {
+              var company;
+              if(obj.id && obj.fieldName) {
+                company = _.find(window.gapi._fakeDb.companies, function (company) {
+                  return company.id === obj.id;
+                });
+                company[obj.fieldName] = guid();
+                delayed(cb, {
+                  "result": true,
+                  "code": 200,
+                  "message": "OK",
+                  "item": company[obj.fieldName],
+                  "kind": "core#companyItem",
+                  "etag": "\"MH7KOPL7ADNdruowVC6-7YuLjZw/B1RYG_QUBrbTcuW6r700m7wrgBU\""
+                });
+              }
+              else {
+                delayed(cb, {
+                  "result": false,
+                  "code": 400,
+                  "message": "Company ID or fieldName is missing."
+                });
+              }
+            }
+          };
         }
       },
       user: {
@@ -4090,6 +4130,9 @@ gapiMockData.companies = [
     setToken: function (token) {
       if(token) {
         localStorage.setItem("gapi-mock-auth-token", JSON.stringify(token));
+      }
+      else {
+        localStorage.removeItem("gapi-mock-auth-token");
       }
     },
     getToken: function () {
