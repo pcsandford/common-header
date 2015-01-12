@@ -56,8 +56,11 @@
 
           browser.get("/test/e2e/index.html#/shopping-cart?cid=" +
             "bfaf9b18-fd5b-475b-afe1-a511cd73662f");
-          assert.eventually.isTrue(element(by.css(".sub-company-alert")).isDisplayed(),
+          assert.eventually.isTrue(element(by.css(".common-header-alert.sub-company-alert")).isDisplayed(),
             "subcompany alert should show");
+          assert.eventually.isFalse(element(by.css(".sub-company-alert.test-company-alert")).isDisplayed(),
+            "test company alert should not show");
+            
           browser.get("/test/e2e/index.html#/shopping-cart");
           browser.refresh();
           assert.eventually.isFalse(element(by.css(".sub-company-alert")).isPresent() &&

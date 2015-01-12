@@ -103,6 +103,12 @@
           Registered Seller
         </label>
       </div>
+      <div class="checkbox" ng-if="isRiseStoreAdmin">
+        <label>
+          <input type="checkbox" ng-model="company.isTest" />
+          Test Company
+        </label>
+      </div>
       <div class="form-group" ng-hide="true">
         <label for="company-settings-status">
           Status

@@ -265,6 +265,11 @@ app.run(["$templateCache", function($templateCache) {
     "\n" +
     "		<ng-include\n" +
     "		replace-include\n" +
+    "		ng-controller=\"TestCompanyBannerCtrl\"\n" +
+    "		src=\"'test-company-banner.html'\"></ng-include>\n" +
+    "		\n" +
+    "		<ng-include\n" +
+    "		replace-include\n" +
     "		ng-controller=\"SubcompanyBannerCtrl\"\n" +
     "		src=\"'subcompany-banner.html'\"></ng-include>\n" +
     "	</div>\n" +
@@ -623,6 +628,12 @@ app.run(["$templateCache", function($templateCache) {
     "        <label>\n" +
     "          <input type=\"checkbox\" ng-model=\"company.isSeller\" />\n" +
     "          Registered Seller\n" +
+    "        </label>\n" +
+    "      </div>\n" +
+    "      <div class=\"checkbox\" ng-if=\"isRiseStoreAdmin\">\n" +
+    "        <label>\n" +
+    "          <input type=\"checkbox\" ng-model=\"company.isTest\" />\n" +
+    "          Test Company\n" +
     "        </label>\n" +
     "      </div>\n" +
     "      <div class=\"form-group\" ng-hide=\"true\">\n" +
@@ -1156,7 +1167,7 @@ app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subcompany-banner.html",
     "<div ng-show=\"isSubcompanySelected && !inRVAFrame\"\n" +
-    "  class=\"sub-company-alert\">\n" +
+    "  class=\"common-header-alert sub-company-alert\">\n" +
     "  You're in Sub-Company {{selectedCompanyName}}&nbsp;\n" +
     "  <a href=\"\" ng-click=\"switchToMyCompany()\" class=\"link-button\">Switch to My Company</a>\n" +
     "</div>\n" +
@@ -1254,6 +1265,20 @@ app.run(["$templateCache", function($templateCache) {
     "        <span class=\"label label-danger system-messages-badge\">{{messages.length}}</span>\n" +
     "    </a>\n" +
     "</li>\n" +
+    "");
+}]);
+})();
+
+(function(module) {
+try { app = angular.module("risevision.common.header.templates"); }
+catch(err) { app = angular.module("risevision.common.header.templates", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
+  $templateCache.put("test-company-banner.html",
+    "<div ng-show=\"isTestCompanySelected\"\n" +
+    "  class=\"sub-company-alert test-company-alert\">\n" +
+    "  This is a Test Company\n" +
+    "</div>\n" +
     "");
 }]);
 })();
