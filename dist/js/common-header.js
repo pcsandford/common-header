@@ -3026,7 +3026,6 @@ angular.module("risevision.common.geodata", [])
         ["Djibouti", "DJ"],
         ["Dominica", "DM"],
         ["Dominican Republic", "DO"],
-        ["East Timor", "TP"],
         ["Ecuador", "EC"],
         ["Egypt", "EG"],
         ["El Salvador", "SV"],
@@ -3150,6 +3149,7 @@ angular.module("risevision.common.geodata", [])
         ["San Marino", "SM"],
         ["Sao Tome and Principe", "ST"],
         ["Saudi Arabia", "SA"],
+        ["Serbia", "RS"],
         ["Senegal", "SN"],
         ["Seychelles", "SC"],
         ["Sierra Leone", "SL"],
@@ -3160,7 +3160,6 @@ angular.module("risevision.common.geodata", [])
         ["Somalia", "SO"],
         ["South Africa", "ZA"],
         ["South Korea", "KR"],
-        ["Soviet Union", "SU"],
         ["Spain", "ES"],
         ["Sri Lanka", "LK"],
         ["St. Helena", "SH"],
@@ -3200,8 +3199,6 @@ angular.module("risevision.common.geodata", [])
         ["Wallis and Futuna Islands", "WF"],
         ["Western Sahara", "EH"],
         ["Yemen", "YE"],
-        ["Yugoslavia", "YU"],
-        ["Zaire", "ZR"],
         ["Zambia", "ZM"],
         ["Zimbabwe", "ZW"]])
 
