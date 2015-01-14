@@ -265,6 +265,11 @@ app.run(["$templateCache", function($templateCache) {
     "\n" +
     "		<ng-include\n" +
     "		replace-include\n" +
+    "		ng-controller=\"TestCompanyBannerCtrl\"\n" +
+    "		src=\"'test-company-banner.html'\"></ng-include>\n" +
+    "		\n" +
+    "		<ng-include\n" +
+    "		replace-include\n" +
     "		ng-controller=\"SubcompanyBannerCtrl\"\n" +
     "		src=\"'subcompany-banner.html'\"></ng-include>\n" +
     "	</div>\n" +
@@ -623,6 +628,12 @@ app.run(["$templateCache", function($templateCache) {
     "        <label>\n" +
     "          <input type=\"checkbox\" ng-model=\"company.isSeller\" />\n" +
     "          Registered Seller\n" +
+    "        </label>\n" +
+    "      </div>\n" +
+    "      <div class=\"checkbox\" ng-if=\"isRiseStoreAdmin\">\n" +
+    "        <label>\n" +
+    "          <input type=\"checkbox\" ng-model=\"company.isTest\" />\n" +
+    "          Test Company\n" +
     "        </label>\n" +
     "      </div>\n" +
     "      <div class=\"form-group\" ng-hide=\"true\">\n" +
@@ -1156,7 +1167,7 @@ app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subcompany-banner.html",
     "<div ng-show=\"isSubcompanySelected && !inRVAFrame\"\n" +
-    "  class=\"sub-company-alert\">\n" +
+    "  class=\"common-header-alert sub-company-alert\">\n" +
     "  You're in Sub-Company {{selectedCompanyName}}&nbsp;\n" +
     "  <a href=\"\" ng-click=\"switchToMyCompany()\" class=\"link-button\">Switch to My Company</a>\n" +
     "</div>\n" +
@@ -1254,6 +1265,20 @@ app.run(["$templateCache", function($templateCache) {
     "        <span class=\"label label-danger system-messages-badge\">{{messages.length}}</span>\n" +
     "    </a>\n" +
     "</li>\n" +
+    "");
+}]);
+})();
+
+(function(module) {
+try { app = angular.module("risevision.common.header.templates"); }
+catch(err) { app = angular.module("risevision.common.header.templates", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
+  $templateCache.put("test-company-banner.html",
+    "<div ng-show=\"isTestCompanySelected\"\n" +
+    "  class=\"sub-company-alert test-company-alert\">\n" +
+    "  This is a Test Company\n" +
+    "</div>\n" +
     "");
 }]);
 })();
@@ -2294,6 +2319,17 @@ angular.module("risevision.common.header")
       $scope.switchToMyCompany = function () {
         userState.resetCompany();
       };
+    }
+  ]);
+
+angular.module("risevision.common.header")
+
+  .controller("TestCompanyBannerCtrl", ["$scope", "userState",
+    function($scope, userState) {
+      $scope.$watch(function () { return userState.isTestCompanySelected(); },
+      function (isTest) {
+        $scope.isTestCompanySelected = isTest;
+      });
     }
   ]);
 
@@ -3824,6 +3860,8 @@ angular.module("risevision.common.geodata", [])
       switchCompany: function (company) { _clearAndCopy(company, _state.selectedCompany); },
       isSubcompanySelected: function () {
         return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
+      isTestCompanySelected: function () {
+        return _state.selectedCompany && _state.selectedCompany.isTest === true; },
       getUserPicture: function () { return _state.user.picture; },
       hasRole: hasRole,
       inRVAFrame: function () {return _state.inRVAFrame; },
@@ -4491,7 +4529,7 @@ angular.module("risevision.ui-flow", ["LocalStorageModule"])
     .constant("COMPANY_WRITABLE_FIELDS", [
       "name", "street", "unit", "city", "province", "country",
       "postalCode", "timeZoneOffset", "telephone", "fax", "companyStatus",
-      "notificationEmails", "mailSyncEnabled", "sellerId"
+      "notificationEmails", "mailSyncEnabled", "sellerId", "isTest"
     ])
 
     .factory("createCompany", ["$q", "coreAPILoader", "COMPANY_WRITABLE_FIELDS",

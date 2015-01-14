@@ -514,6 +514,8 @@
       switchCompany: function (company) { _clearAndCopy(company, _state.selectedCompany); },
       isSubcompanySelected: function () {
         return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
+      isTestCompanySelected: function () {
+        return _state.selectedCompany && _state.selectedCompany.isTest === true; },
       getUserPicture: function () { return _state.user.picture; },
       hasRole: hasRole,
       inRVAFrame: function () {return _state.inRVAFrame; },
