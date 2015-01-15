@@ -2285,7 +2285,7 @@ angular.module("risevision.common.header")
     };
 
     $scope.setCompany = function (company) {
-      $modalInstance.close(company);
+      $modalInstance.close(company.id);
     };
 
     $scope.handleScroll = function (event, isEndEvent) {
@@ -3893,7 +3893,11 @@ angular.module("risevision.common.geodata", [])
       resetCompany: function () { _clearAndCopy(_state.userCompany, _state.selectedCompany); },
       getCopyOfUserCompany: function () { return _follow(_state.userCompany); },
       getCopyOfSelectedCompany: function () { return _follow(_state.selectedCompany); },
-      switchCompany: function (company) { _clearAndCopy(company, _state.selectedCompany); },
+      switchCompany: function (companyId) {
+        getCompany(companyId).then(function (company) {  
+          _clearAndCopy(company, _state.selectedCompany); 
+        });
+      },
       isSubcompanySelected: function () {
         return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
       isTestCompanySelected: function () {
@@ -5007,10 +5011,9 @@ function (loadFastpass, userState) {
           var deferred = $q.defer();
           var newCompanyId = $location.search().cid;
           if(newCompanyId && userState.getUserCompanyId() && 
-             newCompanyId !== userState.getSelectedCompanyId()) {
-            getCompany(newCompanyId).then(function (company) {
-              userState.switchCompany(company);
-            }).finally(deferred.resolve);
+            newCompanyId !== userState.getSelectedCompanyId()) {
+            userState.switchCompany(newCompanyId);
+            deferred.resolve();
           }
           else {
             if (!newCompanyId && userState.getSelectedCompanyId() &&
