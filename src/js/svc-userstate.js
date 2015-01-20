@@ -511,7 +511,11 @@
       resetCompany: function () { _clearAndCopy(_state.userCompany, _state.selectedCompany); },
       getCopyOfUserCompany: function () { return _follow(_state.userCompany); },
       getCopyOfSelectedCompany: function () { return _follow(_state.selectedCompany); },
-      switchCompany: function (company) { _clearAndCopy(company, _state.selectedCompany); },
+      switchCompany: function (companyId) {
+        getCompany(companyId).then(function (company) {  
+          _clearAndCopy(company, _state.selectedCompany); 
+        });
+      },
       isSubcompanySelected: function () {
         return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
       isTestCompanySelected: function () {

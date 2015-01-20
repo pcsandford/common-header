@@ -48,10 +48,9 @@
           var deferred = $q.defer();
           var newCompanyId = $location.search().cid;
           if(newCompanyId && userState.getUserCompanyId() && 
-             newCompanyId !== userState.getSelectedCompanyId()) {
-            getCompany(newCompanyId).then(function (company) {
-              userState.switchCompany(company);
-            }).finally(deferred.resolve);
+            newCompanyId !== userState.getSelectedCompanyId()) {
+            userState.switchCompany(newCompanyId);
+            deferred.resolve();
           }
           else {
             if (!newCompanyId && userState.getSelectedCompanyId() &&
