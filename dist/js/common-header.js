@@ -2112,7 +2112,7 @@ angular.module("risevision.common.header")
     $scope.save = function () {
       $scope.loading = true;
 
-      setSellerId();
+      verifyAdmin();
       updateCompany($scope.company.id, $scope.company)
       .then(
         function () {
@@ -2180,12 +2180,13 @@ angular.module("risevision.common.header")
       }
     };
 
-    function setSellerId(){
+    function verifyAdmin(){
       if ($scope.isRiseStoreAdmin) {
         $scope.company.sellerId = $scope.company.isSeller ? "yes" : null;
       } else {
-        //exclude sellerId from API call
+        //exclude fields from API call
         $scope.company.sellerId = undefined;
+        $scope.company.isTest = undefined;
       }
     }
 
