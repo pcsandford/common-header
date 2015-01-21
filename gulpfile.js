@@ -34,16 +34,21 @@ var env = process.env.NODE_ENV || "dev",
     "components/angular-bootstrap/ui-bootstrap-tpls.js",
     "components/angular-ui-flow-manager/src/js/*.js",
     "components/angular-mocks/angular-mocks.js",
+    "components/angular-sanitize/angular-sanitize.js",
     "components/angular-spinner/angular-spinner.js",
+    "components/angular-touch/angular-touch.js",
     "components/ng-biscuit/dist/ng-biscuit.js",
+    "components/ng-csv/build/ng-csv.js",
     "components/angular-local-storage/dist/angular-local-storage.js",
     "components/rv-loading/loading.js",
     "components/ng-gapi-loader/src/js/*.js",
     "components/ng-core-api-client/src/js/*.js",
+    "components/checklist-model/checklist-model.js",
     "src/js/config/config.js",
     "test/unit/fixtures/*.js",
-    "src/js/*.js",
-    "test/unit/*spec.js"
+    "src/templates.js",
+    "src/js/**/*.js",
+    "test/unit/**/*spec.js"
     ],
     commonHeaderSrcFiles = ["./src/templates.js", "./src/js/dtv-common-header.js",
     "./src/js/controllers/ctr-global-alerts.js",
@@ -285,12 +290,17 @@ gulp.task("test", ["lint"], function (cb) {
   runSequence("test:unit", "test:e2e", "metrics", cb);
 });
 
+gulp.task('watch', function() {
+  gulp.watch( unitTestFiles,['test:unit']);
+});
+
 gulp.task("default", [], function () {
   console.log("\n***********************");
   console.log("* Tell me what to do: *");
   console.log("***********************");
   console.log("* gulp test           *");
   console.log("* gulp build          *");
+  console.log("* gulp watch          *");
   console.log("***********************\n");
   return true;
 });
