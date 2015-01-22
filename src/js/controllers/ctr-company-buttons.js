@@ -1,7 +1,7 @@
 angular.module("risevision.common.header")
 .controller("CompanyButtonsCtrl", [ "$scope", "$modal", "$templateCache",
-  "userState", "getCompany", "$location", "selectedCompanyUrlHandler",
-  function($scope, $modal, $templateCache, userState, getCompany, $location,
+  "userState", "selectedCompanyUrlHandler",
+  function($scope, $modal, $templateCache, userState,
     selectedCompanyUrlHandler) {
     $scope.inRVAFrame = userState.inRVAFrame();
 
@@ -31,10 +31,6 @@ angular.module("risevision.common.header")
 
     $scope.$watch(function () {return userState.isRiseAdmin(); },
     function (isRvAdmin) { $scope.isRiseVisionAdmin = isRvAdmin; });
-
-    $scope.$watch(function () { return userState.getUserCompanyId();}, function (is) {
-      if(is) { selectedCompanyUrlHandler.init(); }
-    });
 
     //detect selectCompany changes on route UI
     $scope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);

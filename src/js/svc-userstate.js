@@ -21,12 +21,13 @@
   var _userStateReady;
 
   angular.module("risevision.common.userstate",
-    ["risevision.common.gapi", "risevision.common.localstorage",
+    ["risevision.common.companystate", "risevision.common.util",
+    "risevision.common.gapi", "risevision.common.localstorage",
     "risevision.common.config", "risevision.core.cache",
     "risevision.core.oauth2", "ngBiscuit",
     "risevision.core.util", "risevision.core.userprofile",
-    "risevision.core.company", "risevision.common.loading",
-    "LocalStorageModule", "risevision.ui-flow"
+    "risevision.common.loading", "LocalStorageModule", 
+    "risevision.ui-flow"
   ])
 
   // constants (you can override them in your app as needed)
@@ -70,13 +71,13 @@
   .factory("userState", [
     "$q", "$log", "$location", "CLIENT_ID",
     "gapiLoader", "cookieStore", "OAUTH2_SCOPES", "userInfoCache",
-    "getOAuthUserInfo", "getUserProfile", "getCompany", "$rootScope",
-    "$interval", "$loading", "$window", "GOOGLE_OAUTH2_URL",
+    "getOAuthUserInfo", "getUserProfile", "companyState", "objectHelper",
+    "$rootScope", "$interval", "$loading", "$window", "GOOGLE_OAUTH2_URL",
     "localStorageService", "$document", "uiFlowManager",
     function ($q, $log, $location, CLIENT_ID,
     gapiLoader, cookieStore, OAUTH2_SCOPES, userInfoCache,
-    getOAuthUserInfo, getUserProfile, getCompany, $rootScope,
-    $interval, $loading, $window, GOOGLE_OAUTH2_URL,
+    getOAuthUserInfo, getUserProfile, companyState, objectHelper,
+    $rootScope, $interval, $loading, $window, GOOGLE_OAUTH2_URL,
     localStorageService, $document, uiFlowManager) {
     //singleton factory that represents userState throughout application
 
@@ -87,8 +88,6 @@
     var _state = {
       profile: {}, //Rise vision profile
       user: {}, //Google user
-      userCompany: {},
-      selectedCompany: {},
       roleMap: {},
       userToken: _readRvToken(),
       inRVAFrame: angular.isDefined($location.search().inRVA)
@@ -143,13 +142,6 @@
     };
 
     _addEventListenerVisibilityAPI();
-
-      //
-    var _follow = function(source) {
-      var Follower = function(){};
-      Follower.prototype = source;
-      return new Follower();
-    };
 
     var _getUserId = function () {
       return _state.user ? _state.user.userId : null;
@@ -219,23 +211,12 @@
       return result;
     };
 
-    var _clearObj = function (obj) {
-      for (var member in obj) {
-        delete obj[member];
-      }
-    };
-
-    var _clearAndCopy = function (src, dest) {
-      _clearObj(dest);
-      angular.extend(dest, src);
-    };
-
     var _resetUserState = function () {
-       _clearObj(_state.user);
-       _clearObj(_state.selectedCompany);
-       _clearObj(_state.profile);
-       _clearObj(_state.userCompany);
+       objectHelper.clearObj(_state.user);
+       objectHelper.clearObj(_state.profile);
        _state.roleMap = {};
+       
+       companyState.resetCompanyState();
        $log.debug("User state has been reset.");
      };
 
@@ -245,7 +226,7 @@
          //populate profile if the current user is a rise vision user
          getUserProfile(_state.user.username, true).then(
            function (profile) {
-             _clearAndCopy(angular.extend({
+             objectHelper.clearAndCopy(angular.extend({
                username: oauthUserInfo.email
              }, profile), _state.profile);
 
@@ -292,7 +273,7 @@
                      _state.user.username !== oauthUserInfo.email) {
 
                      //populate user
-                     _clearAndCopy({
+                     objectHelper.clearAndCopy({
                        userId: oauthUserInfo.id, //TODO: ideally we should not use real user ID or email, but use hash value instead
                        username: oauthUserInfo.email,
                        picture: oauthUserInfo.picture
@@ -300,19 +281,10 @@
 
                      _setUserToken();
                      refreshProfile().then(function () {
-                       //populate userCompany
-                       return getCompany().then(function(company) {
-                         _clearAndCopy(company, _state.userCompany);
-                       }, function () { _clearObj(_state.userCompany);
-                       }).finally(function () {
-                        authorizeDeferred.resolve(authResult);
-                        $rootScope.$broadcast("risevision.user.authorized");
-                        if(!attemptImmediate) {
-                          $rootScope.$broadcast("risevision.user.userSignedIn");
-                        }
-                       });
-                     },
-                     function () {
+                       //populate company info
+                       return companyState.init();
+                     })
+                     .finally(function () {
                        authorizeDeferred.resolve(authResult);
                        $rootScope.$broadcast("risevision.user.authorized");
                        if(!attemptImmediate) {
@@ -322,11 +294,11 @@
                    }
                    else {authorizeDeferred.resolve(authResult); }
                  }, function(err){
-                   _clearObj(_state.user);
+                   objectHelper.clearObj(_state.user);
                  authorizeDeferred.reject(err); });
              }
              else {
-               _clearObj(_state.user);
+               objectHelper.clearObj(_state.user);
                authorizeDeferred.reject("not authorized");
              }
            });
@@ -402,7 +374,7 @@
             $log.debug(msg);
            //  _clearUserToken();
             authenticateDeferred.reject(msg);
-            _clearObj(_state.user);
+            objectHelper.clearObj(_state.user);
             $loading.stopGlobal("risevision.user.authenticate");
           }
          });
@@ -430,7 +402,7 @@
            //clear auth token
            // The majority of state is in here
            _resetUserState();
-           _clearObj(_state.user);
+           objectHelper.clearObj(_state.user);
            //call google api to sign out
            $rootScope.$broadcast("risevision.user.signedOut");
            $log.debug("User is signed out.");
@@ -488,38 +460,21 @@
     };
 
     var userState = {
-      getUserCompanyId: function () {
-        return (_state.userCompany && _state.userCompany.id) || null; },
-      getSelectedCompanyId: function () {
-        return (_state.selectedCompany && _state.selectedCompany.id) || null; },
-      getSelectedCompanyName: function () {
-        return (_state.selectedCompany && _state.selectedCompany.name) || null;},
-      updateCompanySettings: function (company) {
-        if (company && _state.selectedCompany) {
-          _clearAndCopy(company, _state.selectedCompany);
-          if (_state.userCompany.id === _state.selectedCompany.id) {
-            _clearAndCopy(company, _state.userCompany);
-          }
-        }
-      },
-      getSelectedCompanyCountry: function () {
-          return (_state.selectedCompany && _state.selectedCompany.country) || null;},
+      getUserCompanyId: companyState.getUserCompanyId,
+      getSelectedCompanyId: companyState.getSelectedCompanyId,
+      getSelectedCompanyName: companyState.getSelectedCompanyName,
+      updateCompanySettings: companyState.updateCompanySettings,
+      getSelectedCompanyCountry: companyState.getSelectedCompanyCountry,
       getUsername: function () {
         return (_state.user && _state.user.username) || null; },
       getUserEmail: function () { return _state.profile.email; },
-      getCopyOfProfile: function () { return _follow(_state.profile); },
-      resetCompany: function () { _clearAndCopy(_state.userCompany, _state.selectedCompany); },
-      getCopyOfUserCompany: function () { return _follow(_state.userCompany); },
-      getCopyOfSelectedCompany: function () { return _follow(_state.selectedCompany); },
-      switchCompany: function (companyId) {
-        getCompany(companyId).then(function (company) {  
-          _clearAndCopy(company, _state.selectedCompany); 
-        });
-      },
-      isSubcompanySelected: function () {
-        return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
-      isTestCompanySelected: function () {
-        return _state.selectedCompany && _state.selectedCompany.isTest === true; },
+      getCopyOfProfile: function () { return objectHelper.follow(_state.profile); },
+      resetCompany: companyState.resetCompany,
+      getCopyOfUserCompany: companyState.getCopyOfUserCompany,
+      getCopyOfSelectedCompany: companyState.getCopyOfSelectedCompany,
+      switchCompany: companyState.switchCompany,
+      isSubcompanySelected: companyState.isSubcompanySelected,
+      isTestCompanySelected: companyState.isTestCompanySelected,
       getUserPicture: function () { return _state.user.picture; },
       hasRole: hasRole,
       inRVAFrame: function () {return _state.inRVAFrame; },
@@ -527,7 +482,7 @@
       isRiseStoreAdmin: function () {return hasRole("ba"); },
       isUserAdmin: function () {return hasRole("ua"); },
       isPurchaser: function () {return hasRole("pu"); },
-      isSeller: function () {return (_state.selectedCompany && _state.selectedCompany.sellerId) ? true : false; },
+      isSeller: companyState.isSeller,
       isRiseVisionUser: isRiseVisionUser,
       isLoggedIn: isLoggedIn,
       authenticate: _state.inRVAFrame ? authenticate : authenticateRedirect,

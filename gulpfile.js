@@ -75,6 +75,7 @@ var env = process.env.NODE_ENV || "dev",
     "./src/js/svc-geodata.js",
     "./src/js/svc-popup-detector.js",
     "./src/js/svc-userstate.js",
+    "./src/js/svc-companystate.js",
     "./components/angular-ui-flow-manager/src/js/svc-ui-flow.js",
     "./src/js/svc-account.js",
     "./src/js/svc-registration.js",
@@ -290,9 +291,7 @@ gulp.task("test", ["lint"], function (cb) {
   runSequence("test:unit", "test:e2e", "metrics", cb);
 });
 
-gulp.task('watch', function() {
-  gulp.watch( unitTestFiles,['test:unit']);
-});
+gulp.task("watch", ["test:unit-watch"]);
 
 gulp.task("default", [], function () {
   console.log("\n***********************");

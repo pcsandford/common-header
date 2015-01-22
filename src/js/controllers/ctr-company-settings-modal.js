@@ -40,8 +40,10 @@ angular.module("risevision.common.header")
     $scope.save = function () {
       $scope.loading = true;
 
-      verifyAdmin();
-      updateCompany($scope.company.id, $scope.company)
+      var company = angular.copy($scope.company);
+      
+      verifyAdmin(company);
+      updateCompany($scope.company.id, company)
       .then(
         function () {
           userState.updateCompanySettings($scope.company);
@@ -108,13 +110,13 @@ angular.module("risevision.common.header")
       }
     };
 
-    function verifyAdmin(){
+    function verifyAdmin(company){
       if ($scope.isRiseStoreAdmin) {
-        $scope.company.sellerId = $scope.company.isSeller ? "yes" : null;
+        company.sellerId = company.isSeller ? "yes" : null;
       } else {
         //exclude fields from API call
-        $scope.company.sellerId = undefined;
-        $scope.company.isTest = undefined;
+        company.sellerId = undefined;
+        company.isTest = undefined;
       }
     }
 
