@@ -5038,19 +5038,17 @@ function (loadFastpass, userState) {
   .factory("shoppingCart", ["rvStorage", "$log", "$q", "userState",
     function (rvStorage, $log, $q, userState){
     var _items = [];
-    var itemsMap = {};
 
     var readFromStorage = function() {
       var storedCartContents = rvStorage.getItem("rvStore_OrderProducts");
       $log.debug("read storedCartContents", storedCartContents);
       if (storedCartContents) {
         var res = JSON.parse(storedCartContents);
-        if (res && res.items && res.itemsMap) {
+        if (res && res.items) {
           while(_items.length > 0) { _items.pop(); } //clear all items
           for (var i = 0; i < res.items.length; i++) {
             _items.push(res.items[i]);
           }
-          itemsMap = res.itemsMap;
           $log.debug(_items.length, "items pushed to cart.");
         }
       }
@@ -5058,7 +5056,7 @@ function (loadFastpass, userState) {
 
     var persistToStorage = function() {
       rvStorage.setItem("rvStore_OrderProducts",
-        JSON.stringify({items: _items, itemsMap: itemsMap}));
+        JSON.stringify({items: _items}));
       var storedCartContents = rvStorage.getItem("rvStore_OrderProducts");
       $log.debug("written storedCartContents", storedCartContents);
     };
@@ -5097,9 +5095,6 @@ function (loadFastpass, userState) {
       },
       clear: function () {
         while(_items.length > 0) { _items.pop(); } //clear all items
-        for (var key in itemsMap) {
-          delete itemsMap[key];
-        }
         persistToStorage();
         $log.debug("Shopping cart cleared.");
       },
@@ -5133,12 +5128,10 @@ function (loadFastpass, userState) {
         }
       },
       removeItem: function(itemToRemove) {
-        if (itemToRemove && itemsMap[itemToRemove.productId]) {
-          delete itemsMap[itemToRemove.productId];
+        if (itemToRemove) {          
           for (var i = 0; i < _items.length; i++) {
             if (_items[i].productId === itemToRemove.productId) {
               _items.splice(i, 1);
-              delete itemsMap[itemToRemove.productId];
               break;
             }
           }
@@ -5146,43 +5139,48 @@ function (loadFastpass, userState) {
         }
       },
       adjustItemQuantity: function(itemToAdjust, qty) {
-        if (itemToAdjust && $.isNumeric(qty) && itemsMap[itemToAdjust.id]) {
-          if (qty > 0) {
-            itemsMap[itemToAdjust.id].quantity = qty;
-            itemsMap[itemToAdjust.id].item.qty = qty;
-            persistToStorage();
-          }
-          else {
-            this.removeItem(itemToAdjust);
-          }
+        if (itemToAdjust && $.isNumeric(qty) && qty > 0) {
+          persistToStorage();
         }
       },
       addItem: function(itemToAdd, qty, pricingIndex) {
 
         if(!userState.isRiseVisionUser()) {return; }
+        var item = this.findItem(itemToAdd);
 
-        if (itemsMap[itemToAdd.productId] && (itemToAdd.paymentTerms === "Subscription" || itemToAdd.paymentTerms === "Metered")) {
+        if (item && (itemToAdd.paymentTerms === "Subscription" || itemToAdd.paymentTerms === "Metered")) {
           return;
         }
 
         if (itemToAdd && $.isNumeric(qty) && itemToAdd.orderedPricing.length > pricingIndex) {
-          if (itemsMap[itemToAdd.productId]) {
+          if (item) {
             // qty for existing item is increased
-            itemsMap[itemToAdd.productId].qty = parseInt(itemsMap[itemToAdd.productId].qty) + parseInt(qty);
-          }
-          else {
+            item.qty = parseInt(item.qty) + parseInt(qty);
+          } else {
             // item is not already in the cart
-            itemsMap[itemToAdd.productId] = angular.copy(itemToAdd);
-            itemsMap[itemToAdd.productId].qty = qty;
-            _items.push(itemsMap[itemToAdd.productId]);
+            item = angular.copy(itemToAdd);
+            item.qty = qty;
+            _items.push(item);
           }
-          itemsMap[itemToAdd.productId].selected = itemToAdd.orderedPricing[pricingIndex];
+          item.selected = itemToAdd.orderedPricing[pricingIndex];
           persistToStorage();
         }
       },
-      itemExists: function(item) {
+      findItem: function(item) {
+        //returns instance of the object from _items array
 
-        if (userState.isRiseVisionUser() && item && itemsMap[item.productId]) {
+        if (item) {
+          for (var i = 0; i < _items.length; i++) {
+            if (item.productId === _items[i].productId) {
+              return _items[i];
+            }
+          }
+        }
+
+        return null;
+      },
+      itemExists: function(item) {
+        if (userState.isRiseVisionUser() && item && this.findItem(item) !== null) {
           return true;
         }
         return false;
