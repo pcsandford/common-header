@@ -82,5 +82,27 @@
 
     };
 
+  }])
+  .factory("objectHelper", [function() {
+    var factory = {};
+    
+    factory.follow = function(source) {
+      var Follower = function(){};
+      Follower.prototype = source;
+      return new Follower();
+    };
+    
+    factory.clearObj = function (obj) {
+      for (var member in obj) {
+        delete obj[member];
+      }
+    };
+    
+    factory.clearAndCopy = function (src, dest) {
+      factory.clearObj(dest);
+      angular.extend(dest, src);
+    };
+    
+    return factory;    
   }]);
 })(angular);

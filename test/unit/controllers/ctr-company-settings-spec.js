@@ -25,29 +25,16 @@ describe("controller: company settings", function() {
       return function(companyId) {
         var deferred = Q.defer();
         expect(companyId).to.equal("RV_test_id");
-        deferred.resolve({
-          "id": "RV_test_id",
-          "parentId": "fb788f1f",
-          "name": "Test Company",
-          "creationDate": "2012-04-03T20:52:17.000Z",
-          "city": "Toronto",
-          "province": "ON",
-          "country": "CA",
-          "companyStatus": 1,
-          "companyStatusChangeDate": "2011-06-30T20:08:57.000Z",
-          "settings": {},
-          "parentSettings": {},
-          "mailSyncEnabled": false,
-          "sellerId": "asdf1234",
-          "isTest": true
-        });
+        deferred.resolve(savedCompany);
         return deferred.promise;
       };
     });
     $provide.service("updateCompany",function(){
-      return function(companyId){
+      return function(companyId, newCompany){
         var deferred = Q.defer();
         expect(companyId).to.equal("RV_test_id");
+        
+        savedCompany = newCompany;
         
         if(createCompany){
           deferred.resolve(companyId);
@@ -59,7 +46,7 @@ describe("controller: company settings", function() {
     });
     
   }));
-  var $scope, userProfile, userState, $modalInstance, createCompany;
+  var $scope, userProfile, userCompany, savedCompany, company, userState, $modalInstance, createCompany;
   var isStoreAdmin = true;
   beforeEach(function(){
     createCompany = true;
@@ -70,34 +57,33 @@ describe("controller: company settings", function() {
       telephone : "telephone",
       email : "e@mail.com"
     };
+    company = {
+      "id": "RV_test_id",
+      "parentId": "fb788f1f",
+      "name": "Test Company",
+      "creationDate": "2012-04-03T20:52:17.000Z",
+      "city": "Toronto",
+      "province": "ON",
+      "country": "CA",
+      "companyStatus": 1,
+      "companyStatusChangeDate": "2011-06-30T20:08:57.000Z",
+      "settings": {},
+      "parentSettings": {},
+      "mailSyncEnabled": false,
+      "sellerId": "asdf1234",
+      "isTest": true
+    };
+    savedCompany = company;
     userState = function(){
       return {
         getCopyOfProfile : function(){
           return userProfile;
         },
         getCopyOfUserCompany : function(){
-          return {
-            id : "RV_test_id",
-            name : "test company",
-            street : "123 fake street",
-            unit : null,
-            city : "USA City",
-            province : null,
-            country : "US",
-            postalCode : "1234 1234"
-          };
+          return userCompany;
         },
         getCopyOfSelectedCompany : function(){
-          return {
-            id : "RV_test_id",
-            name : "test company",
-            street : "123 fake street",
-            unit : null,
-            city : "USA City",
-            province : null,
-            country : "US",
-            postalCode : "1234 1234"
-          };
+          return userCompany;
         },
         getAccessToken : function(){
           return{access_token: "TEST_TOKEN"};
@@ -108,8 +94,8 @@ describe("controller: company settings", function() {
         _restoreState : function(){
           
         },
-        updateCompanySettings: function(){
-          
+        updateCompanySettings: function(company){
+          userCompany = angular.copy(company);
         },
         isSubcompanySelected : function(){
           return true;
@@ -191,9 +177,21 @@ describe("controller: company settings", function() {
       $scope.isRiseStoreAdmin = false;
       $scope.save();
       setTimeout(function() {
-        expect($scope.company).to.have.property("name");
-        expect($scope.company).to.not.have.property("sellerId");
-        expect($scope.company).to.not.have.property("isTest");
+        expect(savedCompany).to.have.property("name");
+        expect(savedCompany).to.not.have.property("sellerId");
+        expect(savedCompany).to.not.have.property("isTest");
+        
+        done();
+      },10);
+    });
+    
+    it("should not remove fields from companyState if user is not Store Admin",function(done){
+      $scope.isRiseStoreAdmin = false;
+      $scope.save();
+      setTimeout(function() {
+        expect($scope.company).to.have.property("isTest");
+        expect($scope.company).to.have.property("sellerId");
+        expect($scope.company.isTest).to.be.true;
         
         done();
       },10);

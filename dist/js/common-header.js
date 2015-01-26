@@ -1441,7 +1441,7 @@ angular.module("risevision.common.header", [
   "risevision.common.localstorage",
   "risevision.common.header.templates",
   "risevision.common.loading",
-  "risevision.common.userstate",   "risevision.ui-flow",
+  "risevision.ui-flow",
   "risevision.common.systemmessages", "risevision.core.systemmessages",
   "risevision.core.oauth2",
   "risevision.common.geodata",
@@ -1716,8 +1716,8 @@ angular.module("risevision.common.header")
 
 angular.module("risevision.common.header")
 .controller("CompanyButtonsCtrl", [ "$scope", "$modal", "$templateCache",
-  "userState", "getCompany", "$location", "selectedCompanyUrlHandler",
-  function($scope, $modal, $templateCache, userState, getCompany, $location,
+  "userState", "selectedCompanyUrlHandler",
+  function($scope, $modal, $templateCache, userState,
     selectedCompanyUrlHandler) {
     $scope.inRVAFrame = userState.inRVAFrame();
 
@@ -1747,10 +1747,6 @@ angular.module("risevision.common.header")
 
     $scope.$watch(function () {return userState.isRiseAdmin(); },
     function (isRvAdmin) { $scope.isRiseVisionAdmin = isRvAdmin; });
-
-    $scope.$watch(function () { return userState.getUserCompanyId();}, function (is) {
-      if(is) { selectedCompanyUrlHandler.init(); }
-    });
 
     //detect selectCompany changes on route UI
     $scope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
@@ -2112,8 +2108,10 @@ angular.module("risevision.common.header")
     $scope.save = function () {
       $scope.loading = true;
 
-      verifyAdmin();
-      updateCompany($scope.company.id, $scope.company)
+      var company = angular.copy($scope.company);
+      
+      verifyAdmin(company);
+      updateCompany($scope.company.id, company)
       .then(
         function () {
           userState.updateCompanySettings($scope.company);
@@ -2180,13 +2178,13 @@ angular.module("risevision.common.header")
       }
     };
 
-    function verifyAdmin(){
+    function verifyAdmin(company){
       if ($scope.isRiseStoreAdmin) {
-        $scope.company.sellerId = $scope.company.isSeller ? "yes" : null;
+        company.sellerId = company.isSeller ? "yes" : null;
       } else {
         //exclude fields from API call
-        $scope.company.sellerId = undefined;
-        $scope.company.isTest = undefined;
+        company.sellerId = undefined;
+        company.isTest = undefined;
       }
     }
 
@@ -2998,6 +2996,28 @@ angular.module("risevision.common.header")
 
     };
 
+  }])
+  .factory("objectHelper", [function() {
+    var factory = {};
+    
+    factory.follow = function(source) {
+      var Follower = function(){};
+      Follower.prototype = source;
+      return new Follower();
+    };
+    
+    factory.clearObj = function (obj) {
+      for (var member in obj) {
+        delete obj[member];
+      }
+    };
+    
+    factory.clearAndCopy = function (src, dest) {
+      factory.clearObj(dest);
+      angular.extend(dest, src);
+    };
+    
+    return factory;    
   }]);
 })(angular);
 
@@ -3404,12 +3424,13 @@ angular.module("risevision.common.geodata", [])
   var _userStateReady;
 
   angular.module("risevision.common.userstate",
-    ["risevision.common.gapi", "risevision.common.localstorage",
+    ["risevision.common.companystate", "risevision.common.util",
+    "risevision.common.gapi", "risevision.common.localstorage",
     "risevision.common.config", "risevision.core.cache",
     "risevision.core.oauth2", "ngBiscuit",
     "risevision.core.util", "risevision.core.userprofile",
-    "risevision.core.company", "risevision.common.loading",
-    "LocalStorageModule", "risevision.ui-flow"
+    "risevision.common.loading", "LocalStorageModule", 
+    "risevision.ui-flow"
   ])
 
   // constants (you can override them in your app as needed)
@@ -3453,13 +3474,13 @@ angular.module("risevision.common.geodata", [])
   .factory("userState", [
     "$q", "$log", "$location", "CLIENT_ID",
     "gapiLoader", "cookieStore", "OAUTH2_SCOPES", "userInfoCache",
-    "getOAuthUserInfo", "getUserProfile", "getCompany", "$rootScope",
-    "$interval", "$loading", "$window", "GOOGLE_OAUTH2_URL",
+    "getOAuthUserInfo", "getUserProfile", "companyState", "objectHelper",
+    "$rootScope", "$interval", "$loading", "$window", "GOOGLE_OAUTH2_URL",
     "localStorageService", "$document", "uiFlowManager",
     function ($q, $log, $location, CLIENT_ID,
     gapiLoader, cookieStore, OAUTH2_SCOPES, userInfoCache,
-    getOAuthUserInfo, getUserProfile, getCompany, $rootScope,
-    $interval, $loading, $window, GOOGLE_OAUTH2_URL,
+    getOAuthUserInfo, getUserProfile, companyState, objectHelper,
+    $rootScope, $interval, $loading, $window, GOOGLE_OAUTH2_URL,
     localStorageService, $document, uiFlowManager) {
     //singleton factory that represents userState throughout application
 
@@ -3470,8 +3491,6 @@ angular.module("risevision.common.geodata", [])
     var _state = {
       profile: {}, //Rise vision profile
       user: {}, //Google user
-      userCompany: {},
-      selectedCompany: {},
       roleMap: {},
       userToken: _readRvToken(),
       inRVAFrame: angular.isDefined($location.search().inRVA)
@@ -3526,13 +3545,6 @@ angular.module("risevision.common.geodata", [])
     };
 
     _addEventListenerVisibilityAPI();
-
-      //
-    var _follow = function(source) {
-      var Follower = function(){};
-      Follower.prototype = source;
-      return new Follower();
-    };
 
     var _getUserId = function () {
       return _state.user ? _state.user.userId : null;
@@ -3602,23 +3614,12 @@ angular.module("risevision.common.geodata", [])
       return result;
     };
 
-    var _clearObj = function (obj) {
-      for (var member in obj) {
-        delete obj[member];
-      }
-    };
-
-    var _clearAndCopy = function (src, dest) {
-      _clearObj(dest);
-      angular.extend(dest, src);
-    };
-
     var _resetUserState = function () {
-       _clearObj(_state.user);
-       _clearObj(_state.selectedCompany);
-       _clearObj(_state.profile);
-       _clearObj(_state.userCompany);
+       objectHelper.clearObj(_state.user);
+       objectHelper.clearObj(_state.profile);
        _state.roleMap = {};
+       
+       companyState.resetCompanyState();
        $log.debug("User state has been reset.");
      };
 
@@ -3628,7 +3629,7 @@ angular.module("risevision.common.geodata", [])
          //populate profile if the current user is a rise vision user
          getUserProfile(_state.user.username, true).then(
            function (profile) {
-             _clearAndCopy(angular.extend({
+             objectHelper.clearAndCopy(angular.extend({
                username: oauthUserInfo.email
              }, profile), _state.profile);
 
@@ -3675,7 +3676,7 @@ angular.module("risevision.common.geodata", [])
                      _state.user.username !== oauthUserInfo.email) {
 
                      //populate user
-                     _clearAndCopy({
+                     objectHelper.clearAndCopy({
                        userId: oauthUserInfo.id, //TODO: ideally we should not use real user ID or email, but use hash value instead
                        username: oauthUserInfo.email,
                        picture: oauthUserInfo.picture
@@ -3683,19 +3684,10 @@ angular.module("risevision.common.geodata", [])
 
                      _setUserToken();
                      refreshProfile().then(function () {
-                       //populate userCompany
-                       return getCompany().then(function(company) {
-                         _clearAndCopy(company, _state.userCompany);
-                       }, function () { _clearObj(_state.userCompany);
-                       }).finally(function () {
-                        authorizeDeferred.resolve(authResult);
-                        $rootScope.$broadcast("risevision.user.authorized");
-                        if(!attemptImmediate) {
-                          $rootScope.$broadcast("risevision.user.userSignedIn");
-                        }
-                       });
-                     },
-                     function () {
+                       //populate company info
+                       return companyState.init();
+                     })
+                     .finally(function () {
                        authorizeDeferred.resolve(authResult);
                        $rootScope.$broadcast("risevision.user.authorized");
                        if(!attemptImmediate) {
@@ -3705,11 +3697,11 @@ angular.module("risevision.common.geodata", [])
                    }
                    else {authorizeDeferred.resolve(authResult); }
                  }, function(err){
-                   _clearObj(_state.user);
+                   objectHelper.clearObj(_state.user);
                  authorizeDeferred.reject(err); });
              }
              else {
-               _clearObj(_state.user);
+               objectHelper.clearObj(_state.user);
                authorizeDeferred.reject("not authorized");
              }
            });
@@ -3785,7 +3777,7 @@ angular.module("risevision.common.geodata", [])
             $log.debug(msg);
            //  _clearUserToken();
             authenticateDeferred.reject(msg);
-            _clearObj(_state.user);
+            objectHelper.clearObj(_state.user);
             $loading.stopGlobal("risevision.user.authenticate");
           }
          });
@@ -3813,7 +3805,7 @@ angular.module("risevision.common.geodata", [])
            //clear auth token
            // The majority of state is in here
            _resetUserState();
-           _clearObj(_state.user);
+           objectHelper.clearObj(_state.user);
            //call google api to sign out
            $rootScope.$broadcast("risevision.user.signedOut");
            $log.debug("User is signed out.");
@@ -3871,38 +3863,21 @@ angular.module("risevision.common.geodata", [])
     };
 
     var userState = {
-      getUserCompanyId: function () {
-        return (_state.userCompany && _state.userCompany.id) || null; },
-      getSelectedCompanyId: function () {
-        return (_state.selectedCompany && _state.selectedCompany.id) || null; },
-      getSelectedCompanyName: function () {
-        return (_state.selectedCompany && _state.selectedCompany.name) || null;},
-      updateCompanySettings: function (company) {
-        if (company && _state.selectedCompany) {
-          _clearAndCopy(company, _state.selectedCompany);
-          if (_state.userCompany.id === _state.selectedCompany.id) {
-            _clearAndCopy(company, _state.userCompany);
-          }
-        }
-      },
-      getSelectedCompanyCountry: function () {
-          return (_state.selectedCompany && _state.selectedCompany.country) || null;},
+      getUserCompanyId: companyState.getUserCompanyId,
+      getSelectedCompanyId: companyState.getSelectedCompanyId,
+      getSelectedCompanyName: companyState.getSelectedCompanyName,
+      updateCompanySettings: companyState.updateCompanySettings,
+      getSelectedCompanyCountry: companyState.getSelectedCompanyCountry,
       getUsername: function () {
         return (_state.user && _state.user.username) || null; },
       getUserEmail: function () { return _state.profile.email; },
-      getCopyOfProfile: function () { return _follow(_state.profile); },
-      resetCompany: function () { _clearAndCopy(_state.userCompany, _state.selectedCompany); },
-      getCopyOfUserCompany: function () { return _follow(_state.userCompany); },
-      getCopyOfSelectedCompany: function () { return _follow(_state.selectedCompany); },
-      switchCompany: function (companyId) {
-        getCompany(companyId).then(function (company) {  
-          _clearAndCopy(company, _state.selectedCompany); 
-        });
-      },
-      isSubcompanySelected: function () {
-        return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
-      isTestCompanySelected: function () {
-        return _state.selectedCompany && _state.selectedCompany.isTest === true; },
+      getCopyOfProfile: function () { return objectHelper.follow(_state.profile); },
+      resetCompany: companyState.resetCompany,
+      getCopyOfUserCompany: companyState.getCopyOfUserCompany,
+      getCopyOfSelectedCompany: companyState.getCopyOfSelectedCompany,
+      switchCompany: companyState.switchCompany,
+      isSubcompanySelected: companyState.isSubcompanySelected,
+      isTestCompanySelected: companyState.isTestCompanySelected,
       getUserPicture: function () { return _state.user.picture; },
       hasRole: hasRole,
       inRVAFrame: function () {return _state.inRVAFrame; },
@@ -3910,7 +3885,7 @@ angular.module("risevision.common.geodata", [])
       isRiseStoreAdmin: function () {return hasRole("ba"); },
       isUserAdmin: function () {return hasRole("ua"); },
       isPurchaser: function () {return hasRole("pu"); },
-      isSeller: function () {return (_state.selectedCompany && _state.selectedCompany.sellerId) ? true : false; },
+      isSeller: companyState.isSeller,
       isRiseVisionUser: isRiseVisionUser,
       isLoggedIn: isLoggedIn,
       authenticate: _state.inRVAFrame ? authenticate : authenticateRedirect,
@@ -3927,6 +3902,118 @@ angular.module("risevision.common.geodata", [])
   }]);
 
 })(angular);
+
+(function (angular){
+  
+  "use strict";
+  
+  angular.module("risevision.common.companystate", ["risevision.core.company",
+    "risevision.common.util"])
+  
+  .factory("companyState", ["$location", "getCompany", "objectHelper", 
+    "$rootScope", "$log", "$q",
+  function ($location, getCompany, objectHelper, $rootScope, $log, $q) {
+    var pendingSelectedCompany;
+    
+    var _state = {
+      userCompany: {},
+      selectedCompany: {}
+    };
+    
+    var _resetCompanyState = function () {
+      objectHelper.clearObj(_state.selectedCompany);
+      objectHelper.clearObj(_state.userCompany);
+      $log.debug("Company state has been reset.");
+    };
+    
+    if($location.search().cid) {
+      $log.debug("cid", $location.search().cid, "saved for later processing.");
+      pendingSelectedCompany = $location.search().cid;
+    }
+    
+    var _init = function () {
+      var deferred = $q.defer();
+      
+      //populate userCompany
+      getCompany().then(function(company) {
+        objectHelper.clearAndCopy(company, _state.userCompany);
+        
+        return _switchCompany(pendingSelectedCompany);
+      })
+      .then(null, function() {
+        _companyState.resetCompany();
+      })
+      .finally(function () {
+        pendingSelectedCompany = null;
+        
+        deferred.resolve(null);
+      });  
+      
+      return deferred.promise;
+    };
+    
+    var _switchCompany = function (companyId) {
+      var deferred = $q.defer();
+      
+      if (companyId && companyId !== _state.userCompany.id) {
+        getCompany(companyId)
+        .then(function (company) {
+          objectHelper.clearAndCopy(company, _state.selectedCompany);
+          
+          deferred.resolve();
+        })
+        .then(null, function(resp) {
+          $log.error("Failed to load selected company.", resp);
+          
+          deferred.reject(resp);
+        });
+      }
+      else {
+        _companyState.resetCompany();
+        
+        deferred.resolve();
+      }
+      
+      return deferred.promise;
+    };
+    
+    var _companyState = {
+      init: _init,
+      switchCompany: _switchCompany,
+      updateCompanySettings: function (company) {
+        if (company && _state.selectedCompany) {
+          objectHelper.clearAndCopy(company, _state.selectedCompany);
+          if (_state.userCompany.id === _state.selectedCompany.id) {
+            objectHelper.clearAndCopy(company, _state.userCompany);
+          }
+        }
+      },
+      resetCompany: function () { 
+        objectHelper.clearAndCopy(_state.userCompany, _state.selectedCompany); 
+      },
+      resetCompanyState: _resetCompanyState,
+      getUserCompanyId: function () {
+        return (_state.userCompany && _state.userCompany.id) || null; },
+      getSelectedCompanyId: function () {
+        return (_state.selectedCompany && _state.selectedCompany.id) || null; },
+      getSelectedCompanyName: function () {
+        return (_state.selectedCompany && _state.selectedCompany.name) || null;},
+      getSelectedCompanyCountry: function () {
+        return (_state.selectedCompany && _state.selectedCompany.country) || null;},
+      getCopyOfUserCompany: function () { return objectHelper.follow(_state.userCompany); },
+      getCopyOfSelectedCompany: function () { return objectHelper.follow(_state.selectedCompany); },
+      isSubcompanySelected: function () {
+        return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
+      isTestCompanySelected: function () {
+        return _state.selectedCompany && _state.selectedCompany.isTest === true; },
+      isSeller: function () {return (_state.selectedCompany && _state.selectedCompany.sellerId) ? true : false; },
+    };
+    
+    return _companyState;
+  }]);
+  
+})(angular);
+  
 
 (function (angular) {
   "use strict";
@@ -4966,35 +5053,10 @@ function (loadFastpass, userState) {
 
   "use strict";
 
-  angular.module("risevision.common.company", ["risevision.core.company",
-  "risevision.common.userstate"])
+  angular.module("risevision.common.company", [])
 
     .service("selectedCompanyUrlHandler", ["$location", "userState",
-      "getCompany", "$rootScope", "$log", "$q",
-      function ($location, userState, getCompany, $rootScope, $log, $q) {
-
-        var that = this;
-        if($location.search().cid && !userState.isLoggedIn()) {
-          $log.debug("cid", $location.search().cid, "saved for later processing.");
-          this.pendingSelectedCompany = $location.search().cid;
-        }
-
-        $rootScope.$on("risevision.user.userSignedIn", function () {
-          if(that.pendingSelectedCompany) {
-            $location.search("cid", that.pendingSelectedCompany);
-            delete(that.pendingSelectedCompany);
-            that.updateSelectedCompanyFromUrl();
-          }
-        });
-
-        this.init = function () {
-          that.updateSelectedCompanyFromUrl().finally(function () {
-            if(!userState.getSelectedCompanyId()) {
-              userState.resetCompany();
-            }
-          });
-        };
-
+      function ($location, userState) {
         this.updateUrl = function () {
           var selectedCompanyId = userState.getSelectedCompanyId();
           // This parameter is only appended to the url if the user is logged in
@@ -5009,22 +5071,16 @@ function (loadFastpass, userState) {
         };
         
         this.updateSelectedCompanyFromUrl = function () {
-          var deferred = $q.defer();
           var newCompanyId = $location.search().cid;
           if(newCompanyId && userState.getUserCompanyId() && 
             newCompanyId !== userState.getSelectedCompanyId()) {
             userState.switchCompany(newCompanyId);
-            deferred.resolve();
           }
-          else {
-            if (!newCompanyId && userState.getSelectedCompanyId() &&
-              userState.getSelectedCompanyId() !== userState.getUserCompanyId()) {
-              $location.search("cid", userState.getSelectedCompanyId());
-              $location.replace();
-            }
-            deferred.reject();
+          else if (!newCompanyId && userState.getSelectedCompanyId() &&
+            userState.getSelectedCompanyId() !== userState.getUserCompanyId()) {
+            $location.search("cid", userState.getSelectedCompanyId());
+            $location.replace();
           }
-          return deferred.promise;
         };
     }]);
   }
