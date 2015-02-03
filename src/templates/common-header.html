@@ -36,62 +36,10 @@
 					src="'close-frame-button.html'"
 				></ng-include>
 				<!-- Current App -->
-				<li class="dropdown" ng-show="false">
-					<a href="" class="dropdown-toggle">
-						<i class="fa fa-th"></i>
-					</a>
-					<ul class="dropdown-menu company-menu">
-						<li class="dropdown-header dropdown-title">
-							Current App
-						</li>
-						<li class="dropdown-header">
-							<i class="fa fa-tags"></i> Store
-						</li>
-						<li class="divider"></li>
-						<li>
-							<div class="menu-box pull-left">
-								<a href="">
-									<i class="fa fa-photo"></i>
-									<span>Displays</span>
-								</a>
-							</div>
-							<div class="menu-box pull-right">
-								<a href="">
-									<i class="fa fa-photo"></i>
-									<span>Scheduler</span>
-								</a>
-							</div>
-						</li>
-						<li>
-							<div class="menu-box pull-left">
-								<a href="">
-									<i class="fa fa-photo"></i>
-									<span>Editor</span>
-								</a>
-							</div>
-							<div class="menu-box pull-right">
-								<a href="">
-									<i class="fa fa-photo"></i>
-									<span>Storage</span>
-								</a>
-							</div>
-						</li>
-						<li>
-							<div class="menu-box pull-left">
-								<a href="">
-									<i class="fa fa-photo"></i>
-									<span>Bulletin</span>
-								</a>
-							</div>
-							<div class="menu-box pull-right">
-								<a href="">
-									<i class="fa fa-photo"></i>
-									<span>Player</span>
-								</a>
-							</div>
-						</li>
-					</ul>
-				</li>
+				<ng-include
+					replace-include
+					src="'app-nav-buttons.html'"
+				></ng-include>
 				<!-- END Current App -->
 				<!-- Company Dropdown -->
 				<ng-include
