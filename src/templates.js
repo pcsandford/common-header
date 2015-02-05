@@ -406,56 +406,78 @@ app.run(["$templateCache", function($templateCache) {
     "  <p ng-show=\"forms.companyForm.name.$invalid && !forms.companyForm.name.$pristine\"\n" +
     "    class=\"help-block validation-error-message-name\">Company name is required.</p>\n" +
     "</div>\n" +
-    "<div class=\"form-group\">\n" +
-    "  <label for=\"company-settings-street\">\n" +
-    "    Street\n" +
-    "  </label>\n" +
-    "  <input id=\"company-settings-street\" type=\"text\" class=\"form-control\" ng-model=\"company.street\" />\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-md-6\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label for=\"company-settings-street\" class=\"control-label\">\n" +
+    "        Street\n" +
+    "      </label>\n" +
+    "      <input id=\"company-settings-street\" type=\"text\" class=\"form-control\" ng-model=\"company.street\" />\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-md-6\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label for=\"company-settings-unit\" class=\"control-label\">\n" +
+    "        Unit\n" +
+    "      </label>\n" +
+    "      <input id=\"company-settings-unit\" type=\"text\" class=\"form-control\" ng-model=\"company.unit\" />\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-md-3\">      \n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label for=\"company-settings-city\" class=\"control-label\">\n" +
+    "        City\n" +
+    "      </label>\n" +
+    "      <input id=\"company-settings-city\" type=\"text\" class=\"form-control\" ng-model=\"company.city\" />\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-md-3\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label for=\"company-settings-country\" class=\"control-label\">\n" +
+    "        Country\n" +
+    "      </label>\n" +
+    "      <select id=\"company-settings-country\" class=\"form-control selectpicker\"\n" +
+    "        ng-model=\"company.country\" ng-options=\"c[1] as c[0] for c in countries\">\n" +
+    "        <option value=\"\">&lt; Select Country &gt;</option>\n" +
+    "      </select>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-md-3\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label for=\"company-settings-state\" class=\"control-label\">\n" +
+    "        State/Province/Region\n" +
+    "      </label>\n" +
+    "      <input id=\"company-settings-state\" type=\"text\" class=\"form-control\" ng-model=\"company.province\" ng-hide=\"company.country == 'US' || company.country == 'CA'\" />\n" +
+    "      <select class=\"form-control selectpicker\" ng-model=\"company.province\" ng-options=\"c[1] as c[0] for c in regionsCA\" ng-show=\"company.country == 'CA'\">\n" +
+    "        <option value=\"\">&lt; Select Province &gt;</option>\n" +
+    "      </select>\n" +
+    "      <select class=\"form-control selectpicker\" ng-model=\"company.province\" ng-options=\"c[1] as c[0] for c in regionsUS\" ng-show=\"company.country == 'US'\">\n" +
+    "        <option value=\"\">&lt; Select State &gt;</option>\n" +
+    "      </select>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-md-3\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label for=\"company-settings-zip\" class=\"control-label\">\n" +
+    "        Zip/Postal Code\n" +
+    "      </label>\n" +
+    "      <input id=\"company-settings-zip\" type=\"text\" class=\"form-control\" ng-model=\"company.postalCode\" />\n" +
+    "    </div>\n" +
+    "  </div>\n" +
     "</div>\n" +
     "<div class=\"form-group\">\n" +
-    "  <label for=\"company-settings-unit\">\n" +
-    "    Unit\n" +
-    "  </label>\n" +
-    "  <input id=\"company-settings-unit\" type=\"text\" class=\"form-control\" ng-model=\"company.unit\" />\n" +
-    "</div>\n" +
-    "<div class=\"form-group\">\n" +
-    "  <label for=\"company-settings-city\">\n" +
-    "    City\n" +
-    "  </label>\n" +
-    "  <input id=\"company-settings-city\" type=\"text\" class=\"form-control\" ng-model=\"company.city\" />\n" +
-    "</div>\n" +
-    "<div class=\"form-group\">\n" +
-    "  <label for=\"company-settings-country\">\n" +
-    "    Country\n" +
-    "  </label>\n" +
-    "  <select id=\"company-settings-country\" class=\"form-control selectpicker\"\n" +
-    "    ng-model=\"company.country\" ng-options=\"c[1] as c[0] for c in countries\">\n" +
-    "    <option value=\"\">&lt; Select Country &gt;</option>\n" +
-    "  </select>\n" +
-    "</div>\n" +
-    "<div class=\"form-group\">\n" +
-    "  <label for=\"company-settings-state\">\n" +
-    "    State / Province\n" +
-    "  </label>\n" +
-    "  <input id=\"company-settings-state\" type=\"text\" class=\"form-control\" ng-model=\"company.province\" ng-hide=\"company.country == 'US' || company.country == 'CA'\" />\n" +
-    "  <select class=\"form-control selectpicker\" ng-model=\"company.province\" ng-options=\"c[1] as c[0] for c in regionsCA\" ng-show=\"company.country == 'CA'\">\n" +
-    "    <option value=\"\">&lt; Select Province &gt;</option>\n" +
-    "  </select>\n" +
-    "  <select class=\"form-control selectpicker\" ng-model=\"company.province\" ng-options=\"c[1] as c[0] for c in regionsUS\" ng-show=\"company.country == 'US'\">\n" +
-    "    <option value=\"\">&lt; Select State &gt;</option>\n" +
-    "  </select>\n" +
-    "</div>\n" +
-    "<div class=\"form-group\">\n" +
-    "  <label for=\"company-settings-zip\">\n" +
-    "    Zip / Postal Code\n" +
-    "  </label>\n" +
-    "  <input id=\"company-settings-zip\" type=\"text\" class=\"form-control\" ng-model=\"company.postalCode\" />\n" +
-    "</div>\n" +
-    "<div class=\"form-group\">\n" +
-    "  <label for=\"company-settings-phone\">\n" +
+    "  <label for=\"company-settings-phone\" class=\"control-label\">\n" +
     "    Phone\n" +
     "  </label>\n" +
     "  <input id=\"company-settings-phone\" type=\"tel\" class=\"form-control\" ng-model=\"company.telephone\"/>\n" +
+    "</div>\n" +
+    "<div class=\"form-group\">\n" +
+    "  <label for=\"company-settings-timezone\" class=\"control-label\">Time Zone</label>\n" +
+    "  <select class=\"form-control\" ng-model=\"company.timeZoneOffset\" ng-options=\"c[1] as c[0] for c in timezones\">\n" +
+    "    <option value=\"\">&lt; Select Time Zone &gt;</option>\n" +
+    "  </select>\n" +
     "</div>\n" +
     "<div class=\"form-group\">\n" +
     "  <label for=\"company-settings-monitoring\">\n" +
