@@ -670,22 +670,26 @@ app.run(["$templateCache", function($templateCache) {
     "    </form>\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +
-    "    <button type=\"button\"\n" +
-    "      class=\"btn btn-success btn-fixed-width\" ng-click=\"save()\"\n" +
-    "      ng-disabled=\"forms.companyForm.$invalid\">Save\n" +
-    "      <i class=\"fa fa-white fa-check icon-right\"></i>\n" +
-    "    </button>\n" +
-    "    <button type=\"button\" class=\"btn btn-danger btn-fixed-width delete-company-button\"\n" +
-    "    ng-show=\"!isDeletingCompany\" ng-click=\"deleteCompany()\">\n" +
+    "    <p class=\"visible-xs text-right\"><last-modified change-date=\"company.changeDate\" changed-by=\"company.changedBy\"></last-modified></p>\n" +
+    "    <button type=\"button\" class=\"btn btn-danger btn-fixed-width pull-left delete-company-button\"\n" +
+    "      ng-show=\"!isDeletingCompany\" ng-click=\"deleteCompany()\">\n" +
     "      Delete <i class=\"fa fa-white fa-trash-o icon-right\"></i>\n" +
     "    </button>\n" +
     "    <button type=\"button\" class=\"btn btn-danger btn-confirm-delete\" data-dismiss=\"modal\" ng-show=\"isDeletingCompany\" ng-click=\"closeModal()\">\n" +
     "      Confirm Deletion <i class=\"fa fa-white fa-warning icon-right\"></i>\n" +
     "    </button>\n" +
-    "    <button type=\"button\"\n" +
-    "      class=\"btn btn-default btn-fixed-width close-company-settings-button\" data-dismiss=\"modal\" ng-click=\"closeModal()\">Cancel\n" +
-    "      <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
-    "    </button>\n" +
+    "    <div class=\"pull-right\">\n" +
+    "      <span class=\"hidden-xs\"><last-modified change-date=\"company.changeDate\" changed-by=\"company.changedBy\"></last-modified></span>\n" +
+    "      <button type=\"button\"\n" +
+    "        class=\"btn btn-primary btn-fixed-width\" ng-click=\"save()\"\n" +
+    "        ng-disabled=\"forms.companyForm.$invalid\">Save\n" +
+    "        <i class=\"fa fa-white fa-check icon-right\"></i>\n" +
+    "      </button>\n" +
+    "      <button type=\"button\"\n" +
+    "        class=\"btn btn-default btn-fixed-width close-company-settings-button\" data-dismiss=\"modal\" ng-click=\"closeModal()\">Cancel\n" +
+    "        <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
+    "      </button>\n" +
+    "    </div>\n" +
     "  </div>\n" +
     "</div>\n" +
     "</div> <!--spinner -->\n" +
@@ -903,6 +907,21 @@ app.run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "  </div>\n" +
     "</div>\n" +
+    "");
+}]);
+})();
+
+(function(module) {
+try { app = angular.module("risevision.common.header.templates"); }
+catch(err) { app = angular.module("risevision.common.header.templates", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
+  $templateCache.put("last-modified.html",
+    "<span class=\"text-muted\">\n" +
+    "  <small>\n" +
+    "    Saved {{changeDate | date:'d-MMM-yyyy h:mm a'}} by {{changedBy | username}}\n" +
+    "  </small>\n" +
+    "</span>\n" +
     "");
 }]);
 })();
@@ -1473,7 +1492,8 @@ angular.module("risevision.common.header", [
   "risevision.common.registration",
   "risevision.common.shoppingcart",
   "checklist-model",
-  "ui.bootstrap", "ngSanitize", "rvScrollEvent", "ngCsv", "ngTouch"
+  "ui.bootstrap", "ngSanitize", "rvScrollEvent", "ngCsv", "ngTouch",
+  "risevision.common.components"
 ])
 
 .factory("bindToScopeWithWatch", [function () {
@@ -5411,6 +5431,12 @@ angular.module("risevision.common.gapi", [])
     function (CORE_URL, gapiClientLoaderGenerator, $location) {
         var baseUrl = $location.search().core_api_base_url ? $location.search().core_api_base_url + "/_ah/api": CORE_URL;
         return gapiClientLoaderGenerator("discovery", "v1", baseUrl);
+  }])
+
+  .factory("monitoringAPILoader", ["MONITORING_SERVICE_URL", "gapiClientLoaderGenerator", "$location",
+    function (MONITORING_SERVICE_URL, gapiClientLoaderGenerator, $location) {
+      var baseUrl = $location.search().core_api_base_url ? $location.search().core_api_base_url + "/_ah/api": MONITORING_SERVICE_URL;
+      return gapiClientLoaderGenerator("monitoring", "v0", baseUrl);
   }]);
 
 (function (angular){
@@ -5545,3 +5571,39 @@ angular.module("risevision.store.data-gadgets", [])
     };
 
   }]);
+
+"use strict";
+
+angular.module("risevision.common.components", [])
+  .directive("lastModified", ["$templateCache",
+    function ($templateCache) {
+      return {
+        restrict: "E",
+        scope: {
+          changeDate: "=",
+          changedBy: "="
+        },
+        template: $templateCache.get("last-modified.html"),
+        link: function ($scope) {
+          $scope.$watch("changedBy", function(newVal) {
+            $scope.changedBy = newVal ? newVal : "N/A";
+          });
+        } //link()
+      };
+    }
+  ]);
+
+"use strict";
+
+// Simple filter that removes the domain from an email
+// for example, bld@riseholdings.com would return bld
+angular.module("risevision.common.components")
+  .filter("username", function () {
+    return function (email) {
+      var username = email;
+      if (email && email.indexOf("@") !== -1) {
+        username = email.substring(0, email.indexOf("@"));
+      }
+      return username;
+    };
+  });

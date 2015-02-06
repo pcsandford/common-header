@@ -18,7 +18,8 @@ angular.module("risevision.common.header", [
   "risevision.common.registration",
   "risevision.common.shoppingcart",
   "checklist-model",
-  "ui.bootstrap", "ngSanitize", "rvScrollEvent", "ngCsv", "ngTouch"
+  "ui.bootstrap", "ngSanitize", "rvScrollEvent", "ngCsv", "ngTouch",
+  "risevision.common.components"
 ])
 
 .factory("bindToScopeWithWatch", [function () {

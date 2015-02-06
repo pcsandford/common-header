@@ -94,7 +94,9 @@ var env = process.env.NODE_ENV || "dev",
     "./components/ng-gapi-loader/src/js/svc-gapi.js",
     "./src/js/svc-localstorage.js",
     "./src/js/svc-system-messages.js",
-    "./src/js/svc-data-gadgets.js"
+    "./src/js/svc-data-gadgets.js",
+    "./src/js/directives/dtv-last-modified.js",
+    "./src/js/filters/ftr-username.js"
     ],
     dependencySrcFiles = ["./components/jquery/dist/jquery.js",
     "./components/angular/angular.js",

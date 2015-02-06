@@ -121,22 +121,26 @@
     </form>
   </div>
   <div class="modal-footer">
-    <button type="button"
-      class="btn btn-success btn-fixed-width" ng-click="save()"
-      ng-disabled="forms.companyForm.$invalid">Save
-      <i class="fa fa-white fa-check icon-right"></i>
-    </button>
-    <button type="button" class="btn btn-danger btn-fixed-width delete-company-button"
-    ng-show="!isDeletingCompany" ng-click="deleteCompany()">
+    <p class="visible-xs text-right"><last-modified change-date="company.changeDate" changed-by="company.changedBy"></last-modified></p>
+    <button type="button" class="btn btn-danger btn-fixed-width pull-left delete-company-button"
+      ng-show="!isDeletingCompany" ng-click="deleteCompany()">
       Delete <i class="fa fa-white fa-trash-o icon-right"></i>
     </button>
     <button type="button" class="btn btn-danger btn-confirm-delete" data-dismiss="modal" ng-show="isDeletingCompany" ng-click="closeModal()">
       Confirm Deletion <i class="fa fa-white fa-warning icon-right"></i>
     </button>
-    <button type="button"
-      class="btn btn-default btn-fixed-width close-company-settings-button" data-dismiss="modal" ng-click="closeModal()">Cancel
-      <i class="fa fa-white fa-times icon-right"></i>
-    </button>
+    <div class="pull-right">
+      <span class="hidden-xs"><last-modified change-date="company.changeDate" changed-by="company.changedBy"></last-modified></span>
+      <button type="button"
+        class="btn btn-primary btn-fixed-width" ng-click="save()"
+        ng-disabled="forms.companyForm.$invalid">Save
+        <i class="fa fa-white fa-check icon-right"></i>
+      </button>
+      <button type="button"
+        class="btn btn-default btn-fixed-width close-company-settings-button" data-dismiss="modal" ng-click="closeModal()">Cancel
+        <i class="fa fa-white fa-times icon-right"></i>
+      </button>
+    </div>
   </div>
 </div>
 </div> <!--spinner -->
