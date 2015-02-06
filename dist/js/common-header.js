@@ -1453,20 +1453,22 @@ app.run(["$templateCache", function($templateCache) {
     "  </form>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "  <button type=\"button\"\n" +
-    "    class=\"btn btn-success btn-fixed-width\"\n" +
-    "    data-dismiss=\"modal\"\n" +
-    "    ng-click=\"save()\" id=\"save-button\">\n" +
-    "    Save <i class=\"fa fa-white fa-check icon-right\"></i>\n" +
-    "  </button>\n" +
-    "  <button type=\"button\" class=\"btn btn-danger btn-fixed-width\"\n" +
+    "  <p class=\"text-right\"><last-modified change-date=\"user.changeDate\" changed-by=\"user.changedBy\"></last-modified></p>\n" +
+    "  <button type=\"button\" class=\"btn btn-danger btn-fixed-width pull-left\"\n" +
     "    ng-if=\"!isAdd\" ng-click=\"deleteUser()\">\n" +
     "    Delete <i class=\"fa fa-white fa-trash-o icon-right\"></i>\n" +
     "  </button>\n" +
-    "  <button type=\"button\" class=\"btn btn-default btn-fixed-width\" ng-click=\"closeModal()\">\n" +
-    "    Cancel <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
-    "  </button>\n" +
-    "</div>\n" +
+    "  <div class=\"pull-right\">\n" +
+    "    <button type=\"button\"\n" +
+    "      class=\"btn btn-primary btn-fixed-width\"\n" +
+    "      data-dismiss=\"modal\"\n" +
+    "      ng-click=\"save()\" id=\"save-button\">\n" +
+    "      Save <i class=\"fa fa-white fa-check icon-right\"></i>\n" +
+    "    </button>\n" +
+    "    <button type=\"button\" class=\"btn btn-default btn-fixed-width\" ng-click=\"closeModal()\">\n" +
+    "      Cancel <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
+    "    </button>\n" +
+    "  </div>\n" +
     "</div>\n" +
     "");
 }]);
