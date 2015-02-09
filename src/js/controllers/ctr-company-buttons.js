@@ -36,20 +36,20 @@ angular.module("risevision.common.header")
     $scope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
     $scope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
 
-    $scope.addSubCompany = function(size) {
+    $scope.addSubCompany = function() {
       $modal.open({
         template: $templateCache.get("subcompany-modal.html"),
         controller: "SubCompanyModalCtrl",
-        size: size
+        size: "lg"
       });
     };
 
     // Show Company Settings Modal
-    $scope.companySettings = function(companyId, size) {
+    $scope.companySettings = function() {
       $modal.open({
         template: $templateCache.get("company-settings-modal.html"),
         controller: "CompanySettingsModalCtrl",
-        size: size,
+        size: "lg",
         resolve: {
           companyId: function () {
             return userState.getSelectedCompanyId();

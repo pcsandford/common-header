@@ -1,15 +1,16 @@
 angular.module("risevision.common.header")
 .controller("SubCompanyModalCtrl", ["$scope", "$modalInstance", "$modal",
   "$templateCache", "createCompany", "COUNTRIES", "REGIONS_CA", "REGIONS_US",
-  "userState", "$loading", "humanReadableError",
+  "TIMEZONES", "userState", "$loading", "humanReadableError",
   function($scope, $modalInstance, $modal, $templateCache,
-    createCompany, COUNTRIES, REGIONS_CA, REGIONS_US, userState, $loading,
-    humanReadableError) {
+    createCompany, COUNTRIES, REGIONS_CA, REGIONS_US, TIMEZONES, userState, 
+    $loading, humanReadableError) {
 
     $scope.company = {};
     $scope.countries = COUNTRIES;
     $scope.regionsCA = REGIONS_CA;
     $scope.regionsUS = REGIONS_US;
+    $scope.timezones = TIMEZONES;
 
     $scope.forms = {};
 
