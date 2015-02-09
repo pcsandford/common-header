@@ -34,8 +34,13 @@
     </a>
 </li>
 <!-- If User NOT Authenticated -->
+<li ng-show="!undetermined && isLoggedIn === false" ng-controller="SignUpButtonCtrl">
+  <button type="button" ng-click="openSignUpModal()"
+  class="btn-primary btn add-right">
+  <i class="fa fa-google"></i> Sign Up Free</button>
+</li>
 <li ng-show="!undetermined && isLoggedIn === false">
   <button type="button" class="sign-in top-auth-button" ng-click="login('registrationComplete')">
-    Sign In <img src="//rise-vision.github.io/style-guide/img/avatar_2x.jpg">
+    Sign In
   </button>
 </li>

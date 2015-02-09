@@ -367,9 +367,11 @@
               }
             }, function () {
               _clearUserToken();
-              authenticateDeferred.reject();}).finally(function (){
-                $loading.stopGlobal("risevision.user.authenticate");
-              });
+              authenticateDeferred.reject();
+            })
+            .finally(function (){
+              $loading.stopGlobal("risevision.user.authenticate");
+            });
           }
           else {
             var msg = "user is not authenticated";

@@ -3,6 +3,119 @@ try { app = angular.module("risevision.common.header.templates"); }
 catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
+  $templateCache.put("app-nav-buttons-menu.html",
+    "<li>\n" +
+    "  <div class=\"menu-box pull-right\">\n" +
+    "    <a href=\"https://store.risevision.com/\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_store.png\"></div>\n" +
+    "      <span>Store</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "  \n" +
+    "  <div class=\"menu-box pull-right\">\n" +
+    "    <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_editor.png\"></div>\n" +
+    "      <span>Editor</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "  \n" +
+    "</li>\n" +
+    "<li>\n" +
+    "  <div class=\"menu-box pull-left\">\n" +
+    "    <a href=\"http://storage.risevision.com/\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_storage.png\"></div>\n" +
+    "      <span>Storage</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "  \n" +
+    "  <div class=\"menu-box pull-left\">\n" +
+    "    <a href=\"http://displays.risevision.com/\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_displays.png\"></div>\n" +
+    "      <span>Displays</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "  \n" +
+    "</li>\n" +
+    "<li>\n" +
+    "  \n" +
+    "  <div class=\"menu-box pull-left\">\n" +
+    "    <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_schedules.png\"></div>\n" +
+    "      <span>Schedules</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "  \n" +
+    "  <div class=\"menu-box pull-right\">\n" +
+    "    <a href=\"https://support.risevision.com\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_support.png\"></div>\n" +
+    "      <span>Support</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "</li>\n" +
+    "<li>\n" +
+    "  <div class=\"menu-box pull-left\">\n" +
+    "    <a href=\"https://community.risevision.com/rise_vision_inc\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_community.png\"></div>\n" +
+    "      <span>Community</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "  <div class=\"menu-box pull-right\">\n" +
+    "    <a href=\"http://help.risevision.com/\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_documentation.png\"></div>\n" +
+    "      <span>Documentation</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "</li>\n" +
+    "<li>\n" +
+    "  <div class=\"menu-box pull-left\">\n" +
+    "    <a href=\"http://developer.risevision.com/\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_hub.png\"></div>\n" +
+    "      <span>Developer</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "  <div class=\"menu-box pull-right\">\n" +
+    "    <a href=\"http://www.risevision.com/about-us/\" target=\"_blank\">\n" +
+    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_about.png\"></div>\n" +
+    "      <span>About</span>\n" +
+    "    </a>\n" +
+    "  </div>\n" +
+    "</li>\n" +
+    "");
+}]);
+})();
+
+(function(module) {
+try { app = angular.module("risevision.common.header.templates"); }
+catch(err) { app = angular.module("risevision.common.header.templates", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
+  $templateCache.put("app-nav-buttons.html",
+    "<li class=\"dropdown hidden-xs\">\n" +
+    "  <a href=\"\" class=\"dropdown-toggle\"><i class=\"fa fa-th\"></i></a>\n" +
+    "  <ul class=\"dropdown-menu\">\n" +
+    "    <ng-include \n" +
+    "    replace-include\n" +
+    "    src=\"'app-nav-buttons-menu.html'\">\n" +
+    "    </ng-include>\n" +
+    "  </ul>\n" +
+    "</li>\n" +
+    "\n" +
+    "<!-- Mobile -->\n" +
+    "<li class=\"visible-xs-inline-block\" >\n" +
+    "  <a href=\"\" class=\"company-buttons-icon-mobile\"\n" +
+    "  action-sheet=\"'app-nav-buttons-menu.html'\">\n" +
+    "    <i class=\"fa fa-th\"></i>\n" +
+    "  </a>\n" +
+    "</li>\n" +
+    "");
+}]);
+})();
+
+(function(module) {
+try { app = angular.module("risevision.common.header.templates"); }
+catch(err) { app = angular.module("risevision.common.header.templates", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
   $templateCache.put("auth-buttons-menu.html",
     "<li class=\"dropdown-header dropdown-title\">\n" +
     "  <span class=\"user-full-name\">{{profile.firstName}} {{profile.lastName}}</span>\n" +
@@ -77,9 +190,14 @@ app.run(["$templateCache", function($templateCache) {
     "    </a>\n" +
     "</li>\n" +
     "<!-- If User NOT Authenticated -->\n" +
+    "<li ng-show=\"!undetermined && isLoggedIn === false\" ng-controller=\"SignUpButtonCtrl\">\n" +
+    "  <button type=\"button\" ng-click=\"openSignUpModal()\"\n" +
+    "  class=\"btn-primary btn add-right\">\n" +
+    "  <i class=\"fa fa-google\"></i> Sign Up Free</button>\n" +
+    "</li>\n" +
     "<li ng-show=\"!undetermined && isLoggedIn === false\">\n" +
     "  <button type=\"button\" class=\"sign-in top-auth-button\" ng-click=\"login('registrationComplete')\">\n" +
-    "    Sign In <img src=\"//rise-vision.github.io/style-guide/img/avatar_2x.jpg\">\n" +
+    "    Sign In\n" +
     "  </button>\n" +
     "</li>\n" +
     "");
@@ -172,62 +290,10 @@ app.run(["$templateCache", function($templateCache) {
     "					src=\"'close-frame-button.html'\"\n" +
     "				></ng-include>\n" +
     "				<!-- Current App -->\n" +
-    "				<li class=\"dropdown\" ng-show=\"false\">\n" +
-    "					<a href=\"\" class=\"dropdown-toggle\">\n" +
-    "						<i class=\"fa fa-th\"></i>\n" +
-    "					</a>\n" +
-    "					<ul class=\"dropdown-menu company-menu\">\n" +
-    "						<li class=\"dropdown-header dropdown-title\">\n" +
-    "							Current App\n" +
-    "						</li>\n" +
-    "						<li class=\"dropdown-header\">\n" +
-    "							<i class=\"fa fa-tags\"></i> Store\n" +
-    "						</li>\n" +
-    "						<li class=\"divider\"></li>\n" +
-    "						<li>\n" +
-    "							<div class=\"menu-box pull-left\">\n" +
-    "								<a href=\"\">\n" +
-    "									<i class=\"fa fa-photo\"></i>\n" +
-    "									<span>Displays</span>\n" +
-    "								</a>\n" +
-    "							</div>\n" +
-    "							<div class=\"menu-box pull-right\">\n" +
-    "								<a href=\"\">\n" +
-    "									<i class=\"fa fa-photo\"></i>\n" +
-    "									<span>Scheduler</span>\n" +
-    "								</a>\n" +
-    "							</div>\n" +
-    "						</li>\n" +
-    "						<li>\n" +
-    "							<div class=\"menu-box pull-left\">\n" +
-    "								<a href=\"\">\n" +
-    "									<i class=\"fa fa-photo\"></i>\n" +
-    "									<span>Editor</span>\n" +
-    "								</a>\n" +
-    "							</div>\n" +
-    "							<div class=\"menu-box pull-right\">\n" +
-    "								<a href=\"\">\n" +
-    "									<i class=\"fa fa-photo\"></i>\n" +
-    "									<span>Storage</span>\n" +
-    "								</a>\n" +
-    "							</div>\n" +
-    "						</li>\n" +
-    "						<li>\n" +
-    "							<div class=\"menu-box pull-left\">\n" +
-    "								<a href=\"\">\n" +
-    "									<i class=\"fa fa-photo\"></i>\n" +
-    "									<span>Bulletin</span>\n" +
-    "								</a>\n" +
-    "							</div>\n" +
-    "							<div class=\"menu-box pull-right\">\n" +
-    "								<a href=\"\">\n" +
-    "									<i class=\"fa fa-photo\"></i>\n" +
-    "									<span>Player</span>\n" +
-    "								</a>\n" +
-    "							</div>\n" +
-    "						</li>\n" +
-    "					</ul>\n" +
-    "				</li>\n" +
+    "				<ng-include\n" +
+    "					replace-include\n" +
+    "					src=\"'app-nav-buttons.html'\"\n" +
+    "				></ng-include>\n" +
     "				<!-- END Current App -->\n" +
     "				<!-- Company Dropdown -->\n" +
     "				<ng-include\n" +
@@ -1196,6 +1262,32 @@ app.run(["$templateCache", function($templateCache) {
     "    <p>\n" +
     "    </p>\n" +
     "  </form>\n" +
+    "</div>\n" +
+    "");
+}]);
+})();
+
+(function(module) {
+try { app = angular.module("risevision.common.header.templates"); }
+catch(err) { app = angular.module("risevision.common.header.templates", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
+  $templateCache.put("signup-modal.html",
+    "<div class=\"modal-body text-center\" style=\"padding:15px 20px;\">\n" +
+    "  <img src=\"//s3.amazonaws.com/rise-common/images/logo-small.png\" class=\"text-center\" width=\"113\" height=\"42\" alt=\"Rise Vision\">\n" +
+    "  \n" +
+    "  <h1>The Enterprise Digital Signage Platform</h1>\n" +
+    "  <p class=\"lead\">Everything you need to create amazing digital signage for FREE</p>\n" +
+    "  \n" +
+    "  <h4 class=\"add-bottom\"><a href=\"http://www.risevision.com\" target=\"_blank\">Learn More about Rise Vision</a></h4>\n" +
+    "  \n" +
+    "  <button class=\"btn-lg btn btn-primary\" ng-click=\"login();\">\n" +
+    "    <i class=\"fa fa-google fa-lg icon-left\"></i>\n" +
+    "    Start with a Google Account\n" +
+    "  </button>\n" +
+    "  \n" +
+    "  <p class=\"text-muted half-top\">Don&apos;t Have a Google Account? <a href=\"https://accounts.google.com/SignUp\" target=\"_blank\">Get One Here.</a></p>\n" +
+    "  <p class=\"text-muted half-top\">Already a Rise Vision User? <a ng-click=\"login(); $event.stopPropagation();\" href=\"#\">Sign In</a></p>\n" +
     "</div>\n" +
     "");
 }]);
