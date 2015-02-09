@@ -541,7 +541,7 @@ app.run(["$templateCache", function($templateCache) {
     "</div>\n" +
     "<div class=\"form-group\">\n" +
     "  <label for=\"company-settings-timezone\" class=\"control-label\">Time Zone</label>\n" +
-    "  <select class=\"form-control\" ng-model=\"company.timeZoneOffset\" ng-options=\"c[1] as c[0] for c in timezones\">\n" +
+    "  <select class=\"form-control\" ng-model=\"company.timeZoneOffset\" ng-options=\"c[1] as c[0] for c in timezones\" integer-parser>\n" +
     "    <option value=\"\">&lt; Select Time Zone &gt;</option>\n" +
     "  </select>\n" +
     "</div>\n" +
@@ -1672,6 +1672,19 @@ angular.module("risevision.common.header", [
     });
   };
 });
+
+angular.module("risevision.common.header")
+.directive("integerParser", [
+function () {
+  return {
+    require: "ngModel",
+    link: function(scope, ele, attr, ctrl){
+      ctrl.$parsers.unshift(function(viewValue){
+        return parseInt(viewValue, 10) || 0;
+      });
+    }
+  };
+}]);
 
 angular.module("risevision.common.header")
 
