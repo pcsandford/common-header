@@ -541,7 +541,7 @@ app.run(["$templateCache", function($templateCache) {
     "</div>\n" +
     "<div class=\"form-group\">\n" +
     "  <label for=\"company-settings-timezone\" class=\"control-label\">Time Zone</label>\n" +
-    "  <select class=\"form-control\" ng-model=\"company.timeZoneOffset\" ng-options=\"c[1] as c[0] for c in timezones\">\n" +
+    "  <select class=\"form-control\" ng-model=\"company.timeZoneOffset\" ng-options=\"c[1] as c[0] for c in timezones\" integer-parser>\n" +
     "    <option value=\"\">&lt; Select Time Zone &gt;</option>\n" +
     "  </select>\n" +
     "</div>\n" +

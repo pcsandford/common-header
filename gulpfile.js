@@ -51,6 +51,7 @@ var env = process.env.NODE_ENV || "dev",
     "test/unit/**/*spec.js"
     ],
     commonHeaderSrcFiles = ["./src/templates.js", "./src/js/dtv-common-header.js",
+    "./src/js/directives/dtv-integer-parser.js",
     "./src/js/controllers/ctr-global-alerts.js",
     "./src/js/controllers/ctr-auth-buttons.js",
     "./src/js/controllers/ctr-signup-modal.js",
