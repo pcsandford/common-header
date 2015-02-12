@@ -40,8 +40,8 @@
 
    .run(["$q", function ($q) {  _userStateReady = $q.defer(); }])
 
-  .run(["$location", "userState", "$log", "gapiLoader",
-      function ($location, userState, $log, gapiLoader) {
+  .run(["$location", "$window", "userState", "$log", "gapiLoader",
+      function ($location, $window, userState, $log, gapiLoader) {
       var path = $location.path();
       var params = parseParams(stripLeadingSlash(path));
       var resolveHandled = false;
@@ -60,6 +60,9 @@
         var state = JSON.parse(params.state);
         if(state.u) {
           $location.path(state.u);
+          if (state.p) {
+            $window.location.pathname = state.p;
+          }
         }
       }
       if (!resolveHandled) {
@@ -318,7 +321,8 @@
        else {
         // _persist();
 
-        var loc = $window.location.href.substr(0, $window.location.href.indexOf("#")) || $window.location.href;
+        var loc = $window.location.origin;
+        var path = $window.location.pathname;
 
         localStorageService.set("risevision.common.userState", _state);
         uiFlowManager.persist();
@@ -330,7 +334,7 @@
           "&redirect_uri=" + encodeURIComponent(loc) +
           //http://stackoverflow.com/a/14393492
           "&prompt=select_account" +
-          "&state=" + encodeURIComponent(JSON.stringify({u: $location.path()}));
+          "&state=" + encodeURIComponent(JSON.stringify({p:path, u: $location.path()}));
 
         var deferred = $q.defer();
         // returns a promise that never get fulfilled since we are redirecting
