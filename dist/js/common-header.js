@@ -1639,6 +1639,11 @@ angular.module("risevision.common.header", [
           attr.hideShoppingCart !== "0" && attr.hideShoppingCart !== "false";
         $scope.hideHelpMenu = attr.hideHelpMenu &&
           attr.hideHelpMenu !== "0" && attr.hideHelpMenu !== "false";
+          
+        // used by userState; determines if the URL root is used for
+        // Authentication redirect
+        $rootScope.redirectToRoot = attr.redirectToRoot &&
+          attr.redirectToRoot !== "0" && attr.redirectToRoot !== "false";
 
         bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
 
@@ -3899,11 +3904,24 @@ angular.module("risevision.common.geodata", [])
        else {
         // _persist();
 
-        var loc = $window.location.origin;
-        var path = $window.location.pathname === "/" ? "" : $window.location.pathname;
-        // Remove first character (?) from search since it causes a parsing error
-        // when the object is returned
-        var search = $window.location.search ? $window.location.search.substring(1) : "";
+        var loc, path, search;
+        
+        // Redirect to full URL path
+        if (!$rootScope.redirectToRoot) {
+          loc = $window.location.href.substr(0, $window.location.href.indexOf("#")) || $window.location.href;
+        }
+        // Redirect to the URL root and append pathname back to the URL
+        // on Authentication success
+        // This prevents Domain authentication errors for sub-folders
+        // Warning: Root folder must have CH available for this to work,
+        // otherwise no redirect is performed!
+        else {
+          loc = $window.location.origin;
+          path = $window.location.pathname === "/" ? "" : $window.location.pathname;
+          // Remove first character (?) from search since it causes a parsing error
+          // when the object is returned
+          search = $window.location.search ? $window.location.search.substring(1) : "";
+        }
 
         localStorageService.set("risevision.common.userState", _state);
         uiFlowManager.persist();
