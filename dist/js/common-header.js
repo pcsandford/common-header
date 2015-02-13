@@ -3638,8 +3638,8 @@ angular.module("risevision.common.geodata", [])
         var state = JSON.parse(params.state);
         if(state.u) {
           $location.path(state.u);
-          if (state.p) {
-            $window.location.pathname = state.p;
+          if (state.p || state.s) {
+            $window.location.pathname = state.p + (state.s ? "?" + state.s : "");
           }
         }
       }
@@ -3900,7 +3900,10 @@ angular.module("risevision.common.geodata", [])
         // _persist();
 
         var loc = $window.location.origin;
-        var path = $window.location.pathname;
+        var path = $window.location.pathname === "/" ? "" : $window.location.pathname;
+        // Remove first character (?) from search since it causes a parsing error
+        // when the object is returned
+        var search = $window.location.search ? $window.location.search.substring(1) : "";
 
         localStorageService.set("risevision.common.userState", _state);
         uiFlowManager.persist();
@@ -3912,7 +3915,7 @@ angular.module("risevision.common.geodata", [])
           "&redirect_uri=" + encodeURIComponent(loc) +
           //http://stackoverflow.com/a/14393492
           "&prompt=select_account" +
-          "&state=" + encodeURIComponent(JSON.stringify({p:path, u: $location.path()}));
+          "&state=" + encodeURIComponent(JSON.stringify({p:path, u: $location.path(), s: search}));
 
         var deferred = $q.defer();
         // returns a promise that never get fulfilled since we are redirecting
