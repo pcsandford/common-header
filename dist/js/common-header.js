@@ -1635,15 +1635,15 @@ angular.module("risevision.common.header", [
         }
 
         //default to true
-        $scope.hideShoppingCart = attr.hideShoppingCart &&
-          attr.hideShoppingCart !== "0" && attr.hideShoppingCart !== "false";
-        $scope.hideHelpMenu = attr.hideHelpMenu &&
-          attr.hideHelpMenu !== "0" && attr.hideHelpMenu !== "false";
+        $scope.hideShoppingCart = attr.hideShoppingCart !== "0" && 
+          attr.hideShoppingCart !== "false";
+        $scope.hideHelpMenu = attr.hideHelpMenu !== "0" && 
+          attr.hideHelpMenu !== "false";
           
         // used by userState; determines if the URL root is used for
         // Authentication redirect
-        $rootScope.redirectToRoot = attr.redirectToRoot &&
-          attr.redirectToRoot !== "0" && attr.redirectToRoot !== "false";
+        $rootScope.redirectToRoot = attr.redirectToRoot !== "0" && 
+          attr.redirectToRoot !== "false";
 
         bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
 
@@ -3640,11 +3640,12 @@ angular.module("risevision.common.geodata", [])
       }
       userState._restoreState();
       if (params.state) {
-        var state = JSON.parse(params.state);
+        var state = JSON.parse(decodeURIComponent(params.state));
         if(state.u) {
           $location.path(state.u);
+          $location.replace();
           if (state.p || state.s) {
-            $window.location.pathname = state.p + (state.s ? "?" + state.s : "");
+            $window.location.replace(state.p + state.s ? "?" + state.s : "");
           }
         }
       }
@@ -3904,7 +3905,7 @@ angular.module("risevision.common.geodata", [])
        else {
         // _persist();
 
-        var loc, path, search;
+        var loc, path, search, state;
         
         // Redirect to full URL path
         if (!$rootScope.redirectToRoot) {
@@ -3922,6 +3923,9 @@ angular.module("risevision.common.geodata", [])
           // when the object is returned
           search = $window.location.search ? $window.location.search.substring(1) : "";
         }
+        
+        // double encode since response gets decoded once!
+        state = encodeURIComponent(encodeURIComponent(JSON.stringify({p:path, u: $location.path(), s: search})));
 
         localStorageService.set("risevision.common.userState", _state);
         uiFlowManager.persist();
@@ -3933,7 +3937,7 @@ angular.module("risevision.common.geodata", [])
           "&redirect_uri=" + encodeURIComponent(loc) +
           //http://stackoverflow.com/a/14393492
           "&prompt=select_account" +
-          "&state=" + encodeURIComponent(JSON.stringify({p:path, u: $location.path(), s: search}));
+          "&state=" + state;
 
         var deferred = $q.defer();
         // returns a promise that never get fulfilled since we are redirecting

@@ -57,11 +57,12 @@
       }
       userState._restoreState();
       if (params.state) {
-        var state = JSON.parse(params.state);
+        var state = JSON.parse(decodeURIComponent(params.state));
         if(state.u) {
           $location.path(state.u);
+          $location.replace();
           if (state.p || state.s) {
-            $window.location.pathname = state.p + (state.s ? "?" + state.s : "");
+            $window.location.replace(state.p + state.s ? "?" + state.s : "");
           }
         }
       }
@@ -321,7 +322,7 @@
        else {
         // _persist();
 
-        var loc, path, search;
+        var loc, path, search, state;
         
         // Redirect to full URL path
         if (!$rootScope.redirectToRoot) {
@@ -339,6 +340,9 @@
           // when the object is returned
           search = $window.location.search ? $window.location.search.substring(1) : "";
         }
+        
+        // double encode since response gets decoded once!
+        state = encodeURIComponent(encodeURIComponent(JSON.stringify({p:path, u: $location.path(), s: search})));
 
         localStorageService.set("risevision.common.userState", _state);
         uiFlowManager.persist();
@@ -350,7 +354,7 @@
           "&redirect_uri=" + encodeURIComponent(loc) +
           //http://stackoverflow.com/a/14393492
           "&prompt=select_account" +
-          "&state=" + encodeURIComponent(JSON.stringify({p:path, u: $location.path(), s: search}));
+          "&state=" + state;
 
         var deferred = $q.defer();
         // returns a promise that never get fulfilled since we are redirecting

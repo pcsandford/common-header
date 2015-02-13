@@ -67,15 +67,15 @@ angular.module("risevision.common.header", [
         }
 
         //default to true
-        $scope.hideShoppingCart = attr.hideShoppingCart &&
-          attr.hideShoppingCart !== "0" && attr.hideShoppingCart !== "false";
-        $scope.hideHelpMenu = attr.hideHelpMenu &&
-          attr.hideHelpMenu !== "0" && attr.hideHelpMenu !== "false";
+        $scope.hideShoppingCart = attr.hideShoppingCart !== "0" && 
+          attr.hideShoppingCart !== "false";
+        $scope.hideHelpMenu = attr.hideHelpMenu !== "0" && 
+          attr.hideHelpMenu !== "false";
           
         // used by userState; determines if the URL root is used for
         // Authentication redirect
-        $rootScope.redirectToRoot = attr.redirectToRoot &&
-          attr.redirectToRoot !== "0" && attr.redirectToRoot !== "false";
+        $rootScope.redirectToRoot = attr.redirectToRoot !== "0" && 
+          attr.redirectToRoot !== "false";
 
         bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
 
