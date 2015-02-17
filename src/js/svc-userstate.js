@@ -63,7 +63,7 @@
           $location.replace();
         }
         if (state.p || state.s) {
-          $window.location.replace(state.p + state.s ? "?" + state.s : "");
+          $window.location.replace(state.p + (state.s ? "?" + state.s : ""));
         }
       }
       if (!resolveHandled) {
