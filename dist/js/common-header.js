@@ -3644,9 +3644,9 @@ angular.module("risevision.common.geodata", [])
         if(state.u) {
           $location.path(state.u);
           $location.replace();
-          if (state.p || state.s) {
-            $window.location.replace(state.p + state.s ? "?" + state.s : "");
-          }
+        }
+        if (state.p || state.s) {
+          $window.location.replace(state.p + state.s ? "?" + state.s : "");
         }
       }
       if (!resolveHandled) {
@@ -3917,8 +3917,9 @@ angular.module("risevision.common.geodata", [])
         // Warning: Root folder must have CH available for this to work,
         // otherwise no redirect is performed!
         else {
-          loc = $window.location.origin;
-          path = $window.location.pathname === "/" ? "" : $window.location.pathname;
+          loc = $window.location.origin + "/";
+          // Remove first character (/) from path since we're adding it to loc
+          path = $window.location.pathname ? "" : $window.location.pathname.substring(1);
           // Remove first character (?) from search since it causes a parsing error
           // when the object is returned
           search = $window.location.search ? $window.location.search.substring(1) : "";
