@@ -3919,7 +3919,7 @@ angular.module("risevision.common.geodata", [])
         else {
           loc = $window.location.origin + "/";
           // Remove first character (/) from path since we're adding it to loc
-          path = $window.location.pathname ? "" : $window.location.pathname.substring(1);
+          path = $window.location.pathname ? $window.location.pathname.substring(1) : "";
           // Remove first character (?) from search since it causes a parsing error
           // when the object is returned
           search = $window.location.search ? $window.location.search.substring(1) : "";
