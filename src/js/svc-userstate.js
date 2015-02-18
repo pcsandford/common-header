@@ -494,6 +494,7 @@
 
     var userState = {
       getUserCompanyId: companyState.getUserCompanyId,
+      getUserCompanyName: companyState.getUserCompanyName,
       getSelectedCompanyId: companyState.getSelectedCompanyId,
       getSelectedCompanyName: companyState.getSelectedCompanyName,
       updateCompanySettings: companyState.updateCompanySettings,

@@ -7,14 +7,14 @@ app.run(["$templateCache", function($templateCache) {
     "<li>\n" +
     "  <div class=\"menu-box pull-right\">\n" +
     "    <a href=\"https://store.risevision.com/\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_store.png\"></div>\n" +
+    "      <svg-icon p=\"riseStore\"></svg-icon>\n" +
     "      <span>Store</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  \n" +
     "  <div class=\"menu-box pull-right\">\n" +
     "    <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_editor.png\"></div>\n" +
+    "      <svg-icon p=\"riseEditor\"></svg-icon>\n" +
     "      <span>Editor</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
@@ -23,31 +23,30 @@ app.run(["$templateCache", function($templateCache) {
     "<li>\n" +
     "  <div class=\"menu-box pull-left\">\n" +
     "    <a href=\"http://storage.risevision.com/\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_storage.png\"></div>\n" +
+    "      <svg-icon p=\"riseStorage\"></svg-icon>\n" +
     "      <span>Storage</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  \n" +
     "  <div class=\"menu-box pull-left\">\n" +
     "    <a href=\"http://displays.risevision.com/\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_displays.png\"></div>\n" +
+    "      <svg-icon p=\"riseDisplays\"></svg-icon>\n" +
     "      <span>Displays</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  \n" +
     "</li>\n" +
     "<li>\n" +
-    "  \n" +
     "  <div class=\"menu-box pull-left\">\n" +
     "    <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_schedules.png\"></div>\n" +
+    "      <svg-icon p=\"riseSchedules\"></svg-icon>\n" +
     "      <span>Schedules</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  \n" +
     "  <div class=\"menu-box pull-right\">\n" +
     "    <a href=\"https://support.risevision.com\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_support.png\"></div>\n" +
+    "      <svg-icon p=\"riseSupport\"></svg-icon>\n" +
     "      <span>Support</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
@@ -55,13 +54,13 @@ app.run(["$templateCache", function($templateCache) {
     "<li>\n" +
     "  <div class=\"menu-box pull-left\">\n" +
     "    <a href=\"https://community.risevision.com/rise_vision_inc\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_community.png\"></div>\n" +
+    "      <svg-icon p=\"riseCommunity\"></svg-icon>\n" +
     "      <span>Community</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  <div class=\"menu-box pull-right\">\n" +
     "    <a href=\"http://help.risevision.com/\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_documentation.png\"></div>\n" +
+    "      <svg-icon p=\"riseDocumentation\"></svg-icon>\n" +
     "      <span>Documentation</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
@@ -69,13 +68,13 @@ app.run(["$templateCache", function($templateCache) {
     "<li>\n" +
     "  <div class=\"menu-box pull-left\">\n" +
     "    <a href=\"http://developer.risevision.com/\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_hub.png\"></div>\n" +
+    "      <svg-icon p=\"riseDevelopers\"></svg-icon>\n" +
     "      <span>Developer</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  <div class=\"menu-box pull-right\">\n" +
     "    <a href=\"http://www.risevision.com/about-us/\" target=\"_blank\">\n" +
-    "      <div class=\"app-nav-icon\"><img src=\"https://s3.amazonaws.com/rise-common/images/nav/icon_about.png\"></div>\n" +
+    "      <svg-icon p=\"riseLogo\"></svg-icon>\n" +
     "      <span>About</span>\n" +
     "    </a>\n" +
     "  </div>\n" +
@@ -92,7 +91,7 @@ app.run(["$templateCache", function($templateCache) {
   $templateCache.put("app-nav-buttons.html",
     "<li class=\"dropdown hidden-xs\">\n" +
     "  <a href=\"\" class=\"dropdown-toggle\"><i class=\"fa fa-th\"></i></a>\n" +
-    "  <ul class=\"dropdown-menu\">\n" +
+    "  <ul class=\"dropdown-menu app-navigation\">\n" +
     "    <ng-include \n" +
     "    replace-include\n" +
     "    src=\"'app-nav-buttons-menu.html'\">\n" +
@@ -168,6 +167,10 @@ app.run(["$templateCache", function($templateCache) {
     "  ng-show=\"isLoggedIn\"\n" +
     "  >\n" +
     "    <a href=\"\" class=\"dropdown-toggle\">\n" +
+    "      <div class=\"user-id pull-left add-right\">\n" +
+    "        <span>{{userEmail}}</span>\n" +
+    "        <span><strong>{{companyName}}</strong></span>\n" +
+    "      </div>\n" +
     "      <img ng-src=\"{{userPicture}}\"\n" +
     "        class=\"profile-pic\" width=\"30\" height=\"30\" alt=\"User\" />\n" +
     "    </a>\n" +
@@ -180,13 +183,15 @@ app.run(["$templateCache", function($templateCache) {
     "</li>\n" +
     "<!-- Mobile -->\n" +
     "<li\n" +
+    "  class=\"dropdown user-profile-dropdown mobile-menu-item\"\n" +
     "  ng-class=\"{'visible-xs-inline-block': isLoggedIn}\"\n" +
     "  ng-show=\"isLoggedIn\"\n" +
-    "  class=\" mobile-menu-item\"\n" +
     "  >\n" +
-    "    <a href=\"\" class=\"dropdown-toggle\" action-sheet=\"'auth-buttons-menu.html'\">\n" +
-    "      <img ng-src=\"{{userPicture}}\"\n" +
-    "        class=\"profile-pic\" width=\"30\" height=\"30\" alt=\"User\" />\n" +
+    "    <a href=\"\" class=\"visible-xs dropdown-toggle\" action-sheet=\"'auth-buttons-menu.html'\">\n" +
+    "      <div class=\"user-id\">\n" +
+    "        <span style=\"max-width:90px\">{{userEmail}}</span>\n" +
+    "        <span style=\"max-width:90px\"><strong>{{companyName}}</strong></span>\n" +
+    "      </div>\n" +
     "    </a>\n" +
     "</li>\n" +
     "<!-- If User NOT Authenticated -->\n" +

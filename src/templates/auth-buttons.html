@@ -12,6 +12,10 @@
   ng-show="isLoggedIn"
   >
     <a href="" class="dropdown-toggle">
+      <div class="user-id pull-left add-right">
+        <span>{{userEmail}}</span>
+        <span><strong>{{companyName}}</strong></span>
+      </div>
       <img ng-src="{{userPicture}}"
         class="profile-pic" width="30" height="30" alt="User" />
     </a>
@@ -24,13 +28,15 @@
 </li>
 <!-- Mobile -->
 <li
+  class="dropdown user-profile-dropdown mobile-menu-item"
   ng-class="{'visible-xs-inline-block': isLoggedIn}"
   ng-show="isLoggedIn"
-  class=" mobile-menu-item"
   >
-    <a href="" class="dropdown-toggle" action-sheet="'auth-buttons-menu.html'">
-      <img ng-src="{{userPicture}}"
-        class="profile-pic" width="30" height="30" alt="User" />
+    <a href="" class="visible-xs dropdown-toggle" action-sheet="'auth-buttons-menu.html'">
+      <div class="user-id">
+        <span style="max-width:90px">{{userEmail}}</span>
+        <span style="max-width:90px"><strong>{{companyName}}</strong></span>
+      </div>
     </a>
 </li>
 <!-- If User NOT Authenticated -->

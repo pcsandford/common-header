@@ -89,6 +89,8 @@
       resetCompanyState: _resetCompanyState,
       getUserCompanyId: function () {
         return (_state.userCompany && _state.userCompany.id) || null; },
+      getUserCompanyName: function () {
+        return (_state.userCompany && _state.userCompany.name) || null;},
       getSelectedCompanyId: function () {
         return (_state.selectedCompany && _state.selectedCompany.id) || null; },
       getSelectedCompanyName: function () {

@@ -80,7 +80,14 @@ angular.module("risevision.common.header")
 
     $scope.$watch(function () {return userState.isLoggedIn();},
       function (loggedIn) { $scope.isLoggedIn = loggedIn;
-        if(loggedIn === true) { $scope.userPicture = userState.getUserPicture();}
+        if(loggedIn === true) { 
+          $scope.userPicture = userState.getUserPicture();
+        }
+      });
+    $scope.$watch(function () {return userState.getUserCompanyName();},
+      function () {
+        $scope.userEmail = userState.getUserEmail();
+        $scope.companyName = userState.getUserCompanyName();
       });
     bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
 
