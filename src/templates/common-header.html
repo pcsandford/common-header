@@ -37,16 +37,11 @@
 				></ng-include>
 				<!-- Current App -->
 				<ng-include
+					ng-if="!inRVAFrame"
 					replace-include
 					src="'app-nav-buttons.html'"
 				></ng-include>
 				<!-- END Current App -->
-				<!-- Company Dropdown -->
-				<ng-include
-					replace-include
-				  ng-controller="CompanyButtonsCtrl"
-					src="'company-buttons.html'"
-				></ng-include>
 				<!-- Auth -->
 				<ng-include
 					replace-include

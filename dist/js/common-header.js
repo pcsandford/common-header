@@ -4,81 +4,83 @@ catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("app-nav-buttons-menu.html",
-    "<li>\n" +
-    "  <div class=\"menu-box pull-right\">\n" +
-    "    <a href=\"https://store.risevision.com/\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseStore\"></svg-icon>\n" +
-    "      <span>Store</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "  \n" +
-    "  <div class=\"menu-box pull-right\">\n" +
-    "    <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseEditor\"></svg-icon>\n" +
-    "      <span>Editor</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "  \n" +
-    "</li>\n" +
-    "<li>\n" +
-    "  <div class=\"menu-box pull-left\">\n" +
-    "    <a href=\"http://storage.risevision.com/\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseStorage\"></svg-icon>\n" +
-    "      <span>Storage</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "  \n" +
-    "  <div class=\"menu-box pull-left\">\n" +
-    "    <a href=\"http://displays.risevision.com/\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseDisplays\"></svg-icon>\n" +
-    "      <span>Displays</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "  \n" +
-    "</li>\n" +
-    "<li>\n" +
-    "  <div class=\"menu-box pull-left\">\n" +
-    "    <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseSchedules\"></svg-icon>\n" +
-    "      <span>Schedules</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "  \n" +
-    "  <div class=\"menu-box pull-right\">\n" +
-    "    <a href=\"https://support.risevision.com\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseSupport\"></svg-icon>\n" +
-    "      <span>Support</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "</li>\n" +
-    "<li>\n" +
-    "  <div class=\"menu-box pull-left\">\n" +
-    "    <a href=\"https://community.risevision.com/rise_vision_inc\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseCommunity\"></svg-icon>\n" +
-    "      <span>Community</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "  <div class=\"menu-box pull-right\">\n" +
-    "    <a href=\"http://help.risevision.com/\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseDocumentation\"></svg-icon>\n" +
-    "      <span>Documentation</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "</li>\n" +
-    "<li>\n" +
-    "  <div class=\"menu-box pull-left\">\n" +
-    "    <a href=\"http://developer.risevision.com/\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseDevelopers\"></svg-icon>\n" +
-    "      <span>Developer</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "  <div class=\"menu-box pull-right\">\n" +
-    "    <a href=\"http://www.risevision.com/about-us/\" target=\"_blank\">\n" +
-    "      <svg-icon p=\"riseLogo\"></svg-icon>\n" +
-    "      <span>About</span>\n" +
-    "    </a>\n" +
-    "  </div>\n" +
-    "</li>\n" +
+    "<ul>\n" +
+    "  <li>\n" +
+    "    <div class=\"menu-box pull-right\">\n" +
+    "      <a href=\"https://store.risevision.com/\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseStore\"></svg-icon>\n" +
+    "        <span>Store</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "    \n" +
+    "    <div class=\"menu-box pull-right\">\n" +
+    "      <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseEditor\"></svg-icon>\n" +
+    "        <span>Editor</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "    \n" +
+    "  </li>\n" +
+    "  <li>\n" +
+    "    <div class=\"menu-box pull-left\">\n" +
+    "      <a href=\"http://storage.risevision.com/\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseStorage\"></svg-icon>\n" +
+    "        <span>Storage</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "    \n" +
+    "    <div class=\"menu-box pull-left\">\n" +
+    "      <a href=\"http://rva.risevision.com/#DISPLAYS\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseDisplays\"></svg-icon>\n" +
+    "        <span>Displays</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "    \n" +
+    "  </li>\n" +
+    "  <li>\n" +
+    "    <div class=\"menu-box pull-left\">\n" +
+    "      <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseSchedules\"></svg-icon>\n" +
+    "        <span>Schedules</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "    \n" +
+    "    <div class=\"menu-box pull-right\">\n" +
+    "      <a href=\"https://support.risevision.com\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseSupport\"></svg-icon>\n" +
+    "        <span>Support</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "  </li>\n" +
+    "  <li>\n" +
+    "    <div class=\"menu-box pull-left\">\n" +
+    "      <a href=\"https://community.risevision.com/rise_vision_inc\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseCommunity\"></svg-icon>\n" +
+    "        <span>Community</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "    <div class=\"menu-box pull-right\">\n" +
+    "      <a href=\"http://help.risevision.com/\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseDocumentation\"></svg-icon>\n" +
+    "        <span>Documentation</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "  </li>\n" +
+    "  <li>\n" +
+    "    <div class=\"menu-box pull-left\">\n" +
+    "      <a href=\"http://developer.risevision.com/\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseDevelopers\"></svg-icon>\n" +
+    "        <span>Developer</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "    <div class=\"menu-box pull-right\">\n" +
+    "      <a href=\"http://www.risevision.com/about-us/\" target=\"_blank\">\n" +
+    "        <svg-icon p=\"riseLogo\"></svg-icon>\n" +
+    "        <span>About</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "  </li>\n" +
+    "</ul>\n" +
     "");
 }]);
 })();
@@ -91,18 +93,19 @@ app.run(["$templateCache", function($templateCache) {
   $templateCache.put("app-nav-buttons.html",
     "<li class=\"dropdown hidden-xs\">\n" +
     "  <a href=\"\" class=\"dropdown-toggle\"><i class=\"fa fa-th\"></i></a>\n" +
-    "  <ul class=\"dropdown-menu app-navigation\">\n" +
+    "  <div class=\"dropdown-menu app-navigation\">\n" +
     "    <ng-include \n" +
-    "    replace-include\n" +
-    "    src=\"'app-nav-buttons-menu.html'\">\n" +
+    "      replace-include\n" +
+    "      src=\"'app-nav-buttons-menu.html'\">\n" +
     "    </ng-include>\n" +
-    "  </ul>\n" +
+    "  </div>\n" +
     "</li>\n" +
     "\n" +
     "<!-- Mobile -->\n" +
     "<li class=\"visible-xs-inline-block\" >\n" +
     "  <a href=\"\" class=\"company-buttons-icon-mobile\"\n" +
-    "  action-sheet=\"'app-nav-buttons-menu.html'\">\n" +
+    "  action-sheet=\"'app-nav-buttons-menu.html'\"\n" +
+    "  action-sheet-class=\"app-navigation\">\n" +
     "    <i class=\"fa fa-th\"></i>\n" +
     "  </a>\n" +
     "</li>\n" +
@@ -116,33 +119,29 @@ catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("auth-buttons-menu.html",
-    "<li class=\"dropdown-header dropdown-title\">\n" +
-    "  <span class=\"user-full-name\">{{profile.firstName}} {{profile.lastName}}</span>\n" +
-    "</li>\n" +
-    "<li class=\"dropdown-header\">\n" +
-    "  {{profile.email}}\n" +
-    "</li>\n" +
-    "<li class=\"divider\" ng-show=\"isRiseVisionUser\"></li>\n" +
-    "<li ng-show=\"isRiseVisionUser\">\n" +
-    "  <a href=\"\" ng-click=\"userSettings()\" class=\"user-settings-button action\">\n" +
-    "    <i class=\"fa fa-cogs\"></i>\n" +
-    "    <span class=\"item-name\">User Settings</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
-    "<li class=\"divider\" ng-show=\"isRiseVisionUser\"></li>\n" +
-    "<li class=\"divider\" ng-show=\"false\"></li>\n" +
-    "<li ng-show=\"false\">\n" +
-    "  <a href=\"\" class=\"action\" ng-click=\"paymentMethods()\">\n" +
-    "    <i class=\"fa fa-usd\"></i>\n" +
-    "    <span class=\"item-name\">Payment Methods</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
-    "<li ng-show=\"isLoggedIn\">\n" +
-    "  <a href=\"\" ng-click=\"logout()\" class=\"sign-out-button action\">\n" +
-    "    <i class=\"fa fa-sign-out\"></i>\n" +
-    "    <span class=\"item-name\">Sign Out</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
+    "<company-buttons\n" +
+    "  ng-show=\"isRiseVisionUser\"\n" +
+    "  ng-controller=\"CompanyButtonsCtrl\"\n" +
+    "></company-buttons>\n" +
+    "\n" +
+    "<ul>\n" +
+    "  <li ng-show=\"isRiseVisionUser\">\n" +
+    "    <a href=\"\" ng-click=\"userSettings()\" class=\"user-settings-button action\">\n" +
+    "      <i class=\"fa fa-user\"></i>\n" +
+    "      <span class=\"item-name\">User Settings</span>\n" +
+    "    </a>\n" +
+    "  </li>\n" +
+    "  <li ng-show=\"false\">\n" +
+    "    <a href=\"\" class=\"action\" ng-click=\"paymentMethods()\">\n" +
+    "      <i class=\"fa fa-usd\"></i>\n" +
+    "      <span class=\"item-name\">Payment Methods</span>\n" +
+    "    </a>\n" +
+    "  </li>\n" +
+    "\n" +
+    "  <li class=\"dropdown-footer text-right\" ng-show=\"isLoggedIn\">\n" +
+    "    <button class=\"sign-out-button btn btn-sm btn-default\" ng-click=\"logout()\">Sign Out <i class=\"fa fa-sign-out\"></i>\n" +
+    "  </li>\n" +
+    "</ul>\n" +
     "");
 }]);
 })();
@@ -168,18 +167,18 @@ app.run(["$templateCache", function($templateCache) {
     "  >\n" +
     "    <a href=\"\" class=\"dropdown-toggle\">\n" +
     "      <div class=\"user-id pull-left add-right\">\n" +
-    "        <span>{{userEmail}}</span>\n" +
+    "        <span class=\"user-email\">{{userEmail}}</span>\n" +
     "        <span><strong>{{companyName}}</strong></span>\n" +
     "      </div>\n" +
     "      <img ng-src=\"{{userPicture}}\"\n" +
     "        class=\"profile-pic\" width=\"30\" height=\"30\" alt=\"User\" />\n" +
     "    </a>\n" +
-    "    <ul class=\"dropdown-menu\">\n" +
+    "    <div class=\"dropdown-menu\">\n" +
     "      <ng-include\n" +
     "        src=\"'auth-buttons-menu.html'\"\n" +
     "        replace-include\n" +
     "      ></ng-include>\n" +
-    "    </ul>\n" +
+    "    </div>\n" +
     "</li>\n" +
     "<!-- Mobile -->\n" +
     "<li\n" +
@@ -187,7 +186,8 @@ app.run(["$templateCache", function($templateCache) {
     "  ng-class=\"{'visible-xs-inline-block': isLoggedIn}\"\n" +
     "  ng-show=\"isLoggedIn\"\n" +
     "  >\n" +
-    "    <a href=\"\" class=\"visible-xs dropdown-toggle\" action-sheet=\"'auth-buttons-menu.html'\">\n" +
+    "    <a href=\"\" class=\"visible-xs dropdown-toggle\" action-sheet=\"'auth-buttons-menu.html'\"\n" +
+    "      action-sheet-class=\"user-profile-dropdown\">\n" +
     "      <div class=\"user-id\">\n" +
     "        <span style=\"max-width:90px\">{{userEmail}}</span>\n" +
     "        <span style=\"max-width:90px\"><strong>{{companyName}}</strong></span>\n" +
@@ -296,16 +296,11 @@ app.run(["$templateCache", function($templateCache) {
     "				></ng-include>\n" +
     "				<!-- Current App -->\n" +
     "				<ng-include\n" +
+    "					ng-if=\"!inRVAFrame\"\n" +
     "					replace-include\n" +
     "					src=\"'app-nav-buttons.html'\"\n" +
     "				></ng-include>\n" +
     "				<!-- END Current App -->\n" +
-    "				<!-- Company Dropdown -->\n" +
-    "				<ng-include\n" +
-    "					replace-include\n" +
-    "				  ng-controller=\"CompanyButtonsCtrl\"\n" +
-    "					src=\"'company-buttons.html'\"\n" +
-    "				></ng-include>\n" +
     "				<!-- Auth -->\n" +
     "				<ng-include\n" +
     "					replace-include\n" +
@@ -379,85 +374,41 @@ catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("company-buttons-menu.html",
-    "<li class=\"dropdown-header dropdown-title\"\n" +
-    "  ng-show=\"isRiseVisionUser\">\n" +
-    "  Current Company\n" +
-    "</li>\n" +
-    "<li class=\"dropdown-header\" ng-show=\"isRiseVisionUser\">\n" +
-    "  <!-- home -->\n" +
-    "  <i ng-show=\"!isSubcompanySelected\" class=\"fa fa-home\"></i>\n" +
-    "  <!-- warning -->\n" +
-    "  <i ng-show=\"isSubcompanySelected\" class=\"fa fa-warning glyphicon-danger\"></i>\n" +
-    "  {{selectedCompanyName}}\n" +
-    "  <div ng-show=\"isSubcompanySelected\" class=\"danger\">This is a Sub-Company of your Company.</div>\n" +
-    "</li>\n" +
-    "<li ng-show=\"isSubcompanySelected\" class=\"divider\"></li>\n" +
-    "<li ng-show=\"isSubcompanySelected\">\n" +
-    "  <a href=\"\" ng-click=\"resetCompany()\" class=\"action\">\n" +
-    "    <i class=\"fa fa-home\"></i>\n" +
-    "    <span class=\"item-name\">Switch To My Company</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
-    "<li class=\"divider\"></li>\n" +
-    "<li ng-show=\"isRiseVisionUser && !isSubcompanySelected\">\n" +
-    "  <a href=\"\" ng-click=\"switchCompany()\" class=\"action select-subcompany-menu-button\">\n" +
-    "    <i class=\"fa fa-share-square-o\"></i>\n" +
-    "    <span class=\"item-name\">Select Sub-Company</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
-    "<li ng-show=\"isUserAdmin || isRiseAdmin\" class=\"divider\"></li>\n" +
-    "<li ng-show=\"isUserAdmin || isRiseAdmin\">\n" +
-    "  <a href=\"\" ng-click=\"addSubCompany()\" class=\"action add-subcompany-menu-button\">\n" +
-    "    <i class=\"fa fa-plus\"></i>\n" +
-    "    <span class=\"item-name\">Add Sub-Company</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
-    "<li ng-show=\"isUserAdmin || isRiseAdmin\" class=\"divider\"></li>\n" +
-    "<li ng-show=\"isUserAdmin || isRiseAdmin\">\n" +
-    "  <a href=\"\" ng-click=\"companySettings()\" class=\"action company-settings-menu-button\">\n" +
-    "    <i class=\"fa fa-cog\"></i>\n" +
-    "    <span class=\"item-name\">Company Settings</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
-    "<li ng-show=\"isUserAdmin || isRiseAdmin\" class=\"divider\"></li>\n" +
-    "<li ng-show=\"isUserAdmin || isRiseAdmin\">\n" +
-    "  <a href=\"\" data-toggle=\"modal\" ng-click=\"companyUsers()\" class=\"action company-users-menu-button\">\n" +
-    "    <i class=\"fa fa-users\"></i>\n" +
-    "    <span class=\"item-name\">Company Users</span>\n" +
-    "  </a>\n" +
-    "</li>\n" +
-    "");
-}]);
-})();
-
-(function(module) {
-try { app = angular.module("risevision.common.header.templates"); }
-catch(err) { app = angular.module("risevision.common.header.templates", []); }
-app.run(["$templateCache", function($templateCache) {
-  "use strict";
-  $templateCache.put("company-buttons.html",
-    "<!-- Desktop and tablet -->\n" +
-    "<li class=\"dropdown hidden-xs\" ng-show=\"isRiseVisionUser && !inRVAFrame\">\n" +
-    "  <a href=\"\" class=\"dropdown-toggle company-buttons-icon\">\n" +
-    "    <i class=\"fa fa-cog\"></i>\n" +
-    "  </a>\n" +
-    "  <ul class=\"dropdown-menu\">\n" +
-    "    <ng-include\n" +
-    "      replace-include\n" +
-    "      src=\"'company-buttons-menu.html'\"\n" +
-    "    ></ng-include>\n" +
-    "  </ul>\n" +
-    "</li>\n" +
+    "<ul>\n" +
+    "  <li class=\"dropdown-header\" ng-show=\"!isSubcompanySelected\">\n" +
+    "    <p>{{profile.email}}</p>\n" +
+    "    <p><strong>{{selectedCompanyName}}</strong>\n" +
+    "      <span class=\"text-muted\" ng-show=\"isRiseVisionUser && !isSubcompanySelected\">|</span>\n" +
+    "      <a href=\"\" ng-click=\"switchCompany()\" ng-show=\"isRiseVisionUser && !isSubcompanySelected\">Select Sub-Company</a>\n" +
+    "    </p>\n" +
+    "  </li>\n" +
     "\n" +
-    "<!-- Mobile -->\n" +
-    "<li\n" +
-    " ng-show=\"isRiseVisionUser && !inRVAFrame\"\n" +
-    " ng-class=\"{'visible-xs-inline-block': isRiseVisionUser}\">\n" +
-    "  <a href=\"\" class=\"company-buttons-icon-mobile\"\n" +
-    "    action-sheet=\"'company-buttons-menu.html'\">\n" +
-    "    <i class=\"fa fa-cog\"></i>\n" +
-    "  </a>\n" +
-    "</li>\n" +
+    "  <li class=\"dropdown-header sub-company-header\" ng-show=\"isSubcompanySelected\">\n" +
+    "    <p>You are in Sub-Company <strong>{{selectedCompanyName}}</strong>\n" +
+    "    <span class=\"text-muted\">|</span>\n" +
+    "     <a href=\"\" ng-click=\"switchCompany()\" ng-show=\"isRiseVisionUser\">Change</a></p>\n" +
+    "    <p><a href=\"\" ng-click=\"resetCompany()\">Switch to My Company</a></p>\n" +
+    "  </li>\n" +
+    "\n" +
+    "  <li ng-show=\"isUserAdmin || isRiseAdmin\">\n" +
+    "    <a href=\"\" ng-click=\"addSubCompany()\" class=\"action add-subcompany-menu-button\">\n" +
+    "      <i class=\"fa fa-plus\"></i>\n" +
+    "      <span class=\"item-name\">Add Sub-Company</span>\n" +
+    "    </a>\n" +
+    "  </li>\n" +
+    "  <li ng-show=\"isUserAdmin || isRiseAdmin\">\n" +
+    "    <a href=\"\" ng-click=\"companySettings()\" class=\"action company-settings-menu-button\">\n" +
+    "      <i class=\"fa fa-building\"></i>\n" +
+    "      <span class=\"item-name\">Company Settings</span>\n" +
+    "    </a>\n" +
+    "  </li>\n" +
+    "  <li ng-show=\"isUserAdmin || isRiseAdmin\">\n" +
+    "    <a href=\"\" data-toggle=\"modal\" ng-click=\"companyUsers()\" class=\"action company-users-menu-button\">\n" +
+    "      <i class=\"fa fa-users\"></i>\n" +
+    "      <span class=\"item-name\">Company Users</span>\n" +
+    "    </a>\n" +
+    "  </li>\n" +
+    "</ul>\n" +
     "");
 }]);
 })();
@@ -1358,14 +1309,16 @@ catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("system-messages-button-menu.html",
-    "<li class=\"dropdown-header dropdown-title system-message\">\n" +
-    "  Notifications\n" +
-    "</li>\n" +
-    "<li class=\"divider\"></li>\n" +
-    "<li class=\"system-message\"\n" +
-    "  ng-repeat=\"message in messages\"\n" +
-    "  ng-bind-html=\"renderHtml(message.text)\">\n" +
-    "</li>\n" +
+    "<ul>\n" +
+    "  <li class=\"dropdown-header dropdown-title system-message\">\n" +
+    "    Notifications\n" +
+    "  </li>\n" +
+    "  <li class=\"divider\"></li>\n" +
+    "  <li class=\"system-message\"\n" +
+    "    ng-repeat=\"message in messages\"\n" +
+    "    ng-bind-html=\"renderHtml(message.text)\">\n" +
+    "  </li>\n" +
+    "</ul>\n" +
     "");
 }]);
 })();
@@ -1383,11 +1336,11 @@ app.run(["$templateCache", function($templateCache) {
     "    <i class=\"fa fa-bell\"></i>\n" +
     "    <span class=\"label label-danger system-messages-badge\">{{messages.length | surpressZero}}</span>\n" +
     "  </a>\n" +
-    "  <ul class=\"dropdown-menu system-messages system-message-list\">\n" +
+    "  <div class=\"dropdown-menu system-messages system-message-list\">\n" +
     "    <ng-include\n" +
     "      src=\"'system-messages-button-menu.html'\"\n" +
     "    ></ng-include>\n" +
-    "  </ul>\n" +
+    "  </div>\n" +
     "</li>\n" +
     "\n" +
     "<!-- Mobile -->\n" +
@@ -1669,6 +1622,20 @@ angular.module("risevision.common.header", [
     };
   }
 ])
+.run(["$rootScope", "userState", "selectedCompanyUrlHandler",
+  function ($rootScope, userState, selectedCompanyUrlHandler) {
+    $rootScope.$watch(function () {return userState.getSelectedCompanyId(); },
+    function (newCompanyId) {
+      if(newCompanyId) {
+        selectedCompanyUrlHandler.updateUrl();
+      }
+    });
+
+    //detect selectCompany changes on route UI
+    $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+    $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+  }
+])
 
 .directive("ngEnter", function() {
   return function(scope, element, attrs) {
@@ -1696,6 +1663,22 @@ function () {
     }
   };
 }]);
+
+"use strict";
+
+angular.module("risevision.common.header")
+  .directive("companyButtons", ["$templateCache",
+    function ($templateCache) {
+      return {
+        restrict: "E",
+        scope: false,
+        replace: true,
+        template: $templateCache.get("company-buttons-menu.html"),
+        link: function () {
+        } //link()
+      };
+    }
+  ]);
 
 angular.module("risevision.common.header")
 
@@ -1727,7 +1710,9 @@ angular.module("risevision.common.header")
   bindToScopeWithWatch) {
 
     window.$loading = $loading; //DEBUG
-
+    
+    $scope.inRVAFrame = userState.inRVAFrame();
+    
     $scope.spinnerOptions = {color: "#999", hwaccel: true, radius: 10};
 
     $scope.register = function () {
@@ -1806,9 +1791,13 @@ angular.module("risevision.common.header")
       });
     $scope.$watch(function () {return userState.getUserCompanyName();},
       function () {
-        $scope.userEmail = userState.getUserEmail();
         $scope.companyName = userState.getUserCompanyName();
       });
+      
+    $scope.$watch(function () {return userState.getUserEmail();},
+      function () {
+        $scope.userEmail = userState.getUserEmail();
+      });  
     bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
 
     //repopulate profile upon change of current user
@@ -1907,19 +1896,15 @@ angular.module("risevision.common.header")
 
 angular.module("risevision.common.header")
 .controller("CompanyButtonsCtrl", [ "$scope", "$modal", "$templateCache",
-  "userState", "selectedCompanyUrlHandler",
-  function($scope, $modal, $templateCache, userState,
-    selectedCompanyUrlHandler) {
+  "userState",
+  function($scope, $modal, $templateCache, userState) {
     $scope.inRVAFrame = userState.inRVAFrame();
 
-    $scope.$watch(function () {return userState.getSelectedCompanyId(); },
-    function (newCompanyId) {
-      if(newCompanyId) {
-        $scope.isSubcompanySelected = userState.isSubcompanySelected();
-        selectedCompanyUrlHandler.updateUrl();
-      }
+    $scope.$watch(function () {return userState.isSubcompanySelected(); },
+    function () {
+      $scope.isSubcompanySelected = userState.isSubcompanySelected();
     });
-
+    
     $scope.$watch(function () {return userState.getSelectedCompanyName(); },
     function (selectedCompanyName) {
       if(selectedCompanyName) {
@@ -1938,10 +1923,6 @@ angular.module("risevision.common.header")
 
     $scope.$watch(function () {return userState.isRiseAdmin(); },
     function (isRvAdmin) { $scope.isRiseVisionAdmin = isRvAdmin; });
-
-    //detect selectCompany changes on route UI
-    $scope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-    $scope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
 
     $scope.addSubCompany = function() {
       $modal.open({

@@ -7,7 +7,9 @@ angular.module("risevision.common.header")
   bindToScopeWithWatch) {
 
     window.$loading = $loading; //DEBUG
-
+    
+    $scope.inRVAFrame = userState.inRVAFrame();
+    
     $scope.spinnerOptions = {color: "#999", hwaccel: true, radius: 10};
 
     $scope.register = function () {
@@ -86,9 +88,13 @@ angular.module("risevision.common.header")
       });
     $scope.$watch(function () {return userState.getUserCompanyName();},
       function () {
-        $scope.userEmail = userState.getUserEmail();
         $scope.companyName = userState.getUserCompanyName();
       });
+      
+    $scope.$watch(function () {return userState.getUserEmail();},
+      function () {
+        $scope.userEmail = userState.getUserEmail();
+      });  
     bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
 
     //repopulate profile upon change of current user

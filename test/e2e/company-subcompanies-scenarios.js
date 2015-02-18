@@ -31,7 +31,7 @@
         xit("Opens select subcompany dialog", function () {
           element(by.css("button.sign-in")).click();
           assert.eventually.isFalse(element(by.css("button.sign-in")).isDisplayed(), "sign in button should not show");
-          element(by.css(".company-buttons-icon")).click();
+          element(by.css(".user-profile-dropdown img.profile-pic")).click();
           assert.eventually.isTrue(element(by.css(".select-subcompany-menu-button")).isDisplayed(),
             "Select subcompany menu item should present");
           element(by.css(".move-company-menu-button")).click();
@@ -71,7 +71,7 @@
 
       describe("Add subcompany & move company", function () {
         it("Opens Add Subcompany dialog", function () {
-          element(by.css(".company-buttons-icon")).click();
+          element(by.css(".user-profile-dropdown img.profile-pic")).click();
           assert.eventually.isTrue(element(by.css(".add-subcompany-menu-button")).isDisplayed(),
             "Add subcompany menu item should show");
           element(by.css(".add-subcompany-menu-button")).click();

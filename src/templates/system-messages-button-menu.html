@@ -1,8 +1,10 @@
-<li class="dropdown-header dropdown-title system-message">
-  Notifications
-</li>
-<li class="divider"></li>
-<li class="system-message"
-  ng-repeat="message in messages"
-  ng-bind-html="renderHtml(message.text)">
-</li>
+<ul>
+  <li class="dropdown-header dropdown-title system-message">
+    Notifications
+  </li>
+  <li class="divider"></li>
+  <li class="system-message"
+    ng-repeat="message in messages"
+    ng-bind-html="renderHtml(message.text)">
+  </li>
+</ul>
