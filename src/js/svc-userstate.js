@@ -58,12 +58,16 @@
       userState._restoreState();
       if (params.state) {
         var state = JSON.parse(decodeURIComponent(params.state));
-        if(state.u) {
+        if ((state.p && $window.location.pathname === "/") || 
+          (state.s && $window.location.search === "")) {
+          $window.location.replace(state.p + 
+            (state.s ? "?" + state.s : "") +
+            "#" + encodeURIComponent($location.path())
+          );
+        }
+        else if (state.u) {
           $location.path(state.u);
           $location.replace();
-        }
-        if (state.p || state.s) {
-          $window.location.replace(state.p + (state.s ? "?" + state.s : ""));
         }
       }
       if (!resolveHandled) {
