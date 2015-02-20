@@ -1,17 +1,18 @@
 <li class="dropdown hidden-xs">
   <a href="" class="dropdown-toggle"><i class="fa fa-th"></i></a>
-  <ul class="dropdown-menu app-navigation">
+  <div class="dropdown-menu app-navigation">
     <ng-include 
-    replace-include
-    src="'app-nav-buttons-menu.html'">
+      replace-include
+      src="'app-nav-buttons-menu.html'">
     </ng-include>
-  </ul>
+  </div>
 </li>
 
 <!-- Mobile -->
 <li class="visible-xs-inline-block" >
   <a href="" class="company-buttons-icon-mobile"
-  action-sheet="'app-nav-buttons-menu.html'">
+  action-sheet="'app-nav-buttons-menu.html'"
+  action-sheet-class="app-navigation">
     <i class="fa fa-th"></i>
   </a>
 </li>

@@ -36,7 +36,7 @@
         });
 
         it("Opens Company Settings Dialog", function() {
-          element(by.css(".company-buttons-icon")).click();
+          element(by.css(".user-profile-dropdown img.profile-pic")).click();
           assert.eventually.isTrue(element(by.css(".company-settings-menu-button")).isDisplayed(),
             "Company settings menu item should present");
           element(by.css(".company-settings-menu-button")).click();
@@ -65,7 +65,7 @@
 
       describe("Delete Company", function () {
         it("Opens Company Settings Dialog", function() {
-          element(by.css(".company-buttons-icon")).click();
+          element(by.css(".user-profile-dropdown img.profile-pic")).click();
           assert.eventually.isTrue(element(by.css(".company-settings-menu-button")).isDisplayed(),
             "Company settings menu item should present");
           element(by.css(".company-settings-menu-button")).click();

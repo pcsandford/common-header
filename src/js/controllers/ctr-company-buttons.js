@@ -1,18 +1,14 @@
 angular.module("risevision.common.header")
 .controller("CompanyButtonsCtrl", [ "$scope", "$modal", "$templateCache",
-  "userState", "selectedCompanyUrlHandler",
-  function($scope, $modal, $templateCache, userState,
-    selectedCompanyUrlHandler) {
+  "userState",
+  function($scope, $modal, $templateCache, userState) {
     $scope.inRVAFrame = userState.inRVAFrame();
 
-    $scope.$watch(function () {return userState.getSelectedCompanyId(); },
-    function (newCompanyId) {
-      if(newCompanyId) {
-        $scope.isSubcompanySelected = userState.isSubcompanySelected();
-        selectedCompanyUrlHandler.updateUrl();
-      }
+    $scope.$watch(function () {return userState.isSubcompanySelected(); },
+    function () {
+      $scope.isSubcompanySelected = userState.isSubcompanySelected();
     });
-
+    
     $scope.$watch(function () {return userState.getSelectedCompanyName(); },
     function (selectedCompanyName) {
       if(selectedCompanyName) {
@@ -31,10 +27,6 @@ angular.module("risevision.common.header")
 
     $scope.$watch(function () {return userState.isRiseAdmin(); },
     function (isRvAdmin) { $scope.isRiseVisionAdmin = isRvAdmin; });
-
-    //detect selectCompany changes on route UI
-    $scope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-    $scope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
 
     $scope.addSubCompany = function() {
       $modal.open({

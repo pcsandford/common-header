@@ -13,18 +13,18 @@
   >
     <a href="" class="dropdown-toggle">
       <div class="user-id pull-left add-right">
-        <span>{{userEmail}}</span>
+        <span class="user-email">{{userEmail}}</span>
         <span><strong>{{companyName}}</strong></span>
       </div>
       <img ng-src="{{userPicture}}"
         class="profile-pic" width="30" height="30" alt="User" />
     </a>
-    <ul class="dropdown-menu">
+    <div class="dropdown-menu">
       <ng-include
         src="'auth-buttons-menu.html'"
         replace-include
       ></ng-include>
-    </ul>
+    </div>
 </li>
 <!-- Mobile -->
 <li
@@ -32,7 +32,8 @@
   ng-class="{'visible-xs-inline-block': isLoggedIn}"
   ng-show="isLoggedIn"
   >
-    <a href="" class="visible-xs dropdown-toggle" action-sheet="'auth-buttons-menu.html'">
+    <a href="" class="visible-xs dropdown-toggle" action-sheet="'auth-buttons-menu.html'"
+      action-sheet-class="user-profile-dropdown">
       <div class="user-id">
         <span style="max-width:90px">{{userEmail}}</span>
         <span style="max-width:90px"><strong>{{companyName}}</strong></span>

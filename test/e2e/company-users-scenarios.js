@@ -35,7 +35,7 @@
         });
 
         it("Opens Company Users Dialog and load company users", function() {
-          element(by.css(".company-buttons-icon")).click();
+          element(by.css(".user-profile-dropdown img.profile-pic")).click();
           assert.eventually.isTrue(element(by.css(".company-users-menu-button")).isDisplayed(),
             "Company users menu item should present");
           element(by.css(".company-users-menu-button")).click();

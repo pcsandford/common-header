@@ -33,7 +33,7 @@
 
         assert.eventually.isFalse(element(by.css("button.sign-in")).isDisplayed(), "sign in button should not show");
 
-        element(by.css(".desktop-menu-item img.profile-pic")).click();
+        element(by.css(".user-profile-dropdown img.profile-pic")).click();
         assert.eventually.isTrue(element(by.css(".user-settings-button")).isDisplayed(), "User settings menu item should show");
 
         //click on user settings button
@@ -91,10 +91,9 @@
       });
 
       it("should immediately update fixes", function () {
-        element(by.css(".desktop-menu-item img.profile-pic")).click();
         assert.eventually.equal(element(
-          by.css("span.user-full-name")).getText(), "John Doe",
-            "User full name shold ");
+          by.css("span.user-email")).getText(), "testmail@testmail.com",
+            "User email sholud update");
       });
   });
 })();
