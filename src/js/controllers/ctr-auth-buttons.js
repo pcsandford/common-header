@@ -91,18 +91,11 @@ angular.module("risevision.common.header")
         $scope.companyName = userState.getUserCompanyName();
       });
       
-    $scope.$watch(function () {return userState.getUserEmail();},
+    $scope.$watch(function () {return userState.getUsername();},
       function () {
-        $scope.userEmail = userState.getUserEmail();
+        $scope.username = userState.getUsername();
       });  
     bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
-
-    //repopulate profile upon change of current user
-    $scope.$watch(function () {return userState.getUsername();},
-      function (username) {
-        if(username) {
-          $scope.profile = userState.getCopyOfProfile();
-        }});
 
     // Login Modal
     $scope.login = function (endStatus) {
