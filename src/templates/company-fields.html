@@ -76,8 +76,9 @@
 </div>
 <div class="form-group">
   <label for="company-settings-timezone" class="control-label">Time Zone</label>
-  <select class="form-control" ng-model="company.timeZoneOffset" ng-options="c[1] as c[0] for c in timezones" integer-parser>
+  <select class="form-control" ng-model="company.timeZoneOffset" integer-parser>
     <option value="">&lt; Select Time Zone &gt;</option>
+    <option value="{{c[1]}}" ng-repeat="c in timezones">{{c[0]}}</option>
   </select>
 </div>
 <div class="form-group">
