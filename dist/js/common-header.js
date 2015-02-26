@@ -167,7 +167,7 @@ app.run(["$templateCache", function($templateCache) {
     "  >\n" +
     "    <a href=\"\" class=\"dropdown-toggle\">\n" +
     "      <div class=\"user-id pull-left add-right\">\n" +
-    "        <span class=\"user-email\">{{userEmail}}</span>\n" +
+    "        <span class=\"username\">{{username}}</span>\n" +
     "        <span><strong>{{companyName}}</strong></span>\n" +
     "      </div>\n" +
     "      <img ng-src=\"{{userPicture}}\"\n" +
@@ -189,7 +189,7 @@ app.run(["$templateCache", function($templateCache) {
     "    <a href=\"\" class=\"visible-xs dropdown-toggle\" action-sheet=\"'auth-buttons-menu.html'\"\n" +
     "      action-sheet-class=\"user-profile-dropdown\">\n" +
     "      <div class=\"user-id\">\n" +
-    "        <span style=\"max-width:90px\">{{userEmail}}</span>\n" +
+    "        <span style=\"max-width:90px\">{{username}}</span>\n" +
     "        <span style=\"max-width:90px\"><strong>{{companyName}}</strong></span>\n" +
     "      </div>\n" +
     "    </a>\n" +
@@ -376,7 +376,7 @@ app.run(["$templateCache", function($templateCache) {
   $templateCache.put("company-buttons-menu.html",
     "<ul>\n" +
     "  <li class=\"dropdown-header\" ng-show=\"!isSubcompanySelected\">\n" +
-    "    <p>{{profile.email}}</p>\n" +
+    "    <p>{{username}}</p>\n" +
     "    <p><strong>{{selectedCompanyName}}</strong>\n" +
     "      <span class=\"text-muted\" ng-show=\"isRiseVisionUser && !isSubcompanySelected\">|</span>\n" +
     "      <a href=\"\" ng-click=\"switchCompany()\" ng-show=\"isRiseVisionUser && !isSubcompanySelected\">Select Sub-Company</a>\n" +
@@ -1794,18 +1794,11 @@ angular.module("risevision.common.header")
         $scope.companyName = userState.getUserCompanyName();
       });
       
-    $scope.$watch(function () {return userState.getUserEmail();},
+    $scope.$watch(function () {return userState.getUsername();},
       function () {
-        $scope.userEmail = userState.getUserEmail();
+        $scope.username = userState.getUsername();
       });  
     bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
-
-    //repopulate profile upon change of current user
-    $scope.$watch(function () {return userState.getUsername();},
-      function (username) {
-        if(username) {
-          $scope.profile = userState.getCopyOfProfile();
-        }});
 
     // Login Modal
     $scope.login = function (endStatus) {
