@@ -1,44 +1,39 @@
 <ul>
   <li>
-    <div class="menu-box pull-right">
+  <div class="menu-box pull-left">
       <a href="https://store.risevision.com/" target="_blank" link-cid>
         <svg-icon p="riseStore"></svg-icon>
         <span>Store</span>
       </a>
     </div>
-    
     <div class="menu-box pull-right">
+      <a href="http://storage.risevision.com/" target="_blank" link-cid>
+        <svg-icon p="riseStorage"></svg-icon>
+        <span>Storage</span>
+      </a>
+    </div> 
+  </li>
+  <li>
+    <div class="menu-box pull-left" ng-show="presentationsVisible">
       <a href="http://rva.risevision.com/#PRESENTATIONS" target="_blank" link-cid>
         <svg-icon p="riseEditor"></svg-icon>
         <span>Editor</span>
       </a>
     </div>
-    
-  </li>
-  <li>
-    <div class="menu-box pull-left">
-      <a href="http://storage.risevision.com/" target="_blank" link-cid>
-        <svg-icon p="riseStorage"></svg-icon>
-        <span>Storage</span>
+    <div class="menu-box pull-right" ng-show="schedulesVisible">
+      <a href="http://rva.risevision.com/#SCHEDULES" target="_blank" link-cid>
+        <svg-icon p="riseSchedules"></svg-icon>
+        <span>Schedules</span>
       </a>
-    </div>
-    
-    <div class="menu-box pull-left">
+    </div> 
+  </li>
+  <li>    
+    <div class="menu-box pull-left" ng-show="displaysVisible">
       <a href="http://rva.risevision.com/#DISPLAYS" target="_blank" link-cid>
         <svg-icon p="riseDisplays"></svg-icon>
         <span>Displays</span>
       </a>
     </div>
-    
-  </li>
-  <li>
-    <div class="menu-box pull-left">
-      <a href="http://rva.risevision.com/#SCHEDULES" target="_blank" link-cid>
-        <svg-icon p="riseSchedules"></svg-icon>
-        <span>Schedules</span>
-      </a>
-    </div>
-    
     <div class="menu-box pull-right">
       <a href="https://support.risevision.com/#/" target="_blank" link-cid>
         <svg-icon p="riseSupport"></svg-icon>
@@ -67,7 +62,7 @@
         <span>Developer</span>
       </a>
     </div>
-    <div class="menu-box pull-right">
+    <div class="menu-box pull-left">
       <a href="http://www.risevision.com/about-us/#" target="_blank" link-cid>
         <svg-icon p="riseLogo"></svg-icon>
         <span>About</span>

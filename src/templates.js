@@ -6,45 +6,40 @@ app.run(["$templateCache", function($templateCache) {
   $templateCache.put("app-nav-buttons-menu.html",
     "<ul>\n" +
     "  <li>\n" +
-    "    <div class=\"menu-box pull-right\">\n" +
+    "  <div class=\"menu-box pull-left\">\n" +
     "      <a href=\"https://store.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseStore\"></svg-icon>\n" +
     "        <span>Store</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
-    "    \n" +
     "    <div class=\"menu-box pull-right\">\n" +
+    "      <a href=\"http://storage.risevision.com/\" target=\"_blank\" link-cid>\n" +
+    "        <svg-icon p=\"riseStorage\"></svg-icon>\n" +
+    "        <span>Storage</span>\n" +
+    "      </a>\n" +
+    "    </div> \n" +
+    "  </li>\n" +
+    "  <li>\n" +
+    "    <div class=\"menu-box pull-left\" ng-show=\"presentationsVisible\">\n" +
     "      <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseEditor\"></svg-icon>\n" +
     "        <span>Editor</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
-    "    \n" +
-    "  </li>\n" +
-    "  <li>\n" +
-    "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://storage.risevision.com/\" target=\"_blank\" link-cid>\n" +
-    "        <svg-icon p=\"riseStorage\"></svg-icon>\n" +
-    "        <span>Storage</span>\n" +
+    "    <div class=\"menu-box pull-right\" ng-show=\"schedulesVisible\">\n" +
+    "      <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\" link-cid>\n" +
+    "        <svg-icon p=\"riseSchedules\"></svg-icon>\n" +
+    "        <span>Schedules</span>\n" +
     "      </a>\n" +
-    "    </div>\n" +
-    "    \n" +
-    "    <div class=\"menu-box pull-left\">\n" +
+    "    </div> \n" +
+    "  </li>\n" +
+    "  <li>    \n" +
+    "    <div class=\"menu-box pull-left\" ng-show=\"displaysVisible\">\n" +
     "      <a href=\"http://rva.risevision.com/#DISPLAYS\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseDisplays\"></svg-icon>\n" +
     "        <span>Displays</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
-    "    \n" +
-    "  </li>\n" +
-    "  <li>\n" +
-    "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\" link-cid>\n" +
-    "        <svg-icon p=\"riseSchedules\"></svg-icon>\n" +
-    "        <span>Schedules</span>\n" +
-    "      </a>\n" +
-    "    </div>\n" +
-    "    \n" +
     "    <div class=\"menu-box pull-right\">\n" +
     "      <a href=\"https://support.risevision.com/#/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseSupport\"></svg-icon>\n" +
@@ -73,7 +68,7 @@ app.run(["$templateCache", function($templateCache) {
     "        <span>Developer</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
-    "    <div class=\"menu-box pull-right\">\n" +
+    "    <div class=\"menu-box pull-left\">\n" +
     "      <a href=\"http://www.risevision.com/about-us/#\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseLogo\"></svg-icon>\n" +
     "        <span>About</span>\n" +
@@ -300,6 +295,7 @@ app.run(["$templateCache", function($templateCache) {
     "				<ng-include\n" +
     "					ng-if=\"!inRVAFrame\"\n" +
     "					replace-include\n" +
+    "					ng-controller=\"AppNavButtonsCtr\"\n" +
     "					src=\"'app-nav-buttons.html'\"\n" +
     "				></ng-include>\n" +
     "				<!-- END Current App -->\n" +
