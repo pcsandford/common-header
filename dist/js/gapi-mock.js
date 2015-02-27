@@ -4011,7 +4011,27 @@ gapiMockData.companies = [
               }
             };
           }
+        },
+        cart: {
+          get: function () {
+            return {
+              execute: function (cb) {
+                  delayed(cb, fakeDb.cart);
+                  //delayed(cb, {items:[{a:"b"},{c:"d"},{e:"f"}]});
+              }
+            };
+          },
+          put: function (data) {
+            return {
+              execute: function (cb) {
+                fakeDb.cart = data.data;
+                fakeDb.cart.items = JSON.parse(data.data.jsonItems);
+                delayed(cb, resp({}));
+              }
+            };
+          },
         }
+
       }
     //store API - END
   };

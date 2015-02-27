@@ -19,11 +19,10 @@ angular.module("risevision.common.header")
     $scope.cart = {};
     $scope.cart.items = shoppingCart.getItems();
     $scope.$watch(function () {return userState.isRiseVisionUser();},
-      function (isRvUser) { $scope.isRiseVisionUser = isRvUser; });
-
-
-    $scope.$on("risevision.user.signedOut", function () {
-      shoppingCart.destroy();
+      function (isRvUser) {
+        $scope.isRiseVisionUser = isRvUser;
+        shoppingCart.initialize();
     });
+
   }
 ]);

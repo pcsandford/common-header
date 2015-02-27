@@ -15,8 +15,15 @@ describe("Services: Shopping Cart", function() {
     $provide.service("$q", function() {return Q;});
 
     $provide.value("userState", {
+      isLoggedIn: function () {return true; },
       isRiseVisionUser: function () {return true; },
       _restoreState: function () {}
+    });
+
+    $provide.value("storeAPILoader", function () {
+       var deffered = Q.defer();
+       deffered.resolve();
+      return deffered.promise;
     });
   }));
 
