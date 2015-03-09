@@ -2007,12 +2007,11 @@ angular.module("risevision.common.header")
     $scope.cart = {};
     $scope.cart.items = shoppingCart.getItems();
     $scope.$watch(function () {return userState.isRiseVisionUser();},
-      function (isRvUser) { $scope.isRiseVisionUser = isRvUser; });
-
-
-    $scope.$on("risevision.user.signedOut", function () {
-      shoppingCart.destroy();
+      function (isRvUser) {
+        $scope.isRiseVisionUser = isRvUser;
+        shoppingCart.initialize();
     });
+
   }
 ]);
 
@@ -5293,32 +5292,100 @@ function (loadFastpass, userState) {
 (function (angular) {
   "use strict";
 
-  angular.module("risevision.common.shoppingcart", ["risevision.common.userstate"])
+  angular.module("risevision.common.shoppingcart", ["risevision.common.gapi", "risevision.common.userstate"])
 
-  .factory("shoppingCart", ["rvStorage", "$log", "$q", "userState",
-    function (rvStorage, $log, $q, userState){
+  .factory("shoppingCart", ["rvStorage", "storeAPILoader", "$log", "$q", "userState",
+    function (rvStorage, storeAPILoader, $log, $q, userState){
     var _items = [];
 
     var readFromStorage = function() {
-      var storedCartContents = rvStorage.getItem("rvStore_OrderProducts");
-      $log.debug("read storedCartContents", storedCartContents);
-      if (storedCartContents) {
-        var res = JSON.parse(storedCartContents);
-        if (res && res.items) {
-          while(_items.length > 0) { _items.pop(); } //clear all items
-          for (var i = 0; i < res.items.length; i++) {
-            _items.push(res.items[i]);
+      var deferred = $q.defer();
+      if (userState.isLoggedIn()) {
+
+        storeAPILoader().then(function (storeApi) {
+          var obj = {"id": userState.getUsername()};
+          var request = storeApi.cart.get(obj);
+          request.execute(function (resp) {
+            if(!resp.error) {
+              clearItems();
+              addItems(resp.items);
+              deferred.resolve();
+            }
+            else {
+              $log.warn("Error loading cart items. Error: " + resp.error);
+              deferred.resolve();
+            }
+          });
+        });
+
+      } else {
+        clearItems();
+        deferred.resolve();
+      }
+      return deferred.promise;
+    };
+
+    var persistToStorage = function() {
+      var deferred = $q.defer();
+      if (userState.isLoggedIn()) {
+        storeAPILoader().then(function (storeApi) {
+          //remove try/catch after API is implemented
+          try {
+            var obj = { "data": {
+              //"id": userState.getUsername(),
+              "jsonItems": getJsonItems(_items),
+              "shipToAttention": "",
+              "useBillToAddress": true
+            }};
+            var request = storeApi.cart.put(obj);
+            request.execute(function (resp) {
+              if(!resp.error) {
+                deferred.resolve();
+              }
+              else {
+                $log.warn("Error persisting cart items. Error: " + resp.error);
+                deferred.resolve();
+              }
+            });
+          } catch (e) {
+              deferred.resolve();
+              $log.error("[persistToStorage] - Unimplemented API method " + e.message);
           }
-          $log.debug(_items.length, "items pushed to cart.");
+        });
+      }
+      return deferred.promise;
+
+    };
+
+    var clearItems = function() {
+      while(_items.length > 0) { _items.pop(); }
+    };
+
+    var addItems = function(items) {
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          _items.push(items[i]);
         }
       }
     };
 
-    var persistToStorage = function() {
-      rvStorage.setItem("rvStore_OrderProducts",
-        JSON.stringify({items: _items}));
-      var storedCartContents = rvStorage.getItem("rvStore_OrderProducts");
-      $log.debug("written storedCartContents", storedCartContents);
+    var cleanProducts = function(items) {
+      var item;
+      var res = [];
+      for (var i = 0; i < items.length; i++) {
+        item = {
+          "productId": items[i].productId,
+          "qty": items[i].qty,
+          "accountingId": items[i].selected.accountingId
+        };
+        res.push(item);
+      }
+      return res;
+    };
+
+    var getJsonItems = function(items) {
+      var cleanedItems = cleanProducts(items);
+      return JSON.stringify(cleanedItems);
     };
 
     var loadReady = $q.defer();
@@ -5354,29 +5421,24 @@ function (loadFastpass, userState) {
         return shipping;
       },
       clear: function () {
-        while(_items.length > 0) { _items.pop(); } //clear all items
+        clearItems();
         persistToStorage();
         $log.debug("Shopping cart cleared.");
-      },
-      destroy: function () {
-        this.clear();
-        persistToStorage();
-        return _items;
       },
       getItems: function () {
         return _items;
       },
       setItems: function (items) {
         $log.debug("Setting cart items", items);
-        while(_items.length > 0) { _items.pop(); } //clear all items
-        for (var i = 0; i < items.length; i++) {
-          _items.push(items[i]);
+        //check if they are pointing to the same object
+        if (items !== _items) {
+          clearItems();
+          addItems(items);
         }
         persistToStorage();
       },
       initialize: function () {
-        readFromStorage();
-        loadReady.resolve();
+        readFromStorage().then(loadReady.resolve);
         return _items;
       },
       getItemCount: function () {

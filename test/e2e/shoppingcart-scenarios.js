@@ -79,7 +79,7 @@
         assert.eventually.strictEqual(element(by.id("cartBadge")).getText(), "", "Cart should be cleared out");
       });
 
-      it("should clear cart when logging out", function() {
+      it("should persist cart on log out and then log in", function() {
         element(by.id("buy-product-2")).click();
         element(by.id("buy-product-3")).click();
         assert.eventually.strictEqual(element(by.id("cartBadge")).getText(), "2", "Cart badge should display 2");
@@ -98,7 +98,7 @@
         browser.executeScript("gapi.setPendingSignInUser('michael.sanchez@awesome.io')");
         element(by.css("button.sign-in")).click();
 
-        assert.eventually.strictEqual(element(by.id("cartBadge")).getText(), "", "Cart badge should display nothing");
+        assert.eventually.strictEqual(element(by.id("cartBadge")).getText(), "2", "Cart badge should display 2");
       });
 
   });
