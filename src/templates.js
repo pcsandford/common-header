@@ -264,7 +264,7 @@ app.run(["$templateCache", function($templateCache) {
     "\n" +
     "		<div class=\"navbar-header\" style=\"width: 100%;\">\n" +
     "			<a class=\"navbar-brand visible-md visible-lg\"\n" +
-    "			  href=\"http://www.risevision.com/\" target=\"_blank\" ng-if=\"!inRVAFrame\">\n" +
+    "			  href=\"http://www.risevision.com/\" target=\"{{newTabHome ? '_blank' : '_self'}}\" ng-if=\"!inRVAFrame\">\n" +
     "				<img src=\"//s3.amazonaws.com/rise-common/images/logo-small.png\" class=\"img-responsive logo-small\" width=\"113\" height=\"42\" alt=\"Rise Vision\">\n" +
     "			</a>\n" +
     "			<a class=\"navbar-brand hidden-md hidden-lg text-center\"\n" +
