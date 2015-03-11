@@ -3635,8 +3635,8 @@ angular.module("risevision.common.geodata", [])
             "#" + encodeURIComponent($location.path())
           );
         }
-        else if (state.u) {
-          $location.path(state.u);
+        else {
+          $location.path(state.u ? state.u : "");
           $location.replace();
         }
       }

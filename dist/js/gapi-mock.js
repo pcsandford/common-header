@@ -4031,7 +4031,6 @@ gapiMockData.companies = [
             };
           },
         }
-
       }
     //store API - END
   };
