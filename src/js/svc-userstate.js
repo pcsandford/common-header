@@ -208,7 +208,14 @@
         else {
           var parts = hostname.split(".");
           if(parts.length > 1) {
-            result = parts.slice(parts.length -2).join(".");
+            // Somehow, cookies don't persist if we set the domain to appspot.com. 
+            // It requires a sub-domain to be set, ie. rva-test.appspot.com.
+            if (parts[parts.length - 2] === "appspot") {
+              result = parts.slice(parts.length -3).join(".");
+            }
+            else {
+              result = parts.slice(parts.length -2).join(".");
+            }
           }
           else {
             //localhost
