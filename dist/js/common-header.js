@@ -2007,7 +2007,7 @@ angular.module("risevision.common.header")
   "$scope", "shoppingCart", "userState", "$log", "STORE_URL",
   function($scope, shoppingCart, userState, $log, STORE_URL) {
 
-    $scope.shoppingCartUrl = STORE_URL + "#/shopping-cart";
+    $scope.shoppingCartUrl = STORE_URL + "shopping-cart";
     $scope.cart = {};
     $scope.cart.items = shoppingCart.getItems();
     $scope.$watch(function () {return userState.isRiseVisionUser();},
