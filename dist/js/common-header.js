@@ -1537,6 +1537,7 @@ angular.module("risevision.common.header", [
 ])
 
 .factory("bindToScopeWithWatch", [
+
   function () {
     return function (fnToWatch, scopeVar, scope) {
       scope.$watch(function () {
@@ -2713,6 +2714,7 @@ angular.module("risevision.common.header")
 
 angular.module("risevision.common.header")
   .filter("humanReadableDateTime", [
+
     function () {
       return function (d) {
         if (d) {
@@ -3287,6 +3289,7 @@ angular.module("risevision.common.header")
   })
 
   .factory("dateIsInRange", [
+
     function () {
       /**
        * check if date is in range
@@ -3330,6 +3333,7 @@ angular.module("risevision.common.header")
     }
   ])
     .factory("objectHelper", [
+
       function () {
         var factory = {};
 
@@ -3546,6 +3550,7 @@ angular.module("risevision.common.geodata", [])
     .value("GOOGLE_OAUTH2_URL", "https://accounts.google.com/o/oauth2/auth")
 
   .factory("userStateReady", [
+
     function () {
       return _userStateReady.promise;
     }
@@ -5516,40 +5521,10 @@ angular.module("risevision.common.header")
       };
 
       var loadReady = $q.defer();
+      var username = null;
 
       var cartManager = {
         loadReady: loadReady.promise,
-        getSubTotal: function (isCAD) {
-          var shipping = 0;
-          var subTotal = 0;
-          if (_items) {
-            for (var i = 0; i < _items.length; i++) {
-              var shippingCost = (isCAD) ? _items[i].selected.shippingCAD :
-                _items[i].selected.shippingUSD;
-              var productCost = (isCAD) ? _items[i].selected.priceCAD :
-                _items[i].selected.priceUSD;
-              if (_items[i].paymentTerms !== "Metered") {
-                shipping += shippingCost * _items[i].qty || 0;
-                subTotal += productCost * _items[i].qty || 0;
-              }
-            }
-          }
-
-          return subTotal + shipping;
-        },
-        getShippingTotal: function (isCAD) {
-          var shipping = 0;
-          if (_items) {
-            for (var i = 0; i < _items.length; i++) {
-              if (_items[i].paymentTerms !== "Metered") {
-                var shippingCost = (isCAD) ? _items[i].selected.shippingCAD :
-                  _items[i].selected.shippingUSD;
-                shipping += shippingCost * _items[i].qty || 0;
-              }
-            }
-          }
-          return shipping;
-        },
         clear: function () {
           clearItems();
           persistToStorage();
@@ -5568,7 +5543,11 @@ angular.module("risevision.common.header")
           persistToStorage();
         },
         initialize: function () {
-          readFromStorage().then(loadReady.resolve);
+          if (username !== userState.getUsername()) {
+            username = userState.getUsername();
+            clearItems();
+            readFromStorage().then(loadReady.resolve);
+          }
           return _items;
         },
         getItemCount: function () {
@@ -5648,6 +5627,98 @@ angular.module("risevision.common.header")
 
     }
   ]);
+})(angular);
+
+(function (angular) {
+  "use strict";
+
+
+  angular.module("risevision.common.currency", [
+    "risevision.common.gapi"
+  ])
+
+  .factory("currencyService", ["$q", "storeAPILoader", "$log",
+    function ($q, storeAPILoader, $log) {
+
+      var deferred = null;
+      var currency = {
+        defaultItem: null
+      };
+
+      var CurrencyItem = function (obj) {
+        this.country = obj.country;
+        this.currencyCode = obj.currencyCode;
+        this.description = obj.description;
+        this.bankAccountCode = obj.bankAccountCode;
+        this.bankAccountDescription = obj.bankAccountDescription;
+
+        this.getName = function () {
+          return this.currencyCode.toUpperCase();
+        };
+
+        this.pickPrice = function (priceUSD, priceCAD) {
+          switch (this.currencyCode.toUpperCase()) {
+          case "CAD":
+            return priceCAD;
+          default:
+            return priceUSD;
+          }
+        };
+      };
+
+      currency.getByCountry = function (country) {
+        if (country) {
+          for (var i = 0; i < this.items.length; i++) {
+            if (this.items[i].country && this.items[i].country.toUpperCase() ===
+              country.toUpperCase()) {
+              return this.items[i];
+            }
+          }
+        }
+        return this.defaultItem;
+      };
+
+      currency.setItems = function (newItems) {
+        this.items = [];
+        //set default currency
+        for (var i = 0; i < newItems.length; i++) {
+          var ci = new CurrencyItem(newItems[i]);
+          this.items.push(ci);
+          if (!ci.country) {
+            this.defaultItem = ci;
+          }
+        }
+      };
+
+      return function () {
+
+        if (deferred !== null) {
+          return deferred.promise;
+        }
+
+        deferred = $q.defer();
+
+        $log.debug("currencyService called");
+        storeAPILoader().then(function (storeAPI) {
+          var request = storeAPI.currency.list();
+          request.execute(function (resp) {
+            $log.debug("currencyService resp", resp);
+            if (!resp.error) {
+              currency.setItems(resp.items);
+              deferred.resolve(currency);
+            } else {
+              $log.error("currencyService error: ", resp.error);
+              deferred.reject(resp.error);
+            }
+          });
+        });
+
+        return deferred.promise;
+      };
+
+    }
+  ]);
+
 })(angular);
 
 /*

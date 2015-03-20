@@ -25,6 +25,7 @@ angular.module("risevision.common.header", [
 ])
 
 .factory("bindToScopeWithWatch", [
+
   function () {
     return function (fnToWatch, scopeVar, scope) {
       scope.$watch(function () {
