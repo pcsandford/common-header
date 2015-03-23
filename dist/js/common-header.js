@@ -4873,6 +4873,10 @@ angular.module("risevision.ui-flow", ["LocalStorageModule"])
       "postalCode", "timeZoneOffset", "telephone", "fax", "companyStatus",
       "notificationEmails", "mailSyncEnabled", "sellerId", "isTest"
     ])
+    .constant("COMPANY_SEARCH_FIELDS", [
+      "name", "id", "street", "unit", "city", "province", "country",
+      "postalCode", "telephone", "fax"
+    ])
 
     .factory("createCompany", ["$q", "coreAPILoader", "COMPANY_WRITABLE_FIELDS",
       "pick",
@@ -5040,13 +5044,28 @@ angular.module("risevision.ui-flow", ["LocalStorageModule"])
     }])
 
     .service("companyService", ["coreAPILoader", "$q", "$log", "getCompany",
-      function (coreAPILoader, $q, $log, getCompany) {
+      "COMPANY_SEARCH_FIELDS",
+      function (coreAPILoader, $q, $log, getCompany, COMPANY_SEARCH_FIELDS) {
+        
+      var createSearchQuery = function(fields, search) {
+        var query = "";
+        
+        for (var i in fields) {
+          query += "OR " + fields[i] + ":~\'" + search + "\' ";
+        }
+        
+        query = query ? query.substring(3) : "";
+          
+        return query.trim();
+      }
 
       this.getCompanies = function (companyId, search, cursor, count, sort) {
         var deferred = $q.defer();
+        var query = search ? createSearchQuery(COMPANY_SEARCH_FIELDS, search) : "";
+          
         var obj = {
           "companyId": companyId,
-          "search": search,
+          "search": query,
           "cursor": cursor,
           "count": count,
           "sort": sort
