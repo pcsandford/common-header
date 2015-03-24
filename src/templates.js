@@ -939,21 +939,6 @@ try { app = angular.module("risevision.common.header.templates"); }
 catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
-  $templateCache.put("last-modified.html",
-    "<span class=\"text-muted\">\n" +
-    "  <small>\n" +
-    "    Saved {{changeDate | date:'d-MMM-yyyy h:mm a'}} by {{changedBy | username}}\n" +
-    "  </small>\n" +
-    "</span>\n" +
-    "");
-}]);
-})();
-
-(function(module) {
-try { app = angular.module("risevision.common.header.templates"); }
-catch(err) { app = angular.module("risevision.common.header.templates", []); }
-app.run(["$templateCache", function($templateCache) {
-  "use strict";
   $templateCache.put("move-company-modal.html",
     "<div rv-spinner\n" +
     "  rv-spinner-key=\"move-company-modal\"\n" +

@@ -38325,7 +38325,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.11.2 - 2014-09-26
+ * Version: 0.11.0 - 2014-05-01
  * License: MIT
  */
 angular.module("ui.bootstrap", ["ui.bootstrap.transition","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
@@ -39069,7 +39069,7 @@ angular.module('ui.bootstrap.dateparser', [])
     }
   };
 
-  function createParser(format) {
+  this.createParser = function(format) {
     var map = [], regex = format.split('');
 
     angular.forEach(formatCodeToRegex, function(data, code) {
@@ -39094,17 +39094,17 @@ angular.module('ui.bootstrap.dateparser', [])
       regex: new RegExp('^' + regex.join('') + '$'),
       map: orderByFilter(map, 'index')
     };
-  }
+  };
 
   this.parse = function(input, format) {
-    if ( !angular.isString(input) || !format ) {
+    if ( !angular.isString(input) ) {
       return input;
     }
 
     format = $locale.DATETIME_FORMATS[format] || format;
 
     if ( !this.parsers[format] ) {
-      this.parsers[format] = createParser(format);
+      this.parsers[format] = this.createParser(format);
     }
 
     var parser = this.parsers[format],
@@ -39330,7 +39330,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     self[key] = angular.isDefined($attrs[key]) ? (index < 8 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : datepickerConfig[key];
   });
 
-  // Watchable date attributes
+  // Watchable attributes
   angular.forEach(['minDate', 'maxDate'], function( key ) {
     if ( $attrs[key] ) {
       $scope.$parent.$watch($parse($attrs[key]), function(value) {
@@ -39777,24 +39777,12 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
         });
       }
 
-      scope.watchData = {};
-      angular.forEach(['minDate', 'maxDate', 'datepickerMode'], function( key ) {
+      angular.forEach(['minDate', 'maxDate'], function( key ) {
         if ( attrs[key] ) {
-          var getAttribute = $parse(attrs[key]);
-          scope.$parent.$watch(getAttribute, function(value){
-            scope.watchData[key] = value;
+          scope.$parent.$watch($parse(attrs[key]), function(value){
+            scope[key] = value;
           });
-          datepickerEl.attr(cameltoDash(key), 'watchData.' + key);
-
-          // Propagate changes from datepicker to outside
-          if ( key === 'datepickerMode' ) {
-            var setAttribute = getAttribute.assign;
-            scope.$watch('watchData.' + key, function(value, oldvalue) {
-              if ( value !== oldvalue ) {
-                setAttribute(scope.$parent, value);
-              }
-            });
-          }
+          datepickerEl.attr(cameltoDash(key), key);
         }
       });
       if (attrs.dateDisabled) {
@@ -39905,9 +39893,6 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
       };
 
       var $popup = $compile(popupEl)(scope);
-      // Prevent jQuery cache memory leak (template is now redundant after linking)
-      popupEl.remove();
-
       if ( appendToBody ) {
         $document.find('body').append($popup);
       } else {
@@ -39969,8 +39954,7 @@ angular.module('ui.bootstrap.dropdown', [])
   };
 
   var closeDropdown = function( evt ) {
-    var toggleElement = openScope.getToggleElement();
-    if ( evt && toggleElement && toggleElement[0].contains(evt.target) ) {
+    if (evt && evt.isDefaultPrevented()) {
         return;
     }
 
@@ -40015,10 +39999,6 @@ angular.module('ui.bootstrap.dropdown', [])
   // Allow other directives to watch status
   this.isOpen = function() {
     return scope.isOpen;
-  };
-
-  scope.getToggleElement = function() {
-    return self.toggleElement;
   };
 
   scope.focusToggleElement = function() {
@@ -40162,8 +40142,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       restrict: 'EA',
       replace: true,
       templateUrl: 'template/modal/backdrop.html',
-      link: function (scope, element, attrs) {
-        scope.backdropClass = attrs.backdropClass || '';
+      link: function (scope) {
 
         scope.animate = false;
 
@@ -40194,18 +40173,8 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         $timeout(function () {
           // trigger CSS transitions
           scope.animate = true;
-
-          /**
-           * Auto-focusing of a freshly-opened modal element causes any child elements
-           * with the autofocus attribute to loose focus. This is an issue on touch
-           * based devices which will show and then hide the onscreen keyboard.
-           * Attempts to refocus the autofocus element via JavaScript will not reopen
-           * the onscreen keyboard. Fixed by updated the focusing logic to only autofocus
-           * the modal element if the modal does not contain an autofocus element.
-           */
-          if (!element[0].querySelectorAll('[autofocus]').length) {
-            element[0].focus();
-          }
+          // focus a freshly-opened modal
+          element[0].focus();
         });
 
         scope.close = function (evt) {
@@ -40219,17 +40188,6 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       }
     };
   }])
-
-  .directive('modalTransclude', function () {
-    return {
-      link: function($scope, $element, $attrs, controller, $transclude) {
-        $transclude($scope.$parent, function(clone) {
-          $element.empty();
-          $element.append(clone);
-        });
-      }
-    };
-  })
 
   .factory('$modalStack', ['$transition', '$timeout', '$document', '$compile', '$rootScope', '$$stackedMap',
     function ($transition, $timeout, $document, $compile, $rootScope, $$stackedMap) {
@@ -40302,7 +40260,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
           });
         } else {
           // Ensure this call is async
-          $timeout(afterAnimating);
+          $timeout(afterAnimating, 0);
         }
 
         function afterAnimating() {
@@ -40347,9 +40305,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         if (currBackdropIndex >= 0 && !backdropDomEl) {
           backdropScope = $rootScope.$new(true);
           backdropScope.index = currBackdropIndex;
-          var angularBackgroundDomEl = angular.element('<div modal-backdrop></div>');
-          angularBackgroundDomEl.attr('backdrop-class', modal.backdropClass);
-          backdropDomEl = $compile(angularBackgroundDomEl)(backdropScope);
+          backdropDomEl = $compile('<div modal-backdrop></div>')(backdropScope);
           body.append(backdropDomEl);
         }
 
@@ -40369,17 +40325,17 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       };
 
       $modalStack.close = function (modalInstance, result) {
-        var modalWindow = openedWindows.get(modalInstance);
+        var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
-          modalWindow.value.deferred.resolve(result);
+          modalWindow.deferred.resolve(result);
           removeModalWindow(modalInstance);
         }
       };
 
       $modalStack.dismiss = function (modalInstance, reason) {
-        var modalWindow = openedWindows.get(modalInstance);
+        var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
-          modalWindow.value.deferred.reject(reason);
+          modalWindow.deferred.reject(reason);
           removeModalWindow(modalInstance);
         }
       };
@@ -40413,15 +40369,14 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
 
           function getTemplatePromise(options) {
             return options.template ? $q.when(options.template) :
-              $http.get(angular.isFunction(options.templateUrl) ? (options.templateUrl)() : options.templateUrl,
-                {cache: $templateCache}).then(function (result) {
-                  return result.data;
+              $http.get(options.templateUrl, {cache: $templateCache}).then(function (result) {
+                return result.data;
               });
           }
 
           function getResolvePromises(resolves) {
             var promisesArr = [];
-            angular.forEach(resolves, function (value) {
+            angular.forEach(resolves, function (value, key) {
               if (angular.isFunction(value) || angular.isArray(value)) {
                 promisesArr.push($q.when($injector.invoke(value)));
               }
@@ -40477,9 +40432,6 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
                 });
 
                 ctrlInstance = $controller(modalOptions.controller, ctrlLocals);
-                if (modalOptions.controllerAs) {
-                  modalScope[modalOptions.controllerAs] = ctrlInstance;
-                }
               }
 
               $modalStack.open(modalInstance, {
@@ -40488,7 +40440,6 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
                 content: tplAndVars[0],
                 backdrop: modalOptions.backdrop,
                 keyboard: modalOptions.keyboard,
-                backdropClass: modalOptions.backdropClass,
                 windowClass: modalOptions.windowClass,
                 windowTemplateUrl: modalOptions.windowTemplateUrl,
                 size: modalOptions.size
@@ -41799,7 +41750,7 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
   .factory('typeaheadParser', ['$parse', function ($parse) {
 
   //                      00000111000000000000022200000000000000003333333333333330000000000044000
-  var TYPEAHEAD_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+([\s\S]+?)$/;
+  var TYPEAHEAD_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/;
 
   return {
     parse:function (input) {
@@ -41965,18 +41916,6 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
       //Declare the timeout promise var outside the function scope so that stacked calls can be cancelled later 
       var timeoutPromise;
 
-      var scheduleSearchWithTimeout = function(inputValue) {
-        timeoutPromise = $timeout(function () {
-          getMatchesAsync(inputValue);
-        }, waitTime);
-      };
-
-      var cancelPreviousTimeout = function() {
-        if (timeoutPromise) {
-          $timeout.cancel(timeoutPromise);
-        }
-      };
-
       //plug into $parsers pipeline to open a typeahead on view changes initiated from DOM
       //$parsers kick-in on all the changes coming from the view as well as manually triggered by $setViewValue
       modelCtrl.$parsers.unshift(function (inputValue) {
@@ -41985,14 +41924,17 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
 
         if (inputValue && inputValue.length >= minSearch) {
           if (waitTime > 0) {
-            cancelPreviousTimeout();
-            scheduleSearchWithTimeout(inputValue);
+            if (timeoutPromise) {
+              $timeout.cancel(timeoutPromise);//cancel previous timeout
+            }
+            timeoutPromise = $timeout(function () {
+              getMatchesAsync(inputValue);
+            }, waitTime);
           } else {
             getMatchesAsync(inputValue);
           }
         } else {
           isLoadingSetter(originalScope, false);
-          cancelPreviousTimeout();
           resetMatches();
         }
 
@@ -42183,7 +42125,7 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.11.2 - 2014-09-26
+ * Version: 0.11.0 - 2014-05-01
  * License: MIT
  */
 angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.transition","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
@@ -42928,7 +42870,7 @@ angular.module('ui.bootstrap.dateparser', [])
     }
   };
 
-  function createParser(format) {
+  this.createParser = function(format) {
     var map = [], regex = format.split('');
 
     angular.forEach(formatCodeToRegex, function(data, code) {
@@ -42953,17 +42895,17 @@ angular.module('ui.bootstrap.dateparser', [])
       regex: new RegExp('^' + regex.join('') + '$'),
       map: orderByFilter(map, 'index')
     };
-  }
+  };
 
   this.parse = function(input, format) {
-    if ( !angular.isString(input) || !format ) {
+    if ( !angular.isString(input) ) {
       return input;
     }
 
     format = $locale.DATETIME_FORMATS[format] || format;
 
     if ( !this.parsers[format] ) {
-      this.parsers[format] = createParser(format);
+      this.parsers[format] = this.createParser(format);
     }
 
     var parser = this.parsers[format],
@@ -43189,7 +43131,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     self[key] = angular.isDefined($attrs[key]) ? (index < 8 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : datepickerConfig[key];
   });
 
-  // Watchable date attributes
+  // Watchable attributes
   angular.forEach(['minDate', 'maxDate'], function( key ) {
     if ( $attrs[key] ) {
       $scope.$parent.$watch($parse($attrs[key]), function(value) {
@@ -43636,24 +43578,12 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
         });
       }
 
-      scope.watchData = {};
-      angular.forEach(['minDate', 'maxDate', 'datepickerMode'], function( key ) {
+      angular.forEach(['minDate', 'maxDate'], function( key ) {
         if ( attrs[key] ) {
-          var getAttribute = $parse(attrs[key]);
-          scope.$parent.$watch(getAttribute, function(value){
-            scope.watchData[key] = value;
+          scope.$parent.$watch($parse(attrs[key]), function(value){
+            scope[key] = value;
           });
-          datepickerEl.attr(cameltoDash(key), 'watchData.' + key);
-
-          // Propagate changes from datepicker to outside
-          if ( key === 'datepickerMode' ) {
-            var setAttribute = getAttribute.assign;
-            scope.$watch('watchData.' + key, function(value, oldvalue) {
-              if ( value !== oldvalue ) {
-                setAttribute(scope.$parent, value);
-              }
-            });
-          }
+          datepickerEl.attr(cameltoDash(key), key);
         }
       });
       if (attrs.dateDisabled) {
@@ -43764,9 +43694,6 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
       };
 
       var $popup = $compile(popupEl)(scope);
-      // Prevent jQuery cache memory leak (template is now redundant after linking)
-      popupEl.remove();
-
       if ( appendToBody ) {
         $document.find('body').append($popup);
       } else {
@@ -43828,8 +43755,7 @@ angular.module('ui.bootstrap.dropdown', [])
   };
 
   var closeDropdown = function( evt ) {
-    var toggleElement = openScope.getToggleElement();
-    if ( evt && toggleElement && toggleElement[0].contains(evt.target) ) {
+    if (evt && evt.isDefaultPrevented()) {
         return;
     }
 
@@ -43874,10 +43800,6 @@ angular.module('ui.bootstrap.dropdown', [])
   // Allow other directives to watch status
   this.isOpen = function() {
     return scope.isOpen;
-  };
-
-  scope.getToggleElement = function() {
-    return self.toggleElement;
   };
 
   scope.focusToggleElement = function() {
@@ -44021,8 +43943,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       restrict: 'EA',
       replace: true,
       templateUrl: 'template/modal/backdrop.html',
-      link: function (scope, element, attrs) {
-        scope.backdropClass = attrs.backdropClass || '';
+      link: function (scope) {
 
         scope.animate = false;
 
@@ -44053,18 +43974,8 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         $timeout(function () {
           // trigger CSS transitions
           scope.animate = true;
-
-          /**
-           * Auto-focusing of a freshly-opened modal element causes any child elements
-           * with the autofocus attribute to loose focus. This is an issue on touch
-           * based devices which will show and then hide the onscreen keyboard.
-           * Attempts to refocus the autofocus element via JavaScript will not reopen
-           * the onscreen keyboard. Fixed by updated the focusing logic to only autofocus
-           * the modal element if the modal does not contain an autofocus element.
-           */
-          if (!element[0].querySelectorAll('[autofocus]').length) {
-            element[0].focus();
-          }
+          // focus a freshly-opened modal
+          element[0].focus();
         });
 
         scope.close = function (evt) {
@@ -44078,17 +43989,6 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       }
     };
   }])
-
-  .directive('modalTransclude', function () {
-    return {
-      link: function($scope, $element, $attrs, controller, $transclude) {
-        $transclude($scope.$parent, function(clone) {
-          $element.empty();
-          $element.append(clone);
-        });
-      }
-    };
-  })
 
   .factory('$modalStack', ['$transition', '$timeout', '$document', '$compile', '$rootScope', '$$stackedMap',
     function ($transition, $timeout, $document, $compile, $rootScope, $$stackedMap) {
@@ -44161,7 +44061,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
           });
         } else {
           // Ensure this call is async
-          $timeout(afterAnimating);
+          $timeout(afterAnimating, 0);
         }
 
         function afterAnimating() {
@@ -44206,9 +44106,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         if (currBackdropIndex >= 0 && !backdropDomEl) {
           backdropScope = $rootScope.$new(true);
           backdropScope.index = currBackdropIndex;
-          var angularBackgroundDomEl = angular.element('<div modal-backdrop></div>');
-          angularBackgroundDomEl.attr('backdrop-class', modal.backdropClass);
-          backdropDomEl = $compile(angularBackgroundDomEl)(backdropScope);
+          backdropDomEl = $compile('<div modal-backdrop></div>')(backdropScope);
           body.append(backdropDomEl);
         }
 
@@ -44228,17 +44126,17 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       };
 
       $modalStack.close = function (modalInstance, result) {
-        var modalWindow = openedWindows.get(modalInstance);
+        var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
-          modalWindow.value.deferred.resolve(result);
+          modalWindow.deferred.resolve(result);
           removeModalWindow(modalInstance);
         }
       };
 
       $modalStack.dismiss = function (modalInstance, reason) {
-        var modalWindow = openedWindows.get(modalInstance);
+        var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
-          modalWindow.value.deferred.reject(reason);
+          modalWindow.deferred.reject(reason);
           removeModalWindow(modalInstance);
         }
       };
@@ -44272,15 +44170,14 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
 
           function getTemplatePromise(options) {
             return options.template ? $q.when(options.template) :
-              $http.get(angular.isFunction(options.templateUrl) ? (options.templateUrl)() : options.templateUrl,
-                {cache: $templateCache}).then(function (result) {
-                  return result.data;
+              $http.get(options.templateUrl, {cache: $templateCache}).then(function (result) {
+                return result.data;
               });
           }
 
           function getResolvePromises(resolves) {
             var promisesArr = [];
-            angular.forEach(resolves, function (value) {
+            angular.forEach(resolves, function (value, key) {
               if (angular.isFunction(value) || angular.isArray(value)) {
                 promisesArr.push($q.when($injector.invoke(value)));
               }
@@ -44336,9 +44233,6 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
                 });
 
                 ctrlInstance = $controller(modalOptions.controller, ctrlLocals);
-                if (modalOptions.controllerAs) {
-                  modalScope[modalOptions.controllerAs] = ctrlInstance;
-                }
               }
 
               $modalStack.open(modalInstance, {
@@ -44347,7 +44241,6 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
                 content: tplAndVars[0],
                 backdrop: modalOptions.backdrop,
                 keyboard: modalOptions.keyboard,
-                backdropClass: modalOptions.backdropClass,
                 windowClass: modalOptions.windowClass,
                 windowTemplateUrl: modalOptions.windowTemplateUrl,
                 size: modalOptions.size
@@ -45658,7 +45551,7 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
   .factory('typeaheadParser', ['$parse', function ($parse) {
 
   //                      00000111000000000000022200000000000000003333333333333330000000000044000
-  var TYPEAHEAD_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+([\s\S]+?)$/;
+  var TYPEAHEAD_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/;
 
   return {
     parse:function (input) {
@@ -45824,18 +45717,6 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
       //Declare the timeout promise var outside the function scope so that stacked calls can be cancelled later 
       var timeoutPromise;
 
-      var scheduleSearchWithTimeout = function(inputValue) {
-        timeoutPromise = $timeout(function () {
-          getMatchesAsync(inputValue);
-        }, waitTime);
-      };
-
-      var cancelPreviousTimeout = function() {
-        if (timeoutPromise) {
-          $timeout.cancel(timeoutPromise);
-        }
-      };
-
       //plug into $parsers pipeline to open a typeahead on view changes initiated from DOM
       //$parsers kick-in on all the changes coming from the view as well as manually triggered by $setViewValue
       modelCtrl.$parsers.unshift(function (inputValue) {
@@ -45844,14 +45725,17 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
 
         if (inputValue && inputValue.length >= minSearch) {
           if (waitTime > 0) {
-            cancelPreviousTimeout();
-            scheduleSearchWithTimeout(inputValue);
+            if (timeoutPromise) {
+              $timeout.cancel(timeoutPromise);//cancel previous timeout
+            }
+            timeoutPromise = $timeout(function () {
+              getMatchesAsync(inputValue);
+            }, waitTime);
           } else {
             getMatchesAsync(inputValue);
           }
         } else {
           isLoadingSetter(originalScope, false);
-          cancelPreviousTimeout();
           resetMatches();
         }
 
@@ -46059,7 +45943,7 @@ angular.module("template/accordion/accordion.html", []).run(["$templateCache", f
 
 angular.module("template/alert/alert.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/alert/alert.html",
-    "<div class=\"alert\" ng-class=\"['alert-' + (type || 'warning'), closeable ? 'alert-dismissable' : null]\" role=\"alert\">\n" +
+    "<div class=\"alert\" ng-class=\"{'alert-{{type || 'warning'}}': true, 'alert-dismissable': closeable}\" role=\"alert\">\n" +
     "    <button ng-show=\"closeable\" type=\"button\" class=\"close\" ng-click=\"close()\">\n" +
     "        <span aria-hidden=\"true\">&times;</span>\n" +
     "        <span class=\"sr-only\">Close</span>\n" +
@@ -46188,7 +46072,7 @@ angular.module("template/datepicker/year.html", []).run(["$templateCache", funct
 
 angular.module("template/modal/backdrop.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/modal/backdrop.html",
-    "<div class=\"modal-backdrop fade {{ backdropClass }}\"\n" +
+    "<div class=\"modal-backdrop fade\"\n" +
     "     ng-class=\"{in: animate}\"\n" +
     "     ng-style=\"{'z-index': 1040 + (index && 1 || 0) + index*10}\"\n" +
     "></div>\n" +
@@ -46198,7 +46082,7 @@ angular.module("template/modal/backdrop.html", []).run(["$templateCache", functi
 angular.module("template/modal/window.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/modal/window.html",
     "<div tabindex=\"-1\" role=\"dialog\" class=\"modal fade\" ng-class=\"{in: animate}\" ng-style=\"{'z-index': 1050 + index*10, display: 'block'}\" ng-click=\"close($event)\">\n" +
-    "    <div class=\"modal-dialog\" ng-class=\"{'modal-sm': size == 'sm', 'modal-lg': size == 'lg'}\"><div class=\"modal-content\" modal-transclude></div></div>\n" +
+    "    <div class=\"modal-dialog\" ng-class=\"{'modal-sm': size == 'sm', 'modal-lg': size == 'lg'}\"><div class=\"modal-content\" ng-transclude></div></div>\n" +
     "</div>");
 }]);
 
@@ -46286,8 +46170,16 @@ angular.module("template/tabs/tab.html", []).run(["$templateCache", function($te
     "");
 }]);
 
+angular.module("template/tabs/tabset-titles.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/tabs/tabset-titles.html",
+    "<ul class=\"nav {{type && 'nav-' + type}}\" ng-class=\"{'nav-stacked': vertical}\">\n" +
+    "</ul>\n" +
+    "");
+}]);
+
 angular.module("template/tabs/tabset.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/tabs/tabset.html",
+    "\n" +
     "<div>\n" +
     "  <ul class=\"nav nav-{{type || 'tabs'}}\" ng-class=\"{'nav-stacked': vertical, 'nav-justified': justified}\" ng-transclude></ul>\n" +
     "  <div class=\"tab-content\">\n" +
@@ -46339,12 +46231,11 @@ angular.module("template/typeahead/typeahead-match.html", []).run(["$templateCac
 
 angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/typeahead/typeahead-popup.html",
-    "<ul class=\"dropdown-menu\" ng-show=\"isOpen()\" ng-style=\"{top: position.top+'px', left: position.left+'px'}\" style=\"display: block;\" role=\"listbox\" aria-hidden=\"{{!isOpen()}}\">\n" +
+    "<ul class=\"dropdown-menu\" ng-if=\"isOpen()\" ng-style=\"{top: position.top+'px', left: position.left+'px'}\" style=\"display: block;\" role=\"listbox\" aria-hidden=\"{{!isOpen()}}\">\n" +
     "    <li ng-repeat=\"match in matches track by $index\" ng-class=\"{active: isActive($index) }\" ng-mouseenter=\"selectActive($index)\" ng-click=\"selectMatch($index)\" role=\"option\" id=\"{{match.id}}\">\n" +
     "        <div typeahead-match index=\"$index\" match=\"match\" query=\"query\" template-url=\"templateUrl\"></div>\n" +
     "    </li>\n" +
-    "</ul>\n" +
-    "");
+    "</ul>");
 }]);
 
 /**
@@ -46981,7 +46872,7 @@ angular.module('checklist-model', [])
 
 angular.module('risevision.common.svg.icons', [])
   .constant('iconsList', {
-    icons1: {	
+    icons1: { 
       riseLogo: "M0 32h32V0L0 32z M15 31v-7h6L15 31z M23 32v-9h9L23 32z M24 21v-6h7L24 21z",
       riseStore: "M13.1 24h13.5 0.1c1 0 1.7-0.8 1.9-1.8l2.6-13.5C31.3 8.4 31 8 30.6 8h-21L13.1 24z",
       riseStorage:"M8 32h20.2c2.1 0 3.8-1.7 3.8-3.8V9L8 32zM19 29v-4h4.3L19 29zM25 23v-4h4.3L25 23zM24 31v-7h7.3L24 31z",
@@ -46992,9 +46883,10 @@ angular.module('risevision.common.svg.icons', [])
       riseAlerts:"M31.5 12.3C31 11.8 30 11.6 30 11.6V4.8c0-0.6-0.4-1.2-0.8-1.6 -0.5-0.5-1.1-0.7-1.7-0.7C23.3 6 19.1 8.1 15 8.9v9.9c4 0.8 8.2 3 12.4 6.5 0.6 0 1.3-0.2 1.8-0.7 0.5-0.5 0.8-1 0.8-1.6v-6.9c0 0 1-0.2 1.5-0.7 0.4-0.4 0.7-1 0.7-1.6S31.9 12.7 31.5 12.3z",
       riseDevelopers:"M8 32h20.2c2.1 0 3.8-1.7 3.8-3.8V9L8 32zM19 29v-4h4.3L19 29zM25 23v-4h4.3L25 23zM24 31v-7h7.3L24 31z",
       riseDocumentation:"M8 32h20.2c2.1 0 3.8-1.7 3.8-3.8V9L8 32zM19 29v-4h4.3L19 29zM25 23v-4h4.3L25 23zM24 31v-7h7.3L24 31z",
-      riseCommunity:"M24 12.6v4.7c0 1.4 0.4 2.3 1.3 2.6v5.4h5.3v-5.4c0.9-0.3 1.3-1.1 1.3-2.6v-4.7H24zM28 11.3c1.5 0 2.7-1.2 2.7-2.7 0-1.5-1.2-2.7-2.7-2.7s-2.7 1.2-2.7 2.7C25.3 10.1 26.3 11.3 28 11.3zM0 17.3c0 1.4 0.4 2.3 1.3 2.6v5.4h5.3v-5.4c1-0.3 1.4-1.2 1.4-2.6v-4.7H0V17.3zM4 11.3c1.7 0 2.7-1.2 2.7-2.7 0-1.5-1.2-2.7-2.7-2.7S1.3 7.1 1.3 8.6C1.3 10.1 2.5 11.3 4 11.3z"
+      riseCommunity:"M24 12.6v4.7c0 1.4 0.4 2.3 1.3 2.6v5.4h5.3v-5.4c0.9-0.3 1.3-1.1 1.3-2.6v-4.7H24zM28 11.3c1.5 0 2.7-1.2 2.7-2.7 0-1.5-1.2-2.7-2.7-2.7s-2.7 1.2-2.7 2.7C25.3 10.1 26.3 11.3 28 11.3zM0 17.3c0 1.4 0.4 2.3 1.3 2.6v5.4h5.3v-5.4c1-0.3 1.4-1.2 1.4-2.6v-4.7H0V17.3zM4 11.3c1.7 0 2.7-1.2 2.7-2.7 0-1.5-1.2-2.7-2.7-2.7S1.3 7.1 1.3 8.6C1.3 10.1 2.5 11.3 4 11.3z",
+      riseStorageGraphic:"M29.4 5.9V4c0-0.1-0.1-0.2-0.2-0.2h-10L0.6 22.1 7.7 25l2.9 7 18.9-18.6V7.2h1.3v7.9L16.8 28.8l0.9 0.9L32 15.6V5.9H29.4z",
     },
-    icons2: {	
+    icons2: { 
       riseLogo: "",
       riseStore: "M26.6 26H11.5L6.7 4H1.6c-0.6 0-1 0.4-1 1s0.4 1 1 1h3.5l4.4 20.3c-0.9 0.4-1.6 1.4-1.6 2.5 0 1.5 1.2 2.7 2.7 2.7s2.7-1.2 2.7-2.7c0-0.2 0-0.5-0.1-0.7H24c-0.1 0.2-0.1 0.5-0.1 0.7 0 1.5 1.2 2.7 2.7 2.7s2.7-1.2 2.7-2.7S28.1 26 26.6 26z",
       riseStorage:"M1.8 9.1c1.2 0.7 2.9 1.3 5 1.7 2.1 0.4 4.4 0.6 6.9 0.6 2.5 0 4.8-0.2 6.9-0.6 2.1-0.4 3.5-1 4.8-1.7C26.6 8.4 27 7.7 27 6.9V4.6c0-0.8-0.4-1.6-1.6-2.3 -1.2-0.7-2.8-1.3-4.9-1.7C18.4 0.2 16.1 0 13.7 0c-2.5 0-4.7 0.2-6.8 0.6C4.7 1 3 1.6 1.8 2.3 0.6 3 0 3.7 0 4.6v2.3C0 7.7 0.6 8.4 1.8 9.1zM1.8 16c1.2 0.7 2.9 1.3 5 1.7 2.1 0.4 4.4 0.6 6.9 0.6 2 0 3.9-0.1 5.7-0.4l6.6-6.4c-1.2 0.6-2.7 1.1-4.5 1.5 -2.5 0.5-5.1 0.8-7.9 0.8 -2.8 0-5.5-0.3-7.9-0.8C3.3 12.4 1 11.7 0 10.7v3C0 14.5 0.6 15.3 1.8 16zM1.8 22.9c1.2 0.7 2.9 1.3 5 1.7 1.6 0.3 3.3 0.5 5.1 0.6l4.8-4.6c-1 0.1-2 0.1-3 0.1 -2.8 0-5.5-0.3-7.9-0.8C3.3 19.3 1 18.5 0 17.5v3C0 21.4 0.6 22.2 1.8 22.9zM5.8 26.7C3.3 26.1 1 25.4 0 24.4v3c0 0.8 0.6 1.6 1.9 2.3 1 0.6 2.3 1 3.8 1.4l4-3.9C8.3 27.1 7 26.9 5.8 26.7z",
@@ -47005,7 +46897,8 @@ angular.module('risevision.common.svg.icons', [])
       riseAlerts:"M11.8 26.4c-0.3-0.4-0.5-0.7-0.6-1s-0.1-0.6-0.1-1 0.2-0.8 0.4-1.2c-0.5-0.5-0.7-1-0.7-1.7 0-0.6 0.2-1.2 0.6-1.8s0.9-1 1.6-1.2c0 0 0 0 0.1 0V9.2c-0.5 0-1.1-0.2-1.6-0.2H2.9c-0.8 0-1.5 0.4-2 1C0.3 10.6 0 11.4 0 12.2v3.4c0 0.8 0.3 1.2 0.8 1.8C1.4 18 2.1 18 2.9 18H5c-0.2 1-0.3 1.5-0.4 2.2 -0.1 0.7-0.1 1.4-0.1 1.9s0.1 1.2 0.3 1.9c0.2 0.7 0.3 1.3 0.4 1.6 0.1 0.4 0.3 0.9 0.6 1.7 0.3 0.8 0.4 1.3 0.5 1.6 0.5 0.5 1.3 0.8 2.4 1 1 0.2 2 0.1 3-0.2s1.6-0.8 2-1.5c-0.5-0.4-0.8-0.7-1.1-0.9S12.1 26.7 11.8 26.4z",
       riseDevelopers:"M5.2 27.6l2.3-1.4c0.6 0.5 1.4 0.9 2.1 1.2l6.7-6.3c-0.1 0-0.2 0-0.3 0 -2.9 0-5.3-2.4-5.3-5.3 0-2.9 2.4-5.3 5.3-5.3s5.3 2.4 5.3 5.3c0 0.2 0 0.4-0.1 0.6L30.1 8l-2-3.5c-0.1-0.2-0.3-0.4-0.6-0.4 -0.2-0.1-0.5 0-0.7 0.1l-2.3 1.4C23.4 4.7 21 4 21 3.5V0.7C21 0.2 20.5 0 19.9 0h-7.6C11.8 0 11 0.2 11 0.7v2.8c0 0.5-2.3 1.1-3.5 2.1L5.2 4.2c-0.5-0.3-1-0.1-1.2 0.3l-3.8 6.6C0 11.3 0 11.6 0 11.8c0.1 0.2 0.2 0.5 0.4 0.6l2.4 1.4c-0.1 0.7-0.2 1.4-0.2 2.1 0 0.7 0.1 1.4 0.2 2.1l-2.4 1.4c-0.5 0.3-0.6 0.8-0.3 1.3l3.8 6.6C4.2 27.7 4.8 27.8 5.2 27.6",
       riseDocumentation:"M6 4C5.4 4 5 4.4 5 5s0.4 1 1 1h17c0.6 0 1-0.4 1-1s-0.4-1-1-1H6zM26 11.9V8.8C26 8.2 25.6 8 25 8H6C4.3 8 3 6.7 3 5c0-1.7 1.3-3 3-3h19c0.6 0 1-0.4 1-1 0-0.6-0.4-1-1-1H6C3.2 0 0 2 0 4.8v21c0 2.4 2.5 5.4 4.9 6.1L26 11.9z",
-      riseCommunity:"M9.4 18.9c0 2.4 0.7 3.8 2.2 4.3v9h8.8v-9c1.5-0.4 2.2-1.9 2.2-4.3v-7.7H9.4V18.9zM16 8.9c2.4 0 4.4-2 4.4-4.4s-2-4.4-4.4-4.4 -4.4 2-4.4 4.4S13.6 8.9 16 8.9z"
+      riseCommunity:"M9.4 18.9c0 2.4 0.7 3.8 2.2 4.3v9h8.8v-9c1.5-0.4 2.2-1.9 2.2-4.3v-7.7H9.4V18.9zM16 8.9c2.4 0 4.4-2 4.4-4.4s-2-4.4-4.4-4.4 -4.4 2-4.4 4.4S13.6 8.9 16 8.9z",
+      riseStorageGraphic:"M19.8 5.1L2.9 21.7 8.6 24l2.4 5.8 17.1-16.9V5.1H19.8zM22.9 11.7c-1.1 0-1.9-0.9-1.9-1.9 0-1.1 0.9-1.9 1.9-1.9 1.1 0 1.9 0.9 1.9 1.9C24.8 10.9 23.9 11.7 22.9 11.7z",
     }
   });
 

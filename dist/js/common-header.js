@@ -939,21 +939,6 @@ try { app = angular.module("risevision.common.header.templates"); }
 catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
-  $templateCache.put("last-modified.html",
-    "<span class=\"text-muted\">\n" +
-    "  <small>\n" +
-    "    Saved {{changeDate | date:'d-MMM-yyyy h:mm a'}} by {{changedBy | username}}\n" +
-    "  </small>\n" +
-    "</span>\n" +
-    "");
-}]);
-})();
-
-(function(module) {
-try { app = angular.module("risevision.common.header.templates"); }
-catch(err) { app = angular.module("risevision.common.header.templates", []); }
-app.run(["$templateCache", function($templateCache) {
-  "use strict";
   $templateCache.put("move-company-modal.html",
     "<div rv-spinner\n" +
     "  rv-spinner-key=\"move-company-modal\"\n" +
@@ -1546,7 +1531,7 @@ angular.module("risevision.common.header", [
   "risevision.common.shoppingcart",
   "checklist-model",
   "ui.bootstrap", "ngSanitize", "rvScrollEvent", "ngCsv", "ngTouch",
-  "risevision.common.components",
+  "risevision.common.components.last-modified",
   "risevision.common.svg"
 ])
 
@@ -5822,38 +5807,57 @@ angular.module("risevision.store.data-gadgets", [])
 
   }]);
 
-"use strict";
+(function () {
+  "use strict";
 
-angular.module("risevision.common.components", [])
-  .directive("lastModified", ["$templateCache",
-    function ($templateCache) {
-      return {
-        restrict: "E",
-        scope: {
-          changeDate: "=",
-          changedBy: "="
-        },
-        template: $templateCache.get("last-modified.html"),
-        link: function ($scope) {
-          $scope.$watch("changedBy", function(newVal) {
-            $scope.changedBy = newVal ? newVal : "N/A";
-          });
-        } //link()
-      };
-    }
-  ]);
-
-"use strict";
-
-// Simple filter that removes the domain from an email
-// for example, bld@riseholdings.com would return bld
-angular.module("risevision.common.components")
-  .filter("username", function () {
-    return function (email) {
-      var username = email;
-      if (email && email.indexOf("@") !== -1) {
-        username = email.substring(0, email.indexOf("@"));
+  angular.module("risevision.common.components.last-modified", [])
+    .directive("lastModified", ["$templateCache",
+      function ($templateCache) {
+        return {
+          restrict: "E",
+          scope: {
+            changeDate: "=",
+            changedBy: "="
+          },
+          template: $templateCache.get("last-modified/last-modified.html"),
+          link: function ($scope) {
+            $scope.$watch("changedBy", function(newVal) {
+              $scope.changedBy = newVal ? newVal : "N/A";
+            });
+          } //link()
+        };
       }
-      return username;
-    };
-  });
+    ]);
+}());
+
+(function () {
+  "use strict";
+
+  // Simple filter that removes the domain from an email
+  // for example, bld@riseholdings.com would return bld
+  angular.module("risevision.common.components.last-modified")
+    .filter("username", function () {
+      return function (email) {
+        var username = email;
+        if (email && email.indexOf("@") !== -1) {
+          username = email.substring(0, email.indexOf("@"));
+        }
+        return username;
+      };
+    });
+}());
+
+(function(module) {
+try { app = angular.module("risevision.common.components.last-modified"); }
+catch(err) { app = angular.module("risevision.common.components.last-modified", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
+  $templateCache.put("last-modified/last-modified.html",
+    "<span class=\"text-muted\">\n" +
+    "  <small>\n" +
+    "    Saved {{changeDate | date:'d-MMM-yyyy h:mm a'}} by {{changedBy | username}}\n" +
+    "  </small>\n" +
+    "</span>\n" +
+    "");
+}]);
+})();

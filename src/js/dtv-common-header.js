@@ -19,7 +19,7 @@ angular.module("risevision.common.header", [
   "risevision.common.shoppingcart",
   "checklist-model",
   "ui.bootstrap", "ngSanitize", "rvScrollEvent", "ngCsv", "ngTouch",
-  "risevision.common.components",
+  "risevision.common.components.last-modified",
   "risevision.common.svg"
 ])
 
