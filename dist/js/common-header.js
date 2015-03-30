@@ -3895,7 +3895,7 @@ angular.module("risevision.common.geodata", [])
         var loc, path, search, state;
         
         // Redirect to full URL path
-        if (!$rootScope.redirectToRoot) {
+        if ($rootScope.redirectToRoot === false) {
           loc = $window.location.href.substr(0, $window.location.href.indexOf("#")) || $window.location.href;
         }
         // Redirect to the URL root and append pathname back to the URL
