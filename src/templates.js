@@ -461,7 +461,7 @@ app.run(["$templateCache", function($templateCache) {
     "        Country\n" +
     "      </label>\n" +
     "      <select id=\"company-settings-country\" class=\"form-control selectpicker\"\n" +
-    "        ng-model=\"company.country\" ng-options=\"c[1] as c[0] for c in countries\">\n" +
+    "        ng-model=\"company.country\" ng-options=\"c.code as c.name for c in countries\">\n" +
     "        <option value=\"\">&lt; Select Country &gt;</option>\n" +
     "      </select>\n" +
     "    </div>\n" +
@@ -855,7 +855,7 @@ app.run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "    <div class=\"form-group\">\n" +
     "      <label for=\"country\">Country</label>\n" +
-    "      <select id=\"country\" class=\"form-control selectpicker\" ng-model=\"addr.country\" ng-options=\"c[1] as c[0] for c in countries\">\n" +
+    "      <select id=\"country\" class=\"form-control selectpicker\" ng-model=\"addr.country\" ng-options=\"c.code as c.name for c in countries\">\n" +
     "        <option value=\"\">&lt; Select Country &gt;</option>\n" +
     "      </select>\n" +
     "    </div>\n" +
