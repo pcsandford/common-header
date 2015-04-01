@@ -7,14 +7,14 @@ app.run(["$templateCache", function($templateCache) {
     "<ul>\n" +
     "  <li>\n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"https://store.risevision.com/\" target=\"_blank\">\n" +
+    "      <a href=\"https://store.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseStore\"></svg-icon>\n" +
     "        <span>Store</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
     "    \n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\">\n" +
+    "      <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseEditor\"></svg-icon>\n" +
     "        <span>Editor</span>\n" +
     "      </a>\n" +
@@ -23,14 +23,14 @@ app.run(["$templateCache", function($templateCache) {
     "  </li>\n" +
     "  <li>\n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://storage.risevision.com/\" target=\"_blank\">\n" +
+    "      <a href=\"http://storage.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseStorage\"></svg-icon>\n" +
     "        <span>Storage</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
     "    \n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://rva.risevision.com/#DISPLAYS\" target=\"_blank\">\n" +
+    "      <a href=\"http://rva.risevision.com/#DISPLAYS\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseDisplays\"></svg-icon>\n" +
     "        <span>Displays</span>\n" +
     "      </a>\n" +
@@ -39,14 +39,14 @@ app.run(["$templateCache", function($templateCache) {
     "  </li>\n" +
     "  <li>\n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\">\n" +
+    "      <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseSchedules\"></svg-icon>\n" +
     "        <span>Schedules</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
     "    \n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"https://support.risevision.com\" target=\"_blank\">\n" +
+    "      <a href=\"https://support.risevision.com\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseSupport\"></svg-icon>\n" +
     "        <span>Support</span>\n" +
     "      </a>\n" +
@@ -60,7 +60,7 @@ app.run(["$templateCache", function($templateCache) {
     "      </a>\n" +
     "    </div>\n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"http://help.risevision.com/\" target=\"_blank\">\n" +
+    "      <a href=\"http://help.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseDocumentation\"></svg-icon>\n" +
     "        <span>Documentation</span>\n" +
     "      </a>\n" +
@@ -68,13 +68,13 @@ app.run(["$templateCache", function($templateCache) {
     "  </li>\n" +
     "  <li>\n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://developer.risevision.com/\" target=\"_blank\">\n" +
+    "      <a href=\"http://developer.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseDevelopers\"></svg-icon>\n" +
     "        <span>Developer</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"http://www.risevision.com/about-us/\" target=\"_blank\">\n" +
+    "      <a href=\"http://www.risevision.com/about-us/#\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseLogo\"></svg-icon>\n" +
     "        <span>About</span>\n" +
     "      </a>\n" +
@@ -5083,6 +5083,36 @@ function (loadFastpass, userState) {
       $scope.$watch(function () { return userState.getUserEmail(); }, function (email) {
         if(email) {
           loadFastpass(userState.getUsername(), userState.getUserEmail());
+        }
+      });
+    }
+  };
+}]);
+
+angular.module("risevision.common.header")
+.directive("linkCid", ["userState",
+function (userState) {
+  return {
+    link: function($scope, ele, attr){
+      var updateLinkCompanyId = function(companyId) {
+        var index = attr.href.indexOf("cid=");
+        var value;
+        if (index > -1) {
+          value = attr.href.substring(0, index + 4) + companyId;
+        }
+        else {
+          value = attr.href + 
+            (attr.href.indexOf("?") === -1 ? "?": "&") + 
+            "cid=" + companyId;
+        }
+        attr.$set("href", value);
+      };
+      
+      $scope.$watch(function () {
+        return userState.getSelectedCompanyId();
+      }, function(newValue, oldValue) {
+        if (newValue && newValue !== oldValue) {
+          updateLinkCompanyId(newValue);
         }
       });
     }
