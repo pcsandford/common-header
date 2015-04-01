@@ -21,6 +21,7 @@ describe("controller: company settings", function() {
       };
     });
     $provide.value("companyId", "RV_test_id");
+    $provide.value("countries", []);
     $provide.service("getCompany",function(){
       return function(companyId) {
         var deferred = Q.defer();

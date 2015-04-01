@@ -40,7 +40,7 @@
         Country
       </label>
       <select id="company-settings-country" class="form-control selectpicker"
-        ng-model="company.country" ng-options="c[1] as c[0] for c in countries">
+        ng-model="company.country" ng-options="c.code as c.name for c in countries">
         <option value="">&lt; Select Country &gt;</option>
       </select>
     </div>
