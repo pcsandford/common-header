@@ -1218,8 +1218,8 @@ app.run(["$templateCache", function($templateCache) {
     "<div class=\"modal-body text-center\" style=\"padding:15px 20px;\">\n" +
     "  <img src=\"//s3.amazonaws.com/rise-common/images/logo-small.png\" class=\"text-center\" width=\"113\" height=\"42\" alt=\"Rise Vision\">\n" +
     "  \n" +
-    "  <h1>The Enterprise Digital Signage Platform</h1>\n" +
-    "  <p class=\"lead\">Everything you need to create amazing digital signage for FREE</p>\n" +
+    "  <h1>Enterprise Digital Signage Platform</h1>\n" +
+    "  <p class=\"lead\">Use it for Free</p>\n" +
     "  \n" +
     "  <h4 class=\"add-bottom\"><a href=\"http://www.risevision.com\" target=\"_blank\">Learn More about Rise Vision</a></h4>\n" +
     "  \n" +
