@@ -84,7 +84,7 @@ angular.module("risevision.common.header")
         regenerateCompanyField($scope.company.id, "authKey").then(
           function(resp) {
             $scope.company.authKey = resp.item;
-            alert("Successfully changed authentication key.");
+            alert("Successfully changed Authentication Key.");
           },
           function (error) {
             alert("Error: " + humanReadableError(error));
