@@ -49,18 +49,18 @@ describe("Services: selected company url handler", function() {
   });
 
   describe("updateUrl method: ",function(){    
-    it("should not update the URL if userCompany = selectedCompany", function() {
+    it("should update the URL if userCompany = selectedCompany", function() {
       selectedCompanyUrlHandler.updateUrl();
       
-      expect(locationSearch.cid).to.equal(null);
+      expect(locationSearch.cid).to.equal("user_company_id");
     });
     
-    it("should remove cid from the URL if userCompany = selectedCompany", function() {
+    it("should update cid from the URL if userCompany = selectedCompany", function() {
       locationSearch = {"cid": "selected_company_id"};
       
       selectedCompanyUrlHandler.updateUrl();
       
-      expect(locationSearch.cid).to.equal(null);
+      expect(locationSearch.cid).to.equal("user_company_id");
     });
     
     it("should add cid to the URL if userCompany != selectedCompany", function() {
@@ -83,10 +83,10 @@ describe("Services: selected company url handler", function() {
   });
   
   describe("updateSelectedCompanyFromUrl method: ",function(){    
-    it("should not update the URL or selected company", function() {
+    it("should update the URL with user company", function() {
       selectedCompanyUrlHandler.updateSelectedCompanyFromUrl();
       
-      expect(locationSearch.cid).to.equal(null);
+      expect(locationSearch.cid).to.equal("user_company_id");
       expect(selectedCompanyId).to.equal("user_company_id");
     });
     
