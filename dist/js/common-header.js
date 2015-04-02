@@ -1000,7 +1000,7 @@ app.run(["$templateCache", function($templateCache) {
     "    ng-show=\"company.name && !moveSuccess\" ng-click=\"moveCompany()\">Move Company\n" +
     "    <i class=\"fa fa-white fa-check icon-right\"></i>\n" +
     "  </button>\n" +
-    "  <button type=\"button\" class=\"btn btn-primary close-move-company-button\" data-dismiss=\"modal\" ng-click=\"closeModal()\">\n" +
+    "  <button type=\"button\" class=\"btn btn-default btn-fixed-width close-move-company-button\" data-dismiss=\"modal\" ng-click=\"closeModal()\">\n" +
     "    {{dismissButtonText}} <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
     "  </button>\n" +
     "</div>\n" +
@@ -2315,7 +2315,7 @@ angular.module("risevision.common.header")
         regenerateCompanyField($scope.company.id, "authKey").then(
           function(resp) {
             $scope.company.authKey = resp.item;
-            alert("Successfully changed authentication key.");
+            alert("Successfully changed Authentication Key.");
           },
           function (error) {
             alert("Error: " + humanReadableError(error));
