@@ -46,7 +46,7 @@ app.run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "    \n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"https://support.risevision.com\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://support.risevision.com/#/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseSupport\"></svg-icon>\n" +
     "        <span>Support</span>\n" +
     "      </a>\n" +
