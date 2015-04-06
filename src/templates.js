@@ -1223,13 +1223,13 @@ app.run(["$templateCache", function($templateCache) {
     "  \n" +
     "  <h4 class=\"add-bottom\"><a href=\"http://www.risevision.com\" target=\"_blank\">Learn More about Rise Vision</a></h4>\n" +
     "  \n" +
-    "  <button class=\"btn-lg btn btn-primary\" ng-click=\"login();\">\n" +
+    "  <button class=\"btn-lg btn btn-primary\" ng-click=\"login('registrationComplete')\">\n" +
     "    <i class=\"fa fa-google fa-lg icon-left\"></i>\n" +
     "    Start with a Google Account\n" +
     "  </button>\n" +
     "  \n" +
     "  <p class=\"text-muted half-top\">Don&apos;t Have a Google Account? <a href=\"https://accounts.google.com/SignUp\" target=\"_blank\">Get One Here.</a></p>\n" +
-    "  <p class=\"text-muted half-top\">Already a Rise Vision User? <a ng-click=\"login(); $event.stopPropagation();\" href=\"#\">Sign In</a></p>\n" +
+    "  <p class=\"text-muted half-top\">Already a Rise Vision User? <a ng-click=\"login('registrationComplete'); $event.stopPropagation();\" ng-href=\"#\">Sign In</a></p>\n" +
     "</div>\n" +
     "");
 }]);

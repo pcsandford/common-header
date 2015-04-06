@@ -1,10 +1,15 @@
 angular.module("risevision.common.header")
-  .controller("SignUpModalCtrl", ["$scope", "uiFlowManager",
-  function($scope, uiFlowManager) {
+  .controller("SignUpModalCtrl", ["$scope", "userState", "uiFlowManager",
+  "$loading",
+  function($scope, userState, uiFlowManager, $loading) {
     
-    // Trigger Login action
-    $scope.login = function () {
-      uiFlowManager.invalidateStatus("signedInWithGoogle");
+    // Login Modal
+    $scope.login = function (endStatus) {
+      $loading.startGlobal("auth-buttons-login");
+      userState.authenticate(true).then().finally(function(){
+        $loading.stopGlobal("auth-buttons-login");
+        uiFlowManager.invalidateStatus(endStatus);
+      });
     };
   }
 ]);
