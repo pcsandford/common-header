@@ -17,7 +17,7 @@ describe("Services: auth & user state", function() {
       }
     });
     $provide.factory("gapiLoader", [function () {
-
+      return {};
     }]);
   }));
 
