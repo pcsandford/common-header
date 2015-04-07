@@ -24,26 +24,31 @@ angular.module("risevision.common.header", [
   "risevision.common.svg"
 ])
 
-.factory("bindToScopeWithWatch", [function () {
-  return function (fnToWatch, scopeVar, scope) {
-    scope.$watch(function () { return fnToWatch.call(); },
-    function (val) { scope[scopeVar] = val; });
-  };
-}])
+.factory("bindToScopeWithWatch", [
+  function () {
+    return function (fnToWatch, scopeVar, scope) {
+      scope.$watch(function () {
+          return fnToWatch.call();
+        },
+        function (val) {
+          scope[scopeVar] = val;
+        });
+    };
+  }
+])
 
-.directive("commonHeader",
-  ["$modal", "$rootScope", "$q", "$loading",
-   "$interval", "oauth2APILoader", "$log",
-    "$templateCache", "userState", "$location", "bindToScopeWithWatch",
-    "$document",
-  function($modal, $rootScope, $q, $loading, $interval,
+.directive("commonHeader", ["$modal", "$rootScope", "$q", "$loading",
+  "$interval", "oauth2APILoader", "$log",
+  "$templateCache", "userState", "$location", "bindToScopeWithWatch",
+  "$document",
+  function ($modal, $rootScope, $q, $loading, $interval,
     oauth2APILoader, $log, $templateCache, userState, $location,
     bindToScopeWithWatch, $document) {
     return {
       restrict: "E",
       template: $templateCache.get("common-header.html"),
       scope: false,
-      link: function($scope, element, attr) {
+      link: function ($scope, element, attr) {
         $scope.navCollapsed = true;
         $scope.inRVAFrame = userState.inRVAFrame();
 
@@ -69,23 +74,24 @@ angular.module("risevision.common.header", [
         }
 
         //default to true
-        $scope.hideShoppingCart = attr.hideShoppingCart !== "0" && 
+        $scope.hideShoppingCart = attr.hideShoppingCart !== "0" &&
           attr.hideShoppingCart !== "false";
-        $scope.hideHelpMenu = attr.hideHelpMenu !== "0" && 
+        $scope.hideHelpMenu = attr.hideHelpMenu !== "0" &&
           attr.hideHelpMenu !== "false";
-          
+
         // used by userState; determines if the URL root is used for
         // Authentication redirect
-        $rootScope.redirectToRoot = attr.redirectToRoot !== "0" && 
+        $rootScope.redirectToRoot = attr.redirectToRoot !== "0" &&
           attr.redirectToRoot !== "false";
-        
+
         // disable opening home page in new tab (default true)
-        $rootScope.newTabHome = attr.newTabHome !== "0" && 
+        $rootScope.newTabHome = attr.newTabHome !== "0" &&
           attr.newTabHome !== "false";
 
-        bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
+        bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser",
+          $scope);
 
-        $rootScope.$on("$stateChangeSuccess", function() {
+        $rootScope.$on("$stateChangeSuccess", function () {
           if ($scope.inRVAFrame) {
             $location.search("inRVA", $scope.inRVAFrame);
           }
@@ -93,34 +99,37 @@ angular.module("risevision.common.header", [
 
         //insert meta tag to page to prevent zooming in in mobile mode
         var viewPortTag = $document[0].createElement("meta");
-        viewPortTag.id="viewport";
+        viewPortTag.id = "viewport";
         viewPortTag.name = "viewport";
-        viewPortTag.content = "width=device-width, initial-scale=1, user-scalable=no";
+        viewPortTag.content =
+          "width=device-width, initial-scale=1, user-scalable=no";
         $document[0].getElementsByTagName("head")[0].appendChild(viewPortTag);
       }
     };
   }
 ])
-.run(["$rootScope", "userState", "selectedCompanyUrlHandler",
-  function ($rootScope, userState, selectedCompanyUrlHandler) {
-    $rootScope.$watch(function () {return userState.getSelectedCompanyId(); },
-    function (newCompanyId) {
-      if(newCompanyId) {
-        selectedCompanyUrlHandler.updateUrl();
-      }
-    });
+  .run(["$rootScope", "userState", "selectedCompanyUrlHandler",
+    function ($rootScope, userState, selectedCompanyUrlHandler) {
+      $rootScope.$watch(function () {
+          return userState.getSelectedCompanyId();
+        },
+        function (newCompanyId) {
+          if (newCompanyId) {
+            selectedCompanyUrlHandler.updateUrl();
+          }
+        });
 
-    //detect selectCompany changes on route UI
-    $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-    $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-  }
-])
+      //detect selectCompany changes on route UI
+      $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+      $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+    }
+  ])
 
-.directive("ngEnter", function() {
-  return function(scope, element, attrs) {
-    element.bind("keydown keypress", function(event) {
-      if(event.which === 13) {
-        scope.$apply(function(){
+.directive("ngEnter", function () {
+  return function (scope, element, attrs) {
+    element.bind("keydown keypress", function (event) {
+      if (event.which === 13) {
+        scope.$apply(function () {
           scope.$eval(attrs.ngEnter);
         });
 

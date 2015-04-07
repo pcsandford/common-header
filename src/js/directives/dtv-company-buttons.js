@@ -8,8 +8,7 @@ angular.module("risevision.common.header")
         scope: false,
         replace: true,
         template: $templateCache.get("company-buttons-menu.html"),
-        link: function () {
-        } //link()
+        link: function () {} //link()
       };
     }
   ]);

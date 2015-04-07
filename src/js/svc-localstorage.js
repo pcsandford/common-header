@@ -1,33 +1,36 @@
-(function (angular){
+(function (angular) {
 
   "use strict";
 
   angular.module("risevision.common.localstorage", ["ngStorage"])
-    .factory("localStorageService", ["$localStorage", "$sessionStorage", function ($localStorage, $sessionStorage) {
+    .factory("localStorageService", ["$localStorage", "$sessionStorage",
+      function ($localStorage, $sessionStorage) {
 
-      var storageImpl = localStorage ? localStorage : sessionStorage;
-      var storageImplWrapper = localStorage ? $localStorage : $sessionStorage;
+        var storageImpl = localStorage ? localStorage : sessionStorage;
+        var storageImplWrapper = localStorage ? $localStorage :
+          $sessionStorage;
 
-      var factory = {};
+        var factory = {};
 
-      factory.getStorage = function() {
-        return storageImplWrapper;
-      };
+        factory.getStorage = function () {
+          return storageImplWrapper;
+        };
 
-      factory.setItemImmediate = function(key, value) {
-        storageImpl.setItem(key, value);
-      };
+        factory.setItemImmediate = function (key, value) {
+          storageImpl.setItem(key, value);
+        };
 
-      factory.removeItemImmediate = function(key) {
-        storageImpl.removeItem(key);
-      };
+        factory.removeItemImmediate = function (key) {
+          storageImpl.removeItem(key);
+        };
 
-      factory.getItem = function(key) {
-        return storageImpl.getItem(key);
-      };
+        factory.getItem = function (key) {
+          return storageImpl.getItem(key);
+        };
 
-      return factory;
+        return factory;
 
-    }]);
+      }
+    ]);
 
 })(angular);
