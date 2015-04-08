@@ -22,6 +22,7 @@ var env = process.env.NODE_ENV || "dev",
     usemin = require("gulp-usemin"),
     es = require("event-stream"),
     uglify = require("gulp-uglify"),
+    prettify = require("gulp-jsbeautifier"),
     minifyCss = require("gulp-minify-css"),
     gulpInject = require("gulp-inject");
 
@@ -146,6 +147,16 @@ gulp.task("coerce-prod-env", function () {
   env = "prod";
 });
 
+/*---- tooling ---*/
+gulp.task("pretty", function() {
+  return gulp.src("./src/js/**/*.js")
+    .pipe(prettify({config: ".jsbeautifyrc", mode: "VERIFY_AND_WRITE"}))
+    .pipe(gulp.dest("./src/js"))
+    .on("error", function (error) {
+      console.error(String(error));
+    });
+});
+
 gulp.task("html", ["coerce-prod-env", "html-inject", "html2js", "lint"], function () {
   return es.concat(
     gulp.src("test/e2e/index.html")
@@ -176,7 +187,7 @@ gulp.task("fonts-copy", function () {
     .pipe(gulp.dest("./dist/fonts"));
 });
 
-gulp.task("lint", ["config", "fonts-copy"], function() {
+gulp.task("lint", ["config", "fonts-copy", "pretty"], function() {
   return gulp.src([
       "src/js/**/*.js",
       "test/**/*.js"

@@ -2,12 +2,12 @@ angular.module("risevision.common.header")
 
 .controller("PaymentMethodsModalCtrl", ["$scope", "$modalInstance", "$modal",
   "$templateCache",
-  function($scope, $modalInstance, $modal, $templateCache) {
-    $scope.closeModal = function() {
+  function ($scope, $modalInstance, $modal, $templateCache) {
+    $scope.closeModal = function () {
       $modalInstance.dismiss("cancel");
     };
     // Show Payment Methods Modal
-    $scope.creditCards = function(size) {
+    $scope.creditCards = function (size) {
       // var modalInstance =
       $modal.open({
         template: $templateCache.get("credit-cards-modal.html"),
@@ -17,10 +17,10 @@ angular.module("risevision.common.header")
     };
   }
 ])
-.controller("CreditCardsModalCtrl", ["$scope", "$modalInstance",
-  function($scope, $modalInstance) {
-    $scope.closeModal = function() {
-      $modalInstance.dismiss("cancel");
-    };
-  }
-]);
+  .controller("CreditCardsModalCtrl", ["$scope", "$modalInstance",
+    function ($scope, $modalInstance) {
+      $scope.closeModal = function () {
+        $modalInstance.dismiss("cancel");
+      };
+    }
+  ]);

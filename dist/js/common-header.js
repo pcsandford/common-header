@@ -1536,26 +1536,31 @@ angular.module("risevision.common.header", [
   "risevision.common.svg"
 ])
 
-.factory("bindToScopeWithWatch", [function () {
-  return function (fnToWatch, scopeVar, scope) {
-    scope.$watch(function () { return fnToWatch.call(); },
-    function (val) { scope[scopeVar] = val; });
-  };
-}])
+.factory("bindToScopeWithWatch", [
+  function () {
+    return function (fnToWatch, scopeVar, scope) {
+      scope.$watch(function () {
+          return fnToWatch.call();
+        },
+        function (val) {
+          scope[scopeVar] = val;
+        });
+    };
+  }
+])
 
-.directive("commonHeader",
-  ["$modal", "$rootScope", "$q", "$loading",
-   "$interval", "oauth2APILoader", "$log",
-    "$templateCache", "userState", "$location", "bindToScopeWithWatch",
-    "$document",
-  function($modal, $rootScope, $q, $loading, $interval,
+.directive("commonHeader", ["$modal", "$rootScope", "$q", "$loading",
+  "$interval", "oauth2APILoader", "$log",
+  "$templateCache", "userState", "$location", "bindToScopeWithWatch",
+  "$document",
+  function ($modal, $rootScope, $q, $loading, $interval,
     oauth2APILoader, $log, $templateCache, userState, $location,
     bindToScopeWithWatch, $document) {
     return {
       restrict: "E",
       template: $templateCache.get("common-header.html"),
       scope: false,
-      link: function($scope, element, attr) {
+      link: function ($scope, element, attr) {
         $scope.navCollapsed = true;
         $scope.inRVAFrame = userState.inRVAFrame();
 
@@ -1581,23 +1586,24 @@ angular.module("risevision.common.header", [
         }
 
         //default to true
-        $scope.hideShoppingCart = attr.hideShoppingCart !== "0" && 
+        $scope.hideShoppingCart = attr.hideShoppingCart !== "0" &&
           attr.hideShoppingCart !== "false";
-        $scope.hideHelpMenu = attr.hideHelpMenu !== "0" && 
+        $scope.hideHelpMenu = attr.hideHelpMenu !== "0" &&
           attr.hideHelpMenu !== "false";
-          
+
         // used by userState; determines if the URL root is used for
         // Authentication redirect
-        $rootScope.redirectToRoot = attr.redirectToRoot !== "0" && 
+        $rootScope.redirectToRoot = attr.redirectToRoot !== "0" &&
           attr.redirectToRoot !== "false";
-        
+
         // disable opening home page in new tab (default true)
-        $rootScope.newTabHome = attr.newTabHome !== "0" && 
+        $rootScope.newTabHome = attr.newTabHome !== "0" &&
           attr.newTabHome !== "false";
 
-        bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
+        bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser",
+          $scope);
 
-        $rootScope.$on("$stateChangeSuccess", function() {
+        $rootScope.$on("$stateChangeSuccess", function () {
           if ($scope.inRVAFrame) {
             $location.search("inRVA", $scope.inRVAFrame);
           }
@@ -1605,34 +1611,37 @@ angular.module("risevision.common.header", [
 
         //insert meta tag to page to prevent zooming in in mobile mode
         var viewPortTag = $document[0].createElement("meta");
-        viewPortTag.id="viewport";
+        viewPortTag.id = "viewport";
         viewPortTag.name = "viewport";
-        viewPortTag.content = "width=device-width, initial-scale=1, user-scalable=no";
+        viewPortTag.content =
+          "width=device-width, initial-scale=1, user-scalable=no";
         $document[0].getElementsByTagName("head")[0].appendChild(viewPortTag);
       }
     };
   }
 ])
-.run(["$rootScope", "userState", "selectedCompanyUrlHandler",
-  function ($rootScope, userState, selectedCompanyUrlHandler) {
-    $rootScope.$watch(function () {return userState.getSelectedCompanyId(); },
-    function (newCompanyId) {
-      if(newCompanyId) {
-        selectedCompanyUrlHandler.updateUrl();
-      }
-    });
+  .run(["$rootScope", "userState", "selectedCompanyUrlHandler",
+    function ($rootScope, userState, selectedCompanyUrlHandler) {
+      $rootScope.$watch(function () {
+          return userState.getSelectedCompanyId();
+        },
+        function (newCompanyId) {
+          if (newCompanyId) {
+            selectedCompanyUrlHandler.updateUrl();
+          }
+        });
 
-    //detect selectCompany changes on route UI
-    $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-    $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-  }
-])
+      //detect selectCompany changes on route UI
+      $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+      $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+    }
+  ])
 
-.directive("ngEnter", function() {
-  return function(scope, element, attrs) {
-    element.bind("keydown keypress", function(event) {
-      if(event.which === 13) {
-        scope.$apply(function(){
+.directive("ngEnter", function () {
+  return function (scope, element, attrs) {
+    element.bind("keydown keypress", function (event) {
+      if (event.which === 13) {
+        scope.$apply(function () {
           scope.$eval(attrs.ngEnter);
         });
 
@@ -1643,17 +1652,19 @@ angular.module("risevision.common.header", [
 });
 
 angular.module("risevision.common.header")
-.directive("integerParser", [
-function () {
-  return {
-    require: "ngModel",
-    link: function(scope, ele, attr, ctrl){
-      ctrl.$parsers.unshift(function(viewValue){
-        return parseInt(viewValue, 10) || 0;
-      });
+  .directive("integerParser", [
+
+    function () {
+      return {
+        require: "ngModel",
+        link: function (scope, ele, attr, ctrl) {
+          ctrl.$parsers.unshift(function (viewValue) {
+            return parseInt(viewValue, 10) || 0;
+          });
+        }
+      };
     }
-  };
-}]);
+  ]);
 
 "use strict";
 
@@ -1665,338 +1676,373 @@ angular.module("risevision.common.header")
         scope: false,
         replace: true,
         template: $templateCache.get("company-buttons-menu.html"),
-        link: function () {
-        } //link()
+        link: function () {} //link()
       };
     }
   ]);
 
 angular.module("risevision.common.header")
 
-  .controller("GlobalAlertsCtrl", ["$scope", "$rootScope",
-    function($scope, $rootScope) {
+.controller("GlobalAlertsCtrl", ["$scope", "$rootScope",
+  function ($scope, $rootScope) {
 
-      $scope.errors = [];
+    $scope.errors = [];
 
-      $scope.$on("risevision.user.authorized", function () {
-        $scope.errors.length = 0;
-      });
-
-      $rootScope.$on("risevision.common.globalError", function (event, message) {
-        $scope.errors.push(message);
-      });
-
-      $scope.dismiss = function (messageType, index) {
-        $scope[messageType].splice(index, 1);
-      };
-    }
-  ]);
-
-angular.module("risevision.common.header")
-.controller("AuthButtonsCtr", ["$scope", "$modal", "$templateCache",
-  "userState", "$loading", "cookieStore",
-  "$log", "uiFlowManager", "oauth2APILoader", "bindToScopeWithWatch",
-  function($scope, $modal, $templateCache, userState,
-  $loading, cookieStore, $log, uiFlowManager, oauth2APILoader,
-  bindToScopeWithWatch) {
-
-    window.$loading = $loading; //DEBUG
-    
-    $scope.inRVAFrame = userState.inRVAFrame();
-    
-    $scope.spinnerOptions = {color: "#999", hwaccel: true, radius: 10};
-
-    $scope.register = function () {
-      cookieStore.remove("surpressRegistration");
-      uiFlowManager.invalidateStatus("registrationComplete");
-    };
-
-    //clear state where user registration is surpressed
-    $scope.$on("risevision.user.signedOut", function () {
-      cookieStore.remove("surpressRegistration");
+    $scope.$on("risevision.user.authorized", function () {
+      $scope.errors.length = 0;
     });
 
-    $scope.$on("risevision.uiStatus.validationCancelled", function () {
-      cookieStore.remove("surpressRegistration");
+    $rootScope.$on("risevision.common.globalError", function (event, message) {
+      $scope.errors.push(message);
     });
 
-    //spinner
-    $scope.$watch(function () {return uiFlowManager.isStatusUndetermined(); },
-    function (undetermined){
-      $scope.undetermined = undetermined;
-      $scope.loading = undetermined;
-    });
-
-
-    //render dialogs based on status the UI is stuck on
-    $scope.$watch(function () { return uiFlowManager.getStatus(); },
-    function (newStatus, oldStatus){
-      if(newStatus) {
-        $log.debug("status changed from", oldStatus, "to", newStatus);
-
-        //render a dialog based on the status current UI is in
-        if(newStatus === "registeredAsRiseVisionUser") {
-          if(!userState.registrationModalInstance && userState.isLoggedIn()) { // avoid duplicate registration modals
-            userState.registrationModalInstance = $modal.open({
-              template: $templateCache.get("registration-modal.html"),
-              controller: "RegistrationModalCtrl",
-              backdrop: "static",
-              resolve: {
-                account: ["getUserProfile", "getAccount", function (getUserProfile, getAccount) {
-                  return getUserProfile(userState.getUsername())
-                  .then(null, function(resp) {
-                    if (resp && resp.message === "User has not yet accepted the Terms of Service") {
-                      return getAccount();
-                    } else {
-                      return null;
-                    }
-                  })
-                  .catch(function() { return null; } );
-                  // console.log(userState);
-                  // return getAccount().catch(function(data){return data;}, function(){return null;});
-                }]
-              }
-            });
-          }
-
-          userState.registrationModalInstance.result.finally(function (){
-            //TODO: put it somewhere else
-            userState.registrationModalInstance = null;
-            uiFlowManager.invalidateStatus();
-          });
-        }
-        else if(newStatus === "signedInWithGoogle") {
-          $scope.login();
-        }
-      }
-    });
-
-    //watch on username change and populate onto scope variables requried
-    // for rendering UI
-
-    $scope.$watch(function () {return userState.isLoggedIn();},
-      function (loggedIn) { $scope.isLoggedIn = loggedIn;
-        if(loggedIn === true) { 
-          $scope.userPicture = userState.getUserPicture();
-        }
-      });
-    $scope.$watch(function () {return userState.getUserCompanyName();},
-      function () {
-        $scope.companyName = userState.getUserCompanyName();
-      });
-      
-    $scope.$watch(function () {return userState.getUsername();},
-      function () {
-        $scope.username = userState.getUsername();
-      });  
-    bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser", $scope);
-
-    // Login Modal
-    $scope.login = function (endStatus) {
-      $loading.startGlobal("auth-buttons-login");
-      userState.authenticate(true).then().finally(function(){
-        $loading.stopGlobal("auth-buttons-login");
-        uiFlowManager.invalidateStatus(endStatus);
-      });
+    $scope.dismiss = function (messageType, index) {
+      $scope[messageType].splice(index, 1);
     };
-
-    $scope.logout = function () {
-      $scope.confirmSignOut();
-    };
-
-    $scope.confirmSignOut = function(size) {
-      var modalInstance =$modal.open({
-        template: $templateCache.get("signout-modal.html"),
-        controller: "SignOutModalCtrl",
-        size: size
-      });
-      modalInstance.result.finally(function () {
-        uiFlowManager.invalidateStatus("registrationComplete");
-      });
-    };
-
-    // Show User Settings Modal
-    $scope.userSettings = function(size) {
-      // var modalInstance =
-      $modal.open({
-        template: $templateCache.get("user-settings-modal.html"),
-        controller: "UserSettingsModalCtrl",
-        size: size,
-        resolve: {username: function () {return userState.getUsername();},
-        add: function () {return false; }}
-      });
-    };
-    // Show Payment Methods Modal
-    $scope.paymentMethods = function(size) {
-      // var modalInstance =
-      $modal.open({
-        template: $templateCache.get("payment-methods-modal.html"),
-        controller: "PaymentMethodsModalCtrl",
-        size: size
-      });
-    };
-
-    $loading.startGlobal("auth-buttons-silent");
-    oauth2APILoader() //force loading oauth api on startup
-                      //to avoid popup blocker
-    .then().finally(function () {
-      userState.authenticate(false).then().finally(function () {
-        $loading.stopGlobal("auth-buttons-silent");
-        if(!uiFlowManager.isStatusUndetermined()) {
-          //attempt to reach a stable registration state only
-          //when there is currently no validating checking
-          uiFlowManager.invalidateStatus("registrationComplete");
-        }
-      });
-    });
-
-
   }
 ]);
+
+angular.module("risevision.common.header")
+  .controller("AuthButtonsCtr", ["$scope", "$modal", "$templateCache",
+    "userState", "$loading", "cookieStore",
+    "$log", "uiFlowManager", "oauth2APILoader", "bindToScopeWithWatch",
+    function ($scope, $modal, $templateCache, userState,
+      $loading, cookieStore, $log, uiFlowManager, oauth2APILoader,
+      bindToScopeWithWatch) {
+
+      window.$loading = $loading; //DEBUG
+
+      $scope.inRVAFrame = userState.inRVAFrame();
+
+      $scope.spinnerOptions = {
+        color: "#999",
+        hwaccel: true,
+        radius: 10
+      };
+
+      $scope.register = function () {
+        cookieStore.remove("surpressRegistration");
+        uiFlowManager.invalidateStatus("registrationComplete");
+      };
+
+      //clear state where user registration is surpressed
+      $scope.$on("risevision.user.signedOut", function () {
+        cookieStore.remove("surpressRegistration");
+      });
+
+      $scope.$on("risevision.uiStatus.validationCancelled", function () {
+        cookieStore.remove("surpressRegistration");
+      });
+
+      //spinner
+      $scope.$watch(function () {
+          return uiFlowManager.isStatusUndetermined();
+        },
+        function (undetermined) {
+          $scope.undetermined = undetermined;
+          $scope.loading = undetermined;
+        });
+
+
+      //render dialogs based on status the UI is stuck on
+      $scope.$watch(function () {
+          return uiFlowManager.getStatus();
+        },
+        function (newStatus, oldStatus) {
+          if (newStatus) {
+            $log.debug("status changed from", oldStatus, "to", newStatus);
+
+            //render a dialog based on the status current UI is in
+            if (newStatus === "registeredAsRiseVisionUser") {
+              if (!userState.registrationModalInstance && userState.isLoggedIn()) { // avoid duplicate registration modals
+                userState.registrationModalInstance = $modal.open({
+                  template: $templateCache.get("registration-modal.html"),
+                  controller: "RegistrationModalCtrl",
+                  backdrop: "static",
+                  resolve: {
+                    account: ["getUserProfile", "getAccount",
+                      function (getUserProfile, getAccount) {
+                        return getUserProfile(userState.getUsername())
+                          .then(null, function (resp) {
+                            if (resp && resp.message ===
+                              "User has not yet accepted the Terms of Service"
+                            ) {
+                              return getAccount();
+                            } else {
+                              return null;
+                            }
+                          })
+                          .catch(function () {
+                            return null;
+                          });
+                        // console.log(userState);
+                        // return getAccount().catch(function(data){return data;}, function(){return null;});
+                      }
+                    ]
+                  }
+                });
+              }
+
+              userState.registrationModalInstance.result.finally(function () {
+                //TODO: put it somewhere else
+                userState.registrationModalInstance = null;
+                uiFlowManager.invalidateStatus();
+              });
+            } else if (newStatus === "signedInWithGoogle") {
+              $scope.login();
+            }
+          }
+        });
+
+      //watch on username change and populate onto scope variables requried
+      // for rendering UI
+
+      $scope.$watch(function () {
+          return userState.isLoggedIn();
+        },
+        function (loggedIn) {
+          $scope.isLoggedIn = loggedIn;
+          if (loggedIn === true) {
+            $scope.userPicture = userState.getUserPicture();
+          }
+        });
+      $scope.$watch(function () {
+          return userState.getUserCompanyName();
+        },
+        function () {
+          $scope.companyName = userState.getUserCompanyName();
+        });
+
+      $scope.$watch(function () {
+          return userState.getUsername();
+        },
+        function () {
+          $scope.username = userState.getUsername();
+        });
+      bindToScopeWithWatch(userState.isRiseVisionUser, "isRiseVisionUser",
+        $scope);
+
+      // Login Modal
+      $scope.login = function (endStatus) {
+        $loading.startGlobal("auth-buttons-login");
+        userState.authenticate(true).then().finally(function () {
+          $loading.stopGlobal("auth-buttons-login");
+          uiFlowManager.invalidateStatus(endStatus);
+        });
+      };
+
+      $scope.logout = function () {
+        $scope.confirmSignOut();
+      };
+
+      $scope.confirmSignOut = function (size) {
+        var modalInstance = $modal.open({
+          template: $templateCache.get("signout-modal.html"),
+          controller: "SignOutModalCtrl",
+          size: size
+        });
+        modalInstance.result.finally(function () {
+          uiFlowManager.invalidateStatus("registrationComplete");
+        });
+      };
+
+      // Show User Settings Modal
+      $scope.userSettings = function (size) {
+        // var modalInstance =
+        $modal.open({
+          template: $templateCache.get("user-settings-modal.html"),
+          controller: "UserSettingsModalCtrl",
+          size: size,
+          resolve: {
+            username: function () {
+              return userState.getUsername();
+            },
+            add: function () {
+              return false;
+            }
+          }
+        });
+      };
+      // Show Payment Methods Modal
+      $scope.paymentMethods = function (size) {
+        // var modalInstance =
+        $modal.open({
+          template: $templateCache.get("payment-methods-modal.html"),
+          controller: "PaymentMethodsModalCtrl",
+          size: size
+        });
+      };
+
+      $loading.startGlobal("auth-buttons-silent");
+      oauth2APILoader() //force loading oauth api on startup
+      //to avoid popup blocker
+      .then().finally(function () {
+        userState.authenticate(false).then().finally(function () {
+          $loading.stopGlobal("auth-buttons-silent");
+          if (!uiFlowManager.isStatusUndetermined()) {
+            //attempt to reach a stable registration state only
+            //when there is currently no validating checking
+            uiFlowManager.invalidateStatus("registrationComplete");
+          }
+        });
+      });
+
+
+    }
+  ]);
 
 angular.module("risevision.common.header")
   .controller("SignUpModalCtrl", ["$scope", "userState", "uiFlowManager",
-  "$loading",
-  function($scope, userState, uiFlowManager, $loading) {
-    
-    // Login Modal
-    $scope.login = function (endStatus) {
-      $loading.startGlobal("auth-buttons-login");
-      userState.authenticate(true).then().finally(function(){
-        $loading.stopGlobal("auth-buttons-login");
-        uiFlowManager.invalidateStatus(endStatus);
-      });
-    };
-  }
-]);
+    "$loading",
+    function ($scope, userState, uiFlowManager, $loading) {
+
+      // Login Modal
+      $scope.login = function (endStatus) {
+        $loading.startGlobal("auth-buttons-login");
+        userState.authenticate(true).then().finally(function () {
+          $loading.stopGlobal("auth-buttons-login");
+          uiFlowManager.invalidateStatus(endStatus);
+        });
+      };
+    }
+  ]);
 
 angular.module("risevision.common.header")
   .controller("SignUpButtonCtrl", ["$scope", "$modal",
-  function($scope, $modal) {
-    
-    $scope.openSignUpModal = function() {
-      $modal.open({
-        templateUrl: "signup-modal.html",
-        controller: "SignUpModalCtrl"
-      });
-    };
-  }
-]);
+    function ($scope, $modal) {
+
+      $scope.openSignUpModal = function () {
+        $modal.open({
+          templateUrl: "signup-modal.html",
+          controller: "SignUpModalCtrl"
+        });
+      };
+    }
+  ]);
 
 angular.module("risevision.common.header")
-.controller("CompanyButtonsCtrl", [ "$scope", "$modal", "$templateCache",
-  "userState", "getCoreCountries",
-  function($scope, $modal, $templateCache, userState, getCoreCountries) {
-    $scope.inRVAFrame = userState.inRVAFrame();
+  .controller("CompanyButtonsCtrl", ["$scope", "$modal", "$templateCache",
+    "userState", "getCoreCountries",
+    function ($scope, $modal, $templateCache, userState, getCoreCountries) {
+      $scope.inRVAFrame = userState.inRVAFrame();
 
-    $scope.$watch(function () {return userState.isSubcompanySelected(); },
-    function () {
-      $scope.isSubcompanySelected = userState.isSubcompanySelected();
-    });
-    
-    $scope.$watch(function () {return userState.getSelectedCompanyName(); },
-    function (selectedCompanyName) {
-      if(selectedCompanyName) {
-        $scope.selectedCompanyName = userState.getSelectedCompanyName();
-      }
-    });
+      $scope.$watch(function () {
+          return userState.isSubcompanySelected();
+        },
+        function () {
+          $scope.isSubcompanySelected = userState.isSubcompanySelected();
+        });
 
-    $scope.$watch(function () {return userState.isRiseVisionUser(); },
-    function (isRvUser) {
-      $scope.isRiseVisionUser = isRvUser;
-      if(isRvUser === true) {
-        $scope.isUserAdmin = userState.isUserAdmin();
-        $scope.isPurchaser = userState.isPurchaser();
-      }
-    });
-
-    $scope.$watch(function () {return userState.isRiseAdmin(); },
-    function (isRvAdmin) { $scope.isRiseVisionAdmin = isRvAdmin; });
-
-    $scope.addSubCompany = function() {
-      $modal.open({
-        template: $templateCache.get("subcompany-modal.html"),
-        controller: "SubCompanyModalCtrl",
-        size: "lg",
-        resolve: {
-          countries: function () {
-            return getCoreCountries();
+      $scope.$watch(function () {
+          return userState.getSelectedCompanyName();
+        },
+        function (selectedCompanyName) {
+          if (selectedCompanyName) {
+            $scope.selectedCompanyName = userState.getSelectedCompanyName();
           }
-        }
-      });
-    };
+        });
 
-    // Show Company Settings Modal
-    $scope.companySettings = function() {
-      $modal.open({
-        template: $templateCache.get("company-settings-modal.html"),
-        controller: "CompanySettingsModalCtrl",
-        size: "lg",
-        resolve: {
-          companyId: function () {
-            return userState.getSelectedCompanyId();
-          },
-          countries: function () {
-            return getCoreCountries();
+      $scope.$watch(function () {
+          return userState.isRiseVisionUser();
+        },
+        function (isRvUser) {
+          $scope.isRiseVisionUser = isRvUser;
+          if (isRvUser === true) {
+            $scope.isUserAdmin = userState.isUserAdmin();
+            $scope.isPurchaser = userState.isPurchaser();
           }
-        }
-      });
-    };
+        });
 
-    // Show Company Users Modal
-    $scope.companyUsers = function(size) {
-      $modal.open({
-        template: $templateCache.get("company-users-modal.html"),
-        controller: "CompanyUsersModalCtrl",
-        size: size,
-        backdrop: true,
-        resolve: {
-          company: function () {
-            return userState.getCopyOfSelectedCompany();
+      $scope.$watch(function () {
+          return userState.isRiseAdmin();
+        },
+        function (isRvAdmin) {
+          $scope.isRiseVisionAdmin = isRvAdmin;
+        });
+
+      $scope.addSubCompany = function () {
+        $modal.open({
+          template: $templateCache.get("subcompany-modal.html"),
+          controller: "SubCompanyModalCtrl",
+          size: "lg",
+          resolve: {
+            countries: function () {
+              return getCoreCountries();
+            }
           }
-        }
-      });
-    };
+        });
+      };
 
-    $scope.switchCompany = function () {
-      var modalInstance = $modal.open({
-        template: $templateCache.get("company-selector-modal.html"),
-        controller: "companySelectorCtr",
-        backdrop: true,
-        resolve: {
-          companyId: function () {
-            return userState.getSelectedCompanyId();
+      // Show Company Settings Modal
+      $scope.companySettings = function () {
+        $modal.open({
+          template: $templateCache.get("company-settings-modal.html"),
+          controller: "CompanySettingsModalCtrl",
+          size: "lg",
+          resolve: {
+            companyId: function () {
+              return userState.getSelectedCompanyId();
+            },
+            countries: function () {
+              return getCoreCountries();
+            }
           }
-        }
-      });
-      modalInstance.result.then(userState.switchCompany);
-    };
+        });
+      };
 
-    // Show Move Company Modal
-    $scope.moveCompany = function(size) {
-      // var modalInstance =
-      $modal.open({
-        template: $templateCache.get("move-company-modal.html"),
-        controller: "MoveCompanyModalCtrl",
-        size: size
-      });
-    };
+      // Show Company Users Modal
+      $scope.companyUsers = function (size) {
+        $modal.open({
+          template: $templateCache.get("company-users-modal.html"),
+          controller: "CompanyUsersModalCtrl",
+          size: size,
+          backdrop: true,
+          resolve: {
+            company: function () {
+              return userState.getCopyOfSelectedCompany();
+            }
+          }
+        });
+      };
 
-    $scope.resetCompany = function () {
-      userState.resetCompany();
-    };
+      $scope.switchCompany = function () {
+        var modalInstance = $modal.open({
+          template: $templateCache.get("company-selector-modal.html"),
+          controller: "companySelectorCtr",
+          backdrop: true,
+          resolve: {
+            companyId: function () {
+              return userState.getSelectedCompanyId();
+            }
+          }
+        });
+        modalInstance.result.then(userState.switchCompany);
+      };
 
-  }
-]);
+      // Show Move Company Modal
+      $scope.moveCompany = function (size) {
+        // var modalInstance =
+        $modal.open({
+          template: $templateCache.get("move-company-modal.html"),
+          controller: "MoveCompanyModalCtrl",
+          size: size
+        });
+      };
+
+      $scope.resetCompany = function () {
+        userState.resetCompany();
+      };
+
+    }
+  ]);
 
 angular.module("risevision.common.header")
 
 .filter("surpressZero", function () {
   return function (num) {
-    if(num) {
+    if (num) {
       return num;
-    }
-    else {
+    } else {
       return "";
     }
   };
@@ -2004,16 +2050,18 @@ angular.module("risevision.common.header")
 
 .controller("ShoppingCartButtonCtrl", [
   "$scope", "shoppingCart", "userState", "$log", "STORE_URL",
-  function($scope, shoppingCart, userState, $log, STORE_URL) {
+  function ($scope, shoppingCart, userState, $log, STORE_URL) {
 
     $scope.shoppingCartUrl = STORE_URL + "shopping-cart";
     $scope.cart = {};
     $scope.cart.items = shoppingCart.getItems();
-    $scope.$watch(function () {return userState.isRiseVisionUser();},
+    $scope.$watch(function () {
+        return userState.isRiseVisionUser();
+      },
       function (isRvUser) {
         $scope.isRiseVisionUser = isRvUser;
         shoppingCart.initialize();
-    });
+      });
 
   }
 ]);
@@ -2022,11 +2070,11 @@ angular.module("risevision.common.header")
 
 .controller("CloseFrameButtonCtrl", [
   "$scope", "$log", "gadgetsService",
-  function($scope, $log, gadgetsService) {
-      $scope.closeIFrame = function () {
+  function ($scope, $log, gadgetsService) {
+    $scope.closeIFrame = function () {
       $log.debug("gadgetsService.closeIFrame");
-          gadgetsService.closeIFrame();
-      };
+      gadgetsService.closeIFrame();
+    };
 
   }
 ]);
@@ -2034,16 +2082,22 @@ angular.module("risevision.common.header")
 angular.module("risevision.common.header")
 
 .controller("SystemMessagesButtonCtrl", [
-  "$scope", "userState", "$log", "$sce", "getCoreSystemMessages", "systemMessages",
-  function($scope, userState, $log, $sce, getCoreSystemMessages,
+  "$scope", "userState", "$log", "$sce", "getCoreSystemMessages",
+  "systemMessages",
+  function ($scope, userState, $log, $sce, getCoreSystemMessages,
     systemMessages) {
 
     $scope.messages = systemMessages;
-    $scope.$watch(function () {return userState.isRiseVisionUser();},
-      function (isRvUser) { $scope.isRiseVisionUser = isRvUser; });
+    $scope.$watch(function () {
+        return userState.isRiseVisionUser();
+      },
+      function (isRvUser) {
+        $scope.isRiseVisionUser = isRvUser;
+      });
 
-    $scope.renderHtml = function(html_code)
-    { return $sce.trustAsHtml(html_code); };
+    $scope.renderHtml = function (html_code) {
+      return $sce.trustAsHtml(html_code);
+    };
 
     //register core message retriever
     systemMessages.registerRetriever(function () {
@@ -2051,15 +2105,16 @@ angular.module("risevision.common.header")
     });
 
     $scope.$watch(
-      function () { return userState.getSelectedCompanyId(); },
+      function () {
+        return userState.getSelectedCompanyId();
+      },
       function (newCompanyId) {
-        if(newCompanyId !== null) {
+        if (newCompanyId !== null) {
           systemMessages.resetAndGetMessages().then($scope.apply);
-        }
-        else {
+        } else {
           systemMessages.clear();
         }
-    });
+      });
 
   }
 ]);
@@ -2068,12 +2123,12 @@ angular.module("risevision.common.header")
 
 .controller("PaymentMethodsModalCtrl", ["$scope", "$modalInstance", "$modal",
   "$templateCache",
-  function($scope, $modalInstance, $modal, $templateCache) {
-    $scope.closeModal = function() {
+  function ($scope, $modalInstance, $modal, $templateCache) {
+    $scope.closeModal = function () {
       $modalInstance.dismiss("cancel");
     };
     // Show Payment Methods Modal
-    $scope.creditCards = function(size) {
+    $scope.creditCards = function (size) {
       // var modalInstance =
       $modal.open({
         template: $templateCache.get("credit-cards-modal.html"),
@@ -2083,23 +2138,23 @@ angular.module("risevision.common.header")
     };
   }
 ])
-.controller("CreditCardsModalCtrl", ["$scope", "$modalInstance",
-  function($scope, $modalInstance) {
-    $scope.closeModal = function() {
-      $modalInstance.dismiss("cancel");
-    };
-  }
-]);
+  .controller("CreditCardsModalCtrl", ["$scope", "$modalInstance",
+    function ($scope, $modalInstance) {
+      $scope.closeModal = function () {
+        $modalInstance.dismiss("cancel");
+      };
+    }
+  ]);
 
 angular.module("risevision.common.header")
-.controller("RegistrationModalCtrl", [
-  "$scope", "$modalInstance",
-  "$loading", "registerAccount", "$log", "cookieStore",
-  "userState", "pick", "uiFlowManager", "humanReadableError",
-  "agreeToTermsAndUpdateUser", "account",
-  function($scope, $modalInstance, $loading, registerAccount, $log,
-    cookieStore, userState, pick, uiFlowManager, humanReadableError,
-    agreeToTermsAndUpdateUser, account) {
+  .controller("RegistrationModalCtrl", [
+    "$scope", "$modalInstance",
+    "$loading", "registerAccount", "$log", "cookieStore",
+    "userState", "pick", "uiFlowManager", "humanReadableError",
+    "agreeToTermsAndUpdateUser", "account",
+    function ($scope, $modalInstance, $loading, registerAccount, $log,
+      cookieStore, userState, pick, uiFlowManager, humanReadableError,
+      agreeToTermsAndUpdateUser, account) {
 
       var newUser = !account;
 
@@ -2109,40 +2164,42 @@ angular.module("risevision.common.header")
       cookieStore.remove("surpressRegistration");
 
 
-      $scope.profile = pick(copyOfProfile, "email", "mailSyncEnabled", "firstName", "lastName");
+      $scope.profile = pick(copyOfProfile, "email", "mailSyncEnabled",
+        "firstName", "lastName");
       $scope.registering = false;
 
       $scope.profile.accepted =
         angular.isDefined(copyOfProfile.termsAcceptanceDate) &&
-          copyOfProfile.termsAcceptanceDate !== null;
+        copyOfProfile.termsAcceptanceDate !== null;
 
-      if(!angular.isDefined($scope.profile.mailSyncEnabled)) {
+      if (!angular.isDefined($scope.profile.mailSyncEnabled)) {
         //"no sign up" by default
         $scope.profile.mailSyncEnabled = false;
       }
 
-      $scope.closeModal = function() {
+      $scope.closeModal = function () {
         cookieStore.put("surpressRegistration", true);
         $modalInstance.dismiss("cancel");
       };
 
       // check status, load spinner, or close dialog if registration is complete
       var watch = $scope.$watch(
-        function () { return uiFlowManager.isStatusUndetermined(); },
+        function () {
+          return uiFlowManager.isStatusUndetermined();
+        },
         function (undetermined) {
-          if(undetermined === true) {
-              //start the spinner
-              $loading.start("registration-modal");
-          }
-          else if (undetermined === false) {
-            if(uiFlowManager.getStatus() === "registrationComplete") {
+          if (undetermined === true) {
+            //start the spinner
+            $loading.start("registration-modal");
+          } else if (undetermined === false) {
+            if (uiFlowManager.getStatus() === "registrationComplete") {
               $modalInstance.close("success");
               //stop the watch
               watch();
             }
             $loading.stop("registration-modal");
           }
-      });
+        });
 
       $scope.save = function () {
         $scope.forms.registrationForm.accepted.$pristine = false;
@@ -2150,7 +2207,7 @@ angular.module("risevision.common.header")
         $scope.forms.registrationForm.lastName.$pristine = false;
         $scope.forms.registrationForm.email.$pristine = false;
 
-        if(!$scope.forms.registrationForm.$invalid) {
+        if (!$scope.forms.registrationForm.$invalid) {
           //update terms and conditions date
           $scope.registering = true;
           $loading.start("registration-modal");
@@ -2158,78 +2215,95 @@ angular.module("risevision.common.header")
 
           var action;
           if (newUser) {
-          action = registerAccount(userState.getUsername(), $scope.profile);
+            action = registerAccount(userState.getUsername(), $scope.profile);
           } else {
-          action = agreeToTermsAndUpdateUser(userState.getUsername(), $scope.profile);
+            action = agreeToTermsAndUpdateUser(userState.getUsername(),
+              $scope.profile);
           }
 
           action.then(
             function () {
               userState.authenticate(false).then()
-              .finally(function () {
-                $modalInstance.close("success");
-                $loading.stop("registration-modal");
-              });
+                .finally(function () {
+                  $modalInstance.close("success");
+                  $loading.stop("registration-modal");
+                });
             },
             function (err) {
               alert("Error: " + humanReadableError(err));
               $log.error(err);
             })
-          .finally(function () {
-            $scope.registering = false;
-            userState.authenticate(false);
-          });
+            .finally(function () {
+              $scope.registering = false;
+              userState.authenticate(false);
+            });
         }
 
       };
       $scope.forms = {};
     }
-]);
+  ]);
 
 angular.module("risevision.common.header")
 
 .controller("MoveCompanyModalCtrl", ["$scope", "$modalInstance",
   "moveCompany", "lookupCompany", "userState", "$loading",
-  function($scope, $modalInstance, moveCompany, lookupCompany, userState, $loading) {
+  function ($scope, $modalInstance, moveCompany, lookupCompany, userState,
+    $loading) {
 
     $scope.company = {};
     $scope.errors = [];
     $scope.messages = [];
 
     $scope.$watch("loading", function (loading) {
-      if(loading) { $loading.start("move-company-modal"); }
-      else { $loading.stop("move-company-modal"); }
+      if (loading) {
+        $loading.start("move-company-modal");
+      } else {
+        $loading.stop("move-company-modal");
+      }
     });
 
     $scope.selectedCompany = userState.getCopyOfSelectedCompany();
 
-    $scope.closeModal = function() {
+    $scope.closeModal = function () {
       $modalInstance.dismiss("cancel");
     };
 
     $scope.moveCompany = function () {
       $scope.messages = [];
       $scope.loading = true;
-      moveCompany($scope.company.authKey, userState.getSelectedCompanyId()).then(function () {
-        $scope.messages.push("Success. The company has been moved under your company.");
-        $scope.moveSuccess = true;
-      }, function (err) {$scope.errors.push("Error: "  + JSON.stringify(err)); })
-      .finally(function () { $scope.loading = false; });
+      moveCompany($scope.company.authKey, userState.getSelectedCompanyId()).then(
+        function () {
+          $scope.messages.push(
+            "Success. The company has been moved under your company.");
+          $scope.moveSuccess = true;
+        }, function (err) {
+          $scope.errors.push("Error: " + JSON.stringify(err));
+        })
+        .finally(function () {
+          $scope.loading = false;
+        });
     };
 
     $scope.getCompany = function () {
-      $scope.errors = []; $scope.messages = [];
+      $scope.errors = [];
+      $scope.messages = [];
       $scope.loading = true;
       lookupCompany($scope.company.authKey).then(function (resp) {
         angular.extend($scope.company, resp);
       }, function (resp) {
         $scope.errors.push("Failed to retrieve company. " + resp.message);
-      }).finally(function () {$scope.loading = false; });
+      }).finally(function () {
+        $scope.loading = false;
+      });
     };
 
     $scope.$watch("moveSuccess", function (moveSuccess) {
-      if(moveSuccess) {$scope.dismissButtonText = "Close"; }
-      else { $scope.dismissButtonText = "Cancel"; }
+      if (moveSuccess) {
+        $scope.dismissButtonText = "Close";
+      } else {
+        $scope.dismissButtonText = "Cancel";
+      }
     });
   }
 ]);
@@ -2237,14 +2311,19 @@ angular.module("risevision.common.header")
 angular.module("risevision.common.header")
 
 .controller("CompanySettingsModalCtrl", ["$scope", "$modalInstance",
-  "updateCompany", "companyId", "countries", "REGIONS_CA", "REGIONS_US", "TIMEZONES",
-  "getCompany", "regenerateCompanyField", "$window", "$loading", "humanReadableError",
+  "updateCompany", "companyId", "countries", "REGIONS_CA", "REGIONS_US",
+  "TIMEZONES",
+  "getCompany", "regenerateCompanyField", "$window", "$loading",
+  "humanReadableError",
   "userState", "deleteCompany",
-  function($scope, $modalInstance, updateCompany, companyId,
-    countries, REGIONS_CA, REGIONS_US, TIMEZONES, getCompany, regenerateCompanyField,
+  function ($scope, $modalInstance, updateCompany, companyId,
+    countries, REGIONS_CA, REGIONS_US, TIMEZONES, getCompany,
+    regenerateCompanyField,
     $window, $loading, humanReadableError, userState, deleteCompany) {
 
-    $scope.company = {id: companyId};
+    $scope.company = {
+      id: companyId
+    };
     $scope.countries = countries;
     $scope.regionsCA = REGIONS_CA;
     $scope.regionsUS = REGIONS_US;
@@ -2252,102 +2331,115 @@ angular.module("risevision.common.header")
     $scope.isRiseStoreAdmin = userState.isRiseStoreAdmin();
 
     $scope.$watch("loading", function (loading) {
-      if(loading) { $loading.start("company-settings-modal"); }
-      else { $loading.stop("company-settings-modal"); }
+      if (loading) {
+        $loading.start("company-settings-modal");
+      } else {
+        $loading.stop("company-settings-modal");
+      }
     });
 
     $scope.loading = false;
 
     $scope.forms = {};
 
-    if(companyId) {
+    if (companyId) {
       $scope.loading = true;
       getCompany(companyId).then(
         function (company) {
           $scope.company = company;
-          $scope.company.isSeller = company && company.sellerId ? true : false;
+          $scope.company.isSeller = company && company.sellerId ? true :
+            false;
         },
         function (resp) {
           alert("An error has occurred. " + humanReadableError(resp));
-        }).finally(function () { $scope.loading = false; });
+        }).finally(function () {
+        $scope.loading = false;
+      });
     }
-    $scope.closeModal = function() {
+    $scope.closeModal = function () {
       $modalInstance.dismiss("cancel");
     };
     $scope.save = function () {
       $scope.loading = true;
 
       var company = angular.copy($scope.company);
-      
+
       verifyAdmin(company);
       updateCompany($scope.company.id, company)
-      .then(
-        function () {
-          userState.updateCompanySettings($scope.company);
-          $modalInstance.close("success");
-        })
-      .catch(
-        function (error) {
-          alert("Error(s): " + humanReadableError(error));
-        })
-      .finally(function () {$scope.loading = false; });
-    };
-    $scope.deleteCompany = function () {
-      if (confirm("Are you sure you want to delete this company?")) {
-        $scope.loading = true;
-
-        deleteCompany($scope.company.id)
         .then(
           function () {
-            if(userState.getUserCompanyId() === $scope.company.id) {
-              userState.signOut();
-            }
-            else if(userState.getSelectedCompanyId() === $scope.company.id) {
-              userState.resetCompany();
-            }
+            userState.updateCompanySettings($scope.company);
             $modalInstance.close("success");
           })
         .catch(
           function (error) {
             alert("Error(s): " + humanReadableError(error));
           })
-        .finally(function () {$scope.loading = false; });
+        .finally(function () {
+          $scope.loading = false;
+        });
+    };
+    $scope.deleteCompany = function () {
+      if (confirm("Are you sure you want to delete this company?")) {
+        $scope.loading = true;
+
+        deleteCompany($scope.company.id)
+          .then(
+            function () {
+              if (userState.getUserCompanyId() === $scope.company.id) {
+                userState.signOut();
+              } else if (userState.getSelectedCompanyId() === $scope.company.id) {
+                userState.resetCompany();
+              }
+              $modalInstance.close("success");
+            })
+          .catch(
+            function (error) {
+              alert("Error(s): " + humanReadableError(error));
+            })
+          .finally(function () {
+            $scope.loading = false;
+          });
       }
     };
-    $scope.resetAuthKey = function() {
-      if ($window.confirm("Resetting the Company Authentication Key will cause existing Data Gadgets to no longer report data until they are updated with the new Key.")) {
+    $scope.resetAuthKey = function () {
+      if ($window.confirm(
+        "Resetting the Company Authentication Key will cause existing Data Gadgets to no longer report data until they are updated with the new Key."
+      )) {
         $loading.start("company-settings-modal");
         regenerateCompanyField($scope.company.id, "authKey").then(
-          function(resp) {
+          function (resp) {
             $scope.company.authKey = resp.item;
             alert("Successfully changed Authentication Key.");
           },
           function (error) {
             alert("Error: " + humanReadableError(error));
-        })
-        .finally(function() {
-          $loading.stop("company-settings-modal");
-        });
+          })
+          .finally(function () {
+            $loading.stop("company-settings-modal");
+          });
       }
     };
-    $scope.resetClaimId = function() {
-      if ($window.confirm("Resetting the Company Claim Id will cause existing installations to no longer be associated with your Company.")) {
+    $scope.resetClaimId = function () {
+      if ($window.confirm(
+        "Resetting the Company Claim Id will cause existing installations to no longer be associated with your Company."
+      )) {
         $loading.start("company-settings-modal");
         regenerateCompanyField($scope.company.id, "claimId").then(
-          function(resp) {
+          function (resp) {
             $scope.company.claimId = resp.item;
             alert("Successfully changed Claim ID.");
           },
           function (error) {
             alert("Error: " + humanReadableError(error));
-        })
-        .finally(function() {
-          $loading.stop("company-settings-modal");
-        });
+          })
+          .finally(function () {
+            $loading.stop("company-settings-modal");
+          });
       }
     };
 
-    function verifyAdmin(company){
+    function verifyAdmin(company) {
       if ($scope.isRiseStoreAdmin) {
         company.sellerId = company.isSeller ? "yes" : null;
       } else {
@@ -2361,272 +2453,312 @@ angular.module("risevision.common.header")
 ]);
 
 angular.module("risevision.common.header")
-.controller("SubCompanyModalCtrl", ["$scope", "$modalInstance", "$modal",
-  "$templateCache", "createCompany", "countries", "REGIONS_CA", "REGIONS_US",
-  "TIMEZONES", "userState", "$loading", "humanReadableError",
-  function($scope, $modalInstance, $modal, $templateCache,
-    createCompany, countries, REGIONS_CA, REGIONS_US, TIMEZONES, userState, 
-    $loading, humanReadableError) {
+  .controller("SubCompanyModalCtrl", ["$scope", "$modalInstance", "$modal",
+    "$templateCache", "createCompany", "countries", "REGIONS_CA",
+    "REGIONS_US",
+    "TIMEZONES", "userState", "$loading", "humanReadableError",
+    function ($scope, $modalInstance, $modal, $templateCache,
+      createCompany, countries, REGIONS_CA, REGIONS_US, TIMEZONES, userState,
+      $loading, humanReadableError) {
 
-    $scope.company = {};
-    $scope.countries = countries;
-    $scope.regionsCA = REGIONS_CA;
-    $scope.regionsUS = REGIONS_US;
-    $scope.timezones = TIMEZONES;
+      $scope.company = {};
+      $scope.countries = countries;
+      $scope.regionsCA = REGIONS_CA;
+      $scope.regionsUS = REGIONS_US;
+      $scope.timezones = TIMEZONES;
 
-    $scope.forms = {};
+      $scope.forms = {};
 
-    $scope.$watch("loading", function (loading) {
-      if(loading) { $loading.start("add-subcompany-modal"); }
-      else { $loading.stop("add-subcompany-modal"); }
-    });
-
-    $scope.closeModal = function() {
-      $modalInstance.dismiss("cancel");
-    };
-    $scope.save = function () {
-      $scope.loading = true;
-      createCompany(userState.getSelectedCompanyId(),
-        $scope.company).then(function () {
-        $modalInstance.close("success");
-      }, function (err) {alert("Error: " + humanReadableError(err)); })
-      .finally(function () {$scope.loading = false; });
-    };
-    // Show Move Company Modal
-    $scope.moveCompany = function(size) {
-      // var modalInstance =
-      $modal.open({
-        template: $templateCache.get("move-company-modal.html"),
-        controller: "MoveCompanyModalCtrl",
-        size: size
+      $scope.$watch("loading", function (loading) {
+        if (loading) {
+          $loading.start("add-subcompany-modal");
+        } else {
+          $loading.stop("add-subcompany-modal");
+        }
       });
-    };
-  }
-]);
+
+      $scope.closeModal = function () {
+        $modalInstance.dismiss("cancel");
+      };
+      $scope.save = function () {
+        $scope.loading = true;
+        createCompany(userState.getSelectedCompanyId(),
+          $scope.company).then(function () {
+          $modalInstance.close("success");
+        }, function (err) {
+          alert("Error: " + humanReadableError(err));
+        })
+          .finally(function () {
+            $scope.loading = false;
+          });
+      };
+      // Show Move Company Modal
+      $scope.moveCompany = function (size) {
+        // var modalInstance =
+        $modal.open({
+          template: $templateCache.get("move-company-modal.html"),
+          controller: "MoveCompanyModalCtrl",
+          size: size
+        });
+      };
+    }
+  ]);
 
 angular.module("risevision.common.header")
-.controller("companySelectorCtr", ["$scope", "$modalInstance",
+  .controller("companySelectorCtr", ["$scope", "$modalInstance",
     "companyService", "companyId", "BaseList", "$loading",
     function ($scope, $modalInstance, companyService,
       companyId, BaseList, $loading) {
 
-    var DB_MAX_COUNT = 20; //number of records to load at a time
+      var DB_MAX_COUNT = 20; //number of records to load at a time
 
-    $scope.companies = new BaseList(DB_MAX_COUNT);
-    $scope.search = {
+      $scope.companies = new BaseList(DB_MAX_COUNT);
+      $scope.search = {
         searchString: ""
-    };
+      };
 
-    $scope.$watch("loading", function (loading) {
-      if(loading) {
-        $loading.start("company-selector-modal");
-        $loading.start("company-selector-modal-list"); }
-      else { $loading.stop("company-selector-modal");
-      $loading.stop("company-selector-modal-list"); }
-    });
+      $scope.$watch("loading", function (loading) {
+        if (loading) {
+          $loading.start("company-selector-modal");
+          $loading.start("company-selector-modal-list");
+        } else {
+          $loading.stop("company-selector-modal");
+          $loading.stop("company-selector-modal-list");
+        }
+      });
 
-    $scope.closeModal = function () {
+      $scope.closeModal = function () {
         $modalInstance.dismiss("cancel");
-    };
+      };
 
-    function loadCompanies() {
-      if (!$scope.companies.endOfList) {
-        $scope.loading = true;
-        companyService.getCompanies(
-          companyId, $scope.search.searchString,
-          $scope.companies.cursor, DB_MAX_COUNT, null).then(function (result) {
-          if (result && result.items) {
-            $scope.companies.add(result.items, result.cursor);
-          }
-        }).finally(function () {
-          $scope.loading = false;
-        });
-      }
-    }
-
-    if ($scope.companies.list.length === 0) {
-      loadCompanies();
-    }
-
-    $scope.doSearch = function () {
-      $scope.companies.clear();
-      loadCompanies();
-    };
-
-    $scope.setCompany = function (company) {
-      $modalInstance.close(company.id);
-    };
-
-    $scope.handleScroll = function (event, isEndEvent) {
-      // $log.debug(event.target.scrollTop + " / " + event.target.scrollHeight + " / " + isEndEvent);
-      if (isEndEvent) {
-        if ((event.target.scrollHeight - event.target.clientHeight - event.target.scrollTop) < 20) {
-          //load more rows if less than 20px left to the bottom
-          loadCompanies();
+      function loadCompanies() {
+        if (!$scope.companies.endOfList) {
+          $scope.loading = true;
+          companyService.getCompanies(
+            companyId, $scope.search.searchString,
+            $scope.companies.cursor, DB_MAX_COUNT, null).then(function (
+            result) {
+            if (result && result.items) {
+              $scope.companies.add(result.items, result.cursor);
+            }
+          }).finally(function () {
+            $scope.loading = false;
+          });
         }
       }
-    };
 
-}
-]);
+      if ($scope.companies.list.length === 0) {
+        loadCompanies();
+      }
+
+      $scope.doSearch = function () {
+        $scope.companies.clear();
+        loadCompanies();
+      };
+
+      $scope.setCompany = function (company) {
+        $modalInstance.close(company.id);
+      };
+
+      $scope.handleScroll = function (event, isEndEvent) {
+        // $log.debug(event.target.scrollTop + " / " + event.target.scrollHeight + " / " + isEndEvent);
+        if (isEndEvent) {
+          if ((event.target.scrollHeight - event.target.clientHeight - event.target
+            .scrollTop) < 20) {
+            //load more rows if less than 20px left to the bottom
+            loadCompanies();
+          }
+        }
+      };
+
+    }
+  ]);
 
 angular.module("risevision.common.header")
 
-  .controller("SubcompanyBannerCtrl", ["$scope", "$modal",
-   "$loading", "userState",
-    function($scope, $modal, $loading, userState) {
-      $scope.inRVAFrame = userState.inRVAFrame();
+.controller("SubcompanyBannerCtrl", ["$scope", "$modal",
+  "$loading", "userState",
+  function ($scope, $modal, $loading, userState) {
+    $scope.inRVAFrame = userState.inRVAFrame();
 
-      $scope.$watch(function () { return userState.getSelectedCompanyId(); },
+    $scope.$watch(function () {
+        return userState.getSelectedCompanyId();
+      },
       function (selectedCompanyId) {
-        if(selectedCompanyId) {
+        if (selectedCompanyId) {
           $scope.isSubcompanySelected = userState.isSubcompanySelected();
           $scope.selectedCompanyName = userState.getSelectedCompanyName();
         }
       });
 
-      $scope.switchToMyCompany = function () {
-        userState.resetCompany();
-      };
-    }
-  ]);
+    $scope.switchToMyCompany = function () {
+      userState.resetCompany();
+    };
+  }
+]);
 
 angular.module("risevision.common.header")
 
-  .controller("TestCompanyBannerCtrl", ["$scope", "userState",
-    function($scope, userState) {
-      $scope.$watch(function () { return userState.isTestCompanySelected(); },
+.controller("TestCompanyBannerCtrl", ["$scope", "userState",
+  function ($scope, userState) {
+    $scope.$watch(function () {
+        return userState.isTestCompanySelected();
+      },
       function (isTest) {
         $scope.isTestCompanySelected = isTest;
       });
-    }
-  ]);
+  }
+]);
 
 angular.module("risevision.common.header")
 
-  .filter("roleLabel", ["userRoleMap", function (userRoleMap) {
+.filter("roleLabel", ["userRoleMap",
+  function (userRoleMap) {
     return function (key) {
       return userRoleMap[key];
     };
-  }])
+  }
+])
 
-  .controller("CompanyUsersModalCtrl", ["$scope", "$modalInstance", "$modal",
-    "$templateCache", "company", "getUsers", "$loading",
-    function($scope, $modalInstance, $modal, $templateCache, company, getUsers,
+.controller("CompanyUsersModalCtrl", ["$scope", "$modalInstance", "$modal",
+  "$templateCache", "company", "getUsers", "$loading",
+  function ($scope, $modalInstance, $modal, $templateCache, company, getUsers,
     $loading) {
 
-      $scope.$watch("loading", function (loading) {
-        if(loading) {
-          $loading.start("company-users-modal");
-          $loading.start("company-users-list"); }
-        else { $loading.stop("company-users-modal");
-        $loading.stop("company-users-list"); }
-      });
-
-      $scope.sort = {
-        field: "username",
-        descending: false
-      };
-
-      $scope.search = {
-          searchString: ""
-      };
-
-      $scope.changeSorting = function(field) {
-        var sort = $scope.sort;
-
-        if (sort.field === field) {
-            sort.descending = !sort.descending;
-        } else {
-            sort.field = field;
-            sort.descending = false;
-        }
-      };
-
-      var loadUsers = function () {
-        $scope.loading = true;
-        getUsers({companyId: company.id,
-          search: $scope.search.searchString}).then(function (users) {
-          $scope.users = users;
-        }).finally(function () {
-          $scope.loading = false;
-        });
-      };
-
-      loadUsers();
-
-      $scope.addUser = function (size) {
-        var instance = $modal.open({
-          template: $templateCache.get("user-settings-modal.html"),
-          controller: "AddUserModalCtrl",
-          size: size,
-          resolve: { companyId: function () {return company.id; } }
-        });
-        instance.result.finally(loadUsers);
-      };
-
-      $scope.editUser = function (username, size) {
-        var instance = $modal.open({
-          template: $templateCache.get("user-settings-modal.html"),
-          controller: "UserSettingsModalCtrl",
-          size: size,
-          resolve: {username: function (){ return username; },
-          add: function () {return false; }
-          }
-        });
-        instance.result.finally(loadUsers);
-      };
-
-      $scope.closeModal = function() {
-        $modalInstance.dismiss("cancel");
-      };
-
-      $scope.doSearch = function () {
-        $scope.users = [];
-        loadUsers();
-      };
-    }
-  ]);
-
-angular.module("risevision.common.header")
-  .filter("humanReadableDateTime", [function () {
-    return function (d) {
-      if(d) {
-        d = new Date(d);
-        return (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear() +
-        " at " + d.toLocaleTimeString() + " EST"; //always assume EST
+    $scope.$watch("loading", function (loading) {
+      if (loading) {
+        $loading.start("company-users-modal");
+        $loading.start("company-users-list");
+      } else {
+        $loading.stop("company-users-modal");
+        $loading.stop("company-users-list");
       }
-      else {
-        return "";
+    });
+
+    $scope.sort = {
+      field: "username",
+      descending: false
+    };
+
+    $scope.search = {
+      searchString: ""
+    };
+
+    $scope.changeSorting = function (field) {
+      var sort = $scope.sort;
+
+      if (sort.field === field) {
+        sort.descending = !sort.descending;
+      } else {
+        sort.field = field;
+        sort.descending = false;
       }
     };
 
-  }])
+    var loadUsers = function () {
+      $scope.loading = true;
+      getUsers({
+        companyId: company.id,
+        search: $scope.search.searchString
+      }).then(function (users) {
+        $scope.users = users;
+      }).finally(function () {
+        $scope.loading = false;
+      });
+    };
 
-  .controller("AddUserModalCtrl",
-  ["$scope", "addUser", "$modalInstance", "companyId", "userState",
+    loadUsers();
+
+    $scope.addUser = function (size) {
+      var instance = $modal.open({
+        template: $templateCache.get("user-settings-modal.html"),
+        controller: "AddUserModalCtrl",
+        size: size,
+        resolve: {
+          companyId: function () {
+            return company.id;
+          }
+        }
+      });
+      instance.result.finally(loadUsers);
+    };
+
+    $scope.editUser = function (username, size) {
+      var instance = $modal.open({
+        template: $templateCache.get("user-settings-modal.html"),
+        controller: "UserSettingsModalCtrl",
+        size: size,
+        resolve: {
+          username: function () {
+            return username;
+          },
+          add: function () {
+            return false;
+          }
+        }
+      });
+      instance.result.finally(loadUsers);
+    };
+
+    $scope.closeModal = function () {
+      $modalInstance.dismiss("cancel");
+    };
+
+    $scope.doSearch = function () {
+      $scope.users = [];
+      loadUsers();
+    };
+  }
+]);
+
+angular.module("risevision.common.header")
+  .filter("humanReadableDateTime", [
+    function () {
+      return function (d) {
+        if (d) {
+          d = new Date(d);
+          return (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear() +
+            " at " + d.toLocaleTimeString() + " EST"; //always assume EST
+        } else {
+          return "";
+        }
+      };
+
+    }
+  ])
+
+.controller("AddUserModalCtrl", ["$scope", "addUser", "$modalInstance",
+  "companyId", "userState",
   "userRoleMap", "humanReadableError", "$loading", "$timeout",
   function ($scope, addUser, $modalInstance, companyId, userState,
-  userRoleMap, humanReadableError, $loading) {
-    $scope.user = {mailSyncEnabled: false};
+    userRoleMap, humanReadableError, $loading) {
+    $scope.user = {
+      mailSyncEnabled: false
+    };
     $scope.isAdd = true;
 
     //push roles into array
     $scope.availableRoles = [];
     angular.forEach(userRoleMap, function (v, k) {
-      $scope.availableRoles.push({key: k, name: v});
+      $scope.availableRoles.push({
+        key: k,
+        name: v
+      });
     });
 
     //convert string to numbers
     $scope.$watch("user.status", function (status) {
-       if(typeof $scope.user.status === "string") {
-          $scope.user.status = parseInt(status);
-       }
+      if (typeof $scope.user.status === "string") {
+        $scope.user.status = parseInt(status);
+      }
     });
 
     $scope.$watch("loading", function (loading) {
-      if(loading) { $loading.start("user-settings-modal"); }
-      else { $loading.stop("user-settings-modal"); }
+      if (loading) {
+        $loading.start("user-settings-modal");
+      } else {
+        $loading.stop("user-settings-modal");
+      }
     });
 
     $scope.save = function () {
@@ -2636,7 +2768,7 @@ angular.module("risevision.common.header")
       $scope.forms.userSettingsForm.firstName.$pristine = false;
       $scope.forms.userSettingsForm.lastName.$pristine = false;
 
-      if(!$scope.forms.userSettingsForm.$invalid) {
+      if (!$scope.forms.userSettingsForm.$invalid) {
         $scope.loading = true;
         addUser(companyId, $scope.user.username, $scope.user).then(
           function () {
@@ -2651,41 +2783,35 @@ angular.module("risevision.common.header")
       }
     };
 
-    $scope.closeModal = function() {
+    $scope.closeModal = function () {
       $modalInstance.dismiss("cancel");
     };
 
     $scope.editRoleAllowed = function (role) {
-      if(userState.isRiseAdmin()) {
+      if (userState.isRiseAdmin()) {
         return true;
-      }
-      else if (userState.isUserAdmin()) {
-        if(role.key === "sa" || role.key === "ba") {
+      } else if (userState.isUserAdmin()) {
+        if (role.key === "sa" || role.key === "ba") {
           return false;
-        }
-        else {
+        } else {
           return true;
         }
-      }
-      else {
+      } else {
         //do not allow user to check/uncheck role by default
         return false;
       }
     };
 
     $scope.editRoleVisible = function (role) {
-      if(userState.isRiseAdmin()) {
+      if (userState.isRiseAdmin()) {
         return true;
-      }
-      else if (userState.isUserAdmin() || userState.isRiseVisionUser()) {
-        if(role.key === "sa" || role.key === "ba") {
+      } else if (userState.isUserAdmin() || userState.isRiseVisionUser()) {
+        if (role.key === "sa" || role.key === "ba") {
           return false;
-        }
-        else {
+        } else {
           return true;
         }
-      }
-      else {
+      } else {
         // in practice should never reach here
         return false;
       }
@@ -2693,319 +2819,342 @@ angular.module("risevision.common.header")
 
     $scope.forms = {};
 
-  }])
+  }
+])
 
-  .controller("UserSettingsModalCtrl", [
-    "$scope", "$modalInstance", "updateUser", "getUserProfile", "deleteUser",
-    "addUser", "username", "userRoleMap", "$log", "$loading", "userState",
-    "uiFlowManager", "humanReadableError",
-    function($scope, $modalInstance, updateUser, getUserProfile, deleteUser,
-      addUser, username, userRoleMap, $log, $loading, userState,
-      uiFlowManager, humanReadableError) {
-      $scope.user = {};
-      $scope.$watch("loading", function (loading) {
-        if(loading) { $loading.start("user-settings-modal"); }
-        else { $loading.stop("user-settings-modal"); }
+.controller("UserSettingsModalCtrl", [
+  "$scope", "$modalInstance", "updateUser", "getUserProfile", "deleteUser",
+  "addUser", "username", "userRoleMap", "$log", "$loading", "userState",
+  "uiFlowManager", "humanReadableError",
+  function ($scope, $modalInstance, updateUser, getUserProfile, deleteUser,
+    addUser, username, userRoleMap, $log, $loading, userState,
+    uiFlowManager, humanReadableError) {
+    $scope.user = {};
+    $scope.$watch("loading", function (loading) {
+      if (loading) {
+        $loading.start("user-settings-modal");
+      } else {
+        $loading.stop("user-settings-modal");
+      }
+    });
+
+    //push roles into array
+    $scope.availableRoles = [];
+    angular.forEach(userRoleMap, function (v, k) {
+      $scope.availableRoles.push({
+        key: k,
+        name: v
       });
+    });
 
-      //push roles into array
-      $scope.availableRoles = [];
-      angular.forEach(userRoleMap, function (v, k) {
-        $scope.availableRoles.push({key: k, name: v});
-      });
+    // convert string to numbers
+    $scope.$watch("user.status", function (status) {
+      if (typeof $scope.user.status === "string") {
+        $scope.user.status = parseInt(status);
+      }
+    });
 
-      // convert string to numbers
-      $scope.$watch("user.status", function (status) {
-         if(typeof $scope.user.status === "string") {
-            $scope.user.status = parseInt(status);
-         }
-      });
+    $scope.isUserAdmin = userState.isUserAdmin();
+    $scope.username = username;
 
-      $scope.isUserAdmin = userState.isUserAdmin();
-      $scope.username = username;
+    $scope.loading = true;
+    getUserProfile(username).then(function (user) {
+      $scope.user = user;
+      $scope.editingYourself = userState.getUsername() === user.username;
 
-      $scope.loading = true;
-      getUserProfile(username).then(function (user) {
-        $scope.user = user;
-        $scope.editingYourself = userState.getUsername() === user.username;
+    }).finally(function () {
+      $scope.loading = false;
+    });
 
-      }).finally(function () {$scope.loading = false; });
-
-      $scope.closeModal = function() {
-        $modalInstance.dismiss("cancel");
-      };
-
-      $scope.deleteUser = function () {
-        if (confirm("Are you sure you want to delete this user?")) {
-          deleteUser($scope.username)
-            .then(function () {
-              if($scope.username === userState.getUsername()) {
-                userState.signOut().then().finally(function() {
-                  uiFlowManager.invalidateStatus("registrationComplete");
-                });
-              }
-            })
-            .finally(function () {
-              $modalInstance.dismiss("deleted");
-            });
-        }
-      };
-
-      $scope.save = function () {
-        $scope.forms.userSettingsForm.email.$pristine = false;
-        $scope.forms.userSettingsForm.firstName.$pristine = false;
-        $scope.forms.userSettingsForm.lastName.$pristine = false;
-
-        if(!$scope.forms.userSettingsForm.$invalid) {
-          $scope.loading = true;
-          updateUser(username, $scope.user).then(
-            function () {
-              $modalInstance.close("success");
-            },
-            function (error) {
-              $log.debug(error);
-              alert("Error: " + humanReadableError(error));
-            }
-          ).finally(function (){
-            if(username === userState.getUsername()) {
-              userState.refreshProfile();
-            }
-            $scope.loading = false;
-          });
-        }
-      };
-
-      $scope.editRoleAllowed = function (role) {
-        if(userState.isRiseAdmin()) {
-          return true;
-        }
-        else if (userState.isUserAdmin()) {
-          if(role.key === "sa" || role.key === "ba") {
-            return false;
-          }
-          else if (role.key ==="ua" &&
-            userState.getUsername() === $scope.user.username) {
-            //cannot unassign oneself from ua
-            return false;
-          }
-          else {
-            return true;
-          }
-        }
-        else {
-          //do not allow user to check/uncheck role by default
-          return false;
-        }
-      };
-
-      $scope.editRoleVisible = function (role) {
-        if(userState.isRiseAdmin()) {
-          return true;
-        }
-        else if (userState.isUserAdmin() || userState.isRiseVisionUser()) {
-          if(role.key === "sa" || role.key === "ba") {
-            return false;
-          }
-          else {
-            return true;
-          }
-        }
-        else {
-          // in practice should never reach here
-          return false;
-        }
-      };
-
-      $scope.forms = {};
-
-    }
-  ]);
-
-angular.module("risevision.common.header")
-.controller("SignOutModalCtrl", ["$scope", "$modalInstance", "$log", "userState",
-  function($scope, $modalInstance, $log, userState) {
-
-    $scope.closeModal = function() {
+    $scope.closeModal = function () {
       $modalInstance.dismiss("cancel");
     };
-    $scope.signOut = function (signOutGoogle) {
-      userState.signOut(signOutGoogle).then(function (){
-        $log.debug("user signed out");
-      }, function (err) {
-        $log.error("sign out failed", err);
-      }).finally(function () {
-        $modalInstance.dismiss("success");
-      });
+
+    $scope.deleteUser = function () {
+      if (confirm("Are you sure you want to delete this user?")) {
+        deleteUser($scope.username)
+          .then(function () {
+            if ($scope.username === userState.getUsername()) {
+              userState.signOut().then().finally(function () {
+                uiFlowManager.invalidateStatus("registrationComplete");
+              });
+            }
+          })
+          .finally(function () {
+            $modalInstance.dismiss("deleted");
+          });
+      }
     };
+
+    $scope.save = function () {
+      $scope.forms.userSettingsForm.email.$pristine = false;
+      $scope.forms.userSettingsForm.firstName.$pristine = false;
+      $scope.forms.userSettingsForm.lastName.$pristine = false;
+
+      if (!$scope.forms.userSettingsForm.$invalid) {
+        $scope.loading = true;
+        updateUser(username, $scope.user).then(
+          function () {
+            $modalInstance.close("success");
+          },
+          function (error) {
+            $log.debug(error);
+            alert("Error: " + humanReadableError(error));
+          }
+        ).finally(function () {
+          if (username === userState.getUsername()) {
+            userState.refreshProfile();
+          }
+          $scope.loading = false;
+        });
+      }
+    };
+
+    $scope.editRoleAllowed = function (role) {
+      if (userState.isRiseAdmin()) {
+        return true;
+      } else if (userState.isUserAdmin()) {
+        if (role.key === "sa" || role.key === "ba") {
+          return false;
+        } else if (role.key === "ua" &&
+          userState.getUsername() === $scope.user.username) {
+          //cannot unassign oneself from ua
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        //do not allow user to check/uncheck role by default
+        return false;
+      }
+    };
+
+    $scope.editRoleVisible = function (role) {
+      if (userState.isRiseAdmin()) {
+        return true;
+      } else if (userState.isUserAdmin() || userState.isRiseVisionUser()) {
+        if (role.key === "sa" || role.key === "ba") {
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        // in practice should never reach here
+        return false;
+      }
+    };
+
+    $scope.forms = {};
+
   }
 ]);
+
+angular.module("risevision.common.header")
+  .controller("SignOutModalCtrl", ["$scope", "$modalInstance", "$log",
+    "userState",
+    function ($scope, $modalInstance, $log, userState) {
+
+      $scope.closeModal = function () {
+        $modalInstance.dismiss("cancel");
+      };
+      $scope.signOut = function (signOutGoogle) {
+        userState.signOut(signOutGoogle).then(function () {
+          $log.debug("user signed out");
+        }, function (err) {
+          $log.error("sign out failed", err);
+        }).finally(function () {
+          $modalInstance.dismiss("success");
+        });
+      };
+    }
+  ]);
 
 // ------------------------------------
 // Off-Canvas Navigation
 // ------------------------------------
 angular.module("risevision.common.header")
-  .service("offCanvas", ["$window", function($window) {
+  .service("offCanvas", ["$window",
+    function ($window) {
 
-    var service = {
-      visible: false,
-      enabled: false
-    };
+      var service = {
+        visible: false,
+        enabled: false
+      };
 
-    service.enabled = angular.element($window).width() <= 1200 ? true : false;
+      service.enabled = angular.element($window).width() <= 1200 ? true :
+        false;
 
-    service.toggle = function(event) {
+      service.toggle = function (event) {
 
-      if (event) { event.stopPropagation(); }
+        if (event) {
+          event.stopPropagation();
+        }
 
-      if(!service.enabled && !service.visible) { return; }
+        if (!service.enabled && !service.visible) {
+          return;
+        }
 
-      service.visible = !service.visible;
-      if (service.visible) {
-        service.nav.addClass("is-off-canvas-opened");
-      } else {
-        service.nav.removeClass("is-off-canvas-opened");
-      }
-    };
+        service.visible = !service.visible;
+        if (service.visible) {
+          service.nav.addClass("is-off-canvas-opened");
+        } else {
+          service.nav.removeClass("is-off-canvas-opened");
+        }
+      };
 
-    service.registerNav = function (nav) {
-      service.nav = nav;
-      service.nav.addClass("off-canvas--container");
-    };
+      service.registerNav = function (nav) {
+        service.nav = nav;
+        service.nav.addClass("off-canvas--container");
+      };
 
-    window.onresize = function () {
-      service.enabled = angular.element($window).width() <= 1200 ? true : false;
-    };
+      window.onresize = function () {
+        service.enabled = angular.element($window).width() <= 1200 ? true :
+          false;
+      };
 
-    return service;
-  }])
-  .directive("offCanvasContent", ["offCanvas", "$swipe", function(offCanvas, $swipe) {
-    return {
-      restrict: "A",
-      link: function (scope, iElement) {
-        // Swipe coords
-        var startCoords;
-        // Handle swipe gesture
-        $swipe.bind(iElement, {
-          "start": function(coords) {
-            startCoords = coords;
-          },
-          "end": function(coords) {
-            if (coords.x - startCoords.x > 0) {
-              offCanvas.toggle();
+      return service;
+    }
+  ])
+  .directive("offCanvasContent", ["offCanvas", "$swipe",
+    function (offCanvas, $swipe) {
+      return {
+        restrict: "A",
+        link: function (scope, iElement) {
+          // Swipe coords
+          var startCoords;
+          // Handle swipe gesture
+          $swipe.bind(iElement, {
+            "start": function (coords) {
+              startCoords = coords;
+            },
+            "end": function (coords) {
+              if (coords.x - startCoords.x > 0) {
+                offCanvas.toggle();
+              }
             }
-          }
-        });
-      }
-    };
-  }])
-  .directive("offCanvasNav", ["offCanvas", "$swipe", function(offCanvas, $swipe) {
-    return {
-      restrict: "A",
-      link: function (scope, iElement) {
-        iElement.addClass("off-canvas--nav");
-        offCanvas.registerNav(iElement);
-        // Swipe coords
-        var startCoords;
-        // Handle swipe gesture
-        $swipe.bind(iElement, {
-          "start": function(coords) {
-            startCoords = coords;
-          },
-          "end": function(coords) {
-            if (coords.x - startCoords.x < 0) {
-              offCanvas.toggle();
+          });
+        }
+      };
+    }
+  ])
+  .directive("offCanvasNav", ["offCanvas", "$swipe",
+    function (offCanvas, $swipe) {
+      return {
+        restrict: "A",
+        link: function (scope, iElement) {
+          iElement.addClass("off-canvas--nav");
+          offCanvas.registerNav(iElement);
+          // Swipe coords
+          var startCoords;
+          // Handle swipe gesture
+          $swipe.bind(iElement, {
+            "start": function (coords) {
+              startCoords = coords;
+            },
+            "end": function (coords) {
+              if (coords.x - startCoords.x < 0) {
+                offCanvas.toggle();
+              }
             }
-          }
-        });
-        // Handle Click
-        iElement.bind("tap", offCanvas.toggle);
-        iElement.bind("click", offCanvas.toggle);
-      }
-    };
-  }])
-  .directive("offCanvasToggle", ["offCanvas", function(offCanvas) {
-    return {
-      restrict: "A",
-      link: function (scope, iElement) {
-        iElement.bind("tap", offCanvas.toggle);
-        iElement.bind("click", offCanvas.toggle);
-      }
-    };
-  }]);
+          });
+          // Handle Click
+          iElement.bind("tap", offCanvas.toggle);
+          iElement.bind("click", offCanvas.toggle);
+        }
+      };
+    }
+  ])
+  .directive("offCanvasToggle", ["offCanvas",
+    function (offCanvas) {
+      return {
+        restrict: "A",
+        link: function (scope, iElement) {
+          iElement.bind("tap", offCanvas.toggle);
+          iElement.bind("click", offCanvas.toggle);
+        }
+      };
+    }
+  ]);
 
 // ------------------------------------
 // Action Sheet
 // ------------------------------------
 angular.module("risevision.common.header")
-  .directive("actionSheet", ["$document", "$compile", "$timeout", function($document, $compile, $timeout) {
-    return {
-      restrict: "A",
-      link: function (scope, iElement, iAttrs) {
+  .directive("actionSheet", ["$document", "$compile", "$timeout",
+    function ($document, $compile, $timeout) {
+      return {
+        restrict: "A",
+        link: function (scope, iElement, iAttrs) {
 
-        var body = $document.find("body").eq(0);
-        var isVisible = false;
-        var backdropDomEl = document.getElementById("action-sheet-backdrop");
+          var body = $document.find("body").eq(0);
+          var isVisible = false;
+          var backdropDomEl = document.getElementById("action-sheet-backdrop");
 
-        if (!angular.isObject(backdropDomEl)) {
-          backdropDomEl = angular.element("<div id=\"action-sheet-backdrop\" class=\"modal-backdrop\"></div>");
-          body.append(backdropDomEl);
-        } else {
-          backdropDomEl = angular.element(backdropDomEl);
-        }
+          if (!angular.isObject(backdropDomEl)) {
+            backdropDomEl = angular.element(
+              "<div id=\"action-sheet-backdrop\" class=\"modal-backdrop\"></div>"
+            );
+            body.append(backdropDomEl);
+          } else {
+            backdropDomEl = angular.element(backdropDomEl);
+          }
 
-        scope.templateUrl = scope.$eval(iAttrs.actionSheet);
-        scope.title = scope.$eval(iAttrs.title);
+          scope.templateUrl = scope.$eval(iAttrs.actionSheet);
+          scope.title = scope.$eval(iAttrs.title);
 
-        var angularDomEl = angular.element("<div class=\"action-sheet is-action-sheet-closed\"><ng-include src=\"templateUrl\"></ng-include></div>");
+          var angularDomEl = angular.element(
+            "<div class=\"action-sheet is-action-sheet-closed\"><ng-include src=\"templateUrl\"></ng-include></div>"
+          );
 
-        var actionSheetDomEl = $compile(angularDomEl)(scope);
-        body.append(actionSheetDomEl);
+          var actionSheetDomEl = $compile(angularDomEl)(scope);
+          body.append(actionSheetDomEl);
 
-        var toggle = function () {
-          isVisible = !isVisible;
-          //fix for #298 - BEGIN
-          //need to completly hide element
-          if (isVisible) {
-            //make element visible first, then apply transformation
-            actionSheetDomEl.toggleClass("is-action-sheet-closed");
-            $timeout(function() {
+          var toggle = function () {
+            isVisible = !isVisible;
+            //fix for #298 - BEGIN
+            //need to completly hide element
+            if (isVisible) {
+              //make element visible first, then apply transformation
+              actionSheetDomEl.toggleClass("is-action-sheet-closed");
+              $timeout(function () {
+                actionSheetDomEl.toggleClass("is-action-sheet-opened");
+                backdropDomEl.toggleClass("is-action-sheet-opened");
+              });
+            } else {
+              //apply transformation first, then hide element
               actionSheetDomEl.toggleClass("is-action-sheet-opened");
               backdropDomEl.toggleClass("is-action-sheet-opened");
+              $timeout(function () {
+                actionSheetDomEl.toggleClass("is-action-sheet-closed");
+              }, 500);
+            }
+            //fix for #298 - END
+
+            if (isVisible) {
+              backdropDomEl.bind("tap", toggle);
+              backdropDomEl.bind("click", toggle);
+            } else {
+              backdropDomEl.unbind("tap");
+              backdropDomEl.unbind("click");
+            }
+          };
+
+          //add classes
+
+          if (iAttrs.actionSheetClass) {
+            iAttrs.actionSheetClass.split(" ").forEach(function (cls) {
+              actionSheetDomEl.addClass(cls);
             });
-          } else {
-            //apply transformation first, then hide element
-            actionSheetDomEl.toggleClass("is-action-sheet-opened");
-            backdropDomEl.toggleClass("is-action-sheet-opened");
-            $timeout(function() {
-              actionSheetDomEl.toggleClass("is-action-sheet-closed");
-            }, 500);
           }
-          //fix for #298 - END
 
-          if (isVisible) {
-            backdropDomEl.bind("tap", toggle);
-            backdropDomEl.bind("click", toggle);
-          } else {
-            backdropDomEl.unbind("tap");
-            backdropDomEl.unbind("click");
-          }
-        };
-
-        //add classes
-
-        if(iAttrs.actionSheetClass) {
-          iAttrs.actionSheetClass.split(" ").forEach(function (cls) {
-            actionSheetDomEl.addClass(cls);
-          });
+          iElement.bind("tap", toggle);
+          iElement.bind("click", toggle);
+          angularDomEl.bind("tap", toggle);
+          angularDomEl.bind("click", toggle);
         }
-
-        iElement.bind("tap", toggle);
-        iElement.bind("click", toggle);
-        angularDomEl.bind("tap", toggle);
-        angularDomEl.bind("click", toggle);
-      }
-    };
-  }])
+      };
+    }
+  ])
   .directive("replaceInclude", function () {
     return {
       require: "ngInclude",
@@ -3016,70 +3165,76 @@ angular.module("risevision.common.header")
     };
   });
 
-(function(angular) {
+(function (angular) {
 
-    "use strict";
+  "use strict";
 
-    var INTERVAL_DELAY = 150;
+  var INTERVAL_DELAY = 150;
 
-    angular.module("rvScrollEvent", [])
-    .directive("rvScrollEvent", ["$parse", "$window", function($parse, $window) {
+  angular.module("rvScrollEvent", [])
+    .directive("rvScrollEvent", ["$parse", "$window",
+      function ($parse, $window) {
         return {
           scope: false,
-          link: function(scope, element, attr) {
-          var fn = $parse(attr.rvScrollEvent);
+          link: function (scope, element, attr) {
+            var fn = $parse(attr.rvScrollEvent);
             var interval,
-            handler,
-            el = element[0],
-            scrollEvent = "scroll",
-            scrollPosition = {
+              handler,
+              el = element[0],
+              scrollEvent = "scroll",
+              scrollPosition = {
                 x: 0,
                 y: 0
+              };
+
+            var bindScroll = function () {
+              handler = function (event) {
+
+                scrollPosition.x = el.scrollLeft;
+                scrollPosition.y = el.scrollTop;
+
+                startInterval(event);
+                unbindScroll();
+                scrollTrigger(event, false);
+              };
+
+
+              element.bind(scrollEvent, handler);
             };
 
-            var bindScroll = function() {
-                handler = function(event) {
-
-                    scrollPosition.x = el.scrollLeft;
-                    scrollPosition.y = el.scrollTop;
-
-                    startInterval(event);
-                    unbindScroll();
-                    scrollTrigger(event, false);
-                };
-
-
-                element.bind(scrollEvent, handler);
+            var startInterval = function (event) {
+              interval = $window.setInterval(function () {
+                if (scrollPosition.x === el.scrollLeft &&
+                  scrollPosition.y === el.scrollTop) {
+                  $window.clearInterval(interval);
+                  bindScroll();
+                  scrollTrigger(event, true);
+                } else {
+                  scrollPosition.x = el.scrollLeft;
+                  scrollPosition.y = el.scrollTop;
+                }
+              }, INTERVAL_DELAY);
             };
 
-            var startInterval = function(event) {
-                interval = $window.setInterval(function() {
-                    if(scrollPosition.x === el.scrollLeft && scrollPosition.y === el.scrollTop) {
-                        $window.clearInterval(interval);
-                        bindScroll();
-                        scrollTrigger(event, true);
-                    } else {
-                        scrollPosition.x = el.scrollLeft;
-                        scrollPosition.y = el.scrollTop;
-                    }
-                }, INTERVAL_DELAY);
+            var unbindScroll = function () {
+              // be nice to others, don"t unbind their scroll handlers
+              element.unbind(scrollEvent, handler);
             };
 
-            var unbindScroll = function() {
-                // be nice to others, don"t unbind their scroll handlers
-                element.unbind(scrollEvent, handler);
-            };
-
-            var scrollTrigger = function(event, isEndEvent) {
-                scope.$apply(function() {
-                  fn(scope, {$event: event, isEndEvent: isEndEvent});
+            var scrollTrigger = function (event, isEndEvent) {
+              scope.$apply(function () {
+                fn(scope, {
+                  $event: event,
+                  isEndEvent: isEndEvent
                 });
+              });
             };
 
             bindScroll();
-        }
-      };
-    }]);
+          }
+        };
+      }
+    ]);
 })(angular);
 
 (function (angular) {
@@ -3088,249 +3243,263 @@ angular.module("risevision.common.header")
 
   .value("humanReadableError", function (resp) {
     var message;
-    if (resp.message) {message = resp.message; }
-    else if(resp.error) {
-      if(resp.error.message) {message = resp.message; }
-      else {message = resp.error; }
+    if (resp.message) {
+      message = resp.message;
+    } else if (resp.error) {
+      if (resp.error.message) {
+        message = resp.message;
+      } else {
+        message = resp.error;
+      }
+    } else {
+      message = resp;
     }
-    else {message = resp; }
     return JSON.stringify(message);
   })
 
   .value("BaseList", function (maxCount) {
+    this.list = [];
+    this.maxCount = maxCount ? maxCount : 20;
+    this.cursor = null;
+    this.endOfList = false;
+    this.searchString = "";
+    this.clear = function () {
       this.list = [];
-      this.maxCount = maxCount ? maxCount : 20;
       this.cursor = null;
       this.endOfList = false;
-      this.searchString = "";
-      this.clear = function () {
-          this.list = [];
-          this.cursor = null;
-          this.endOfList = false;
-      };
-      this.append = function (items) {
-          for (var i = 0; i < items.length; i++) {
-              this.list.push(items[i]);
-          }
-      };
-      this.concat = function (items) {
-          this.list = this.list.concat(items);
-      };
-      this.add = function (items, cursor) {
-          this.cursor = cursor;
-          this.endOfList = items.length < maxCount;
-          this.concat(items);
-      };
-      this.remove = function (index) {
-          this.list.splice(index, 1);
-      };
+    };
+    this.append = function (items) {
+      for (var i = 0; i < items.length; i++) {
+        this.list.push(items[i]);
+      }
+    };
+    this.concat = function (items) {
+      this.list = this.list.concat(items);
+    };
+    this.add = function (items, cursor) {
+      this.cursor = cursor;
+      this.endOfList = items.length < maxCount;
+      this.concat(items);
+    };
+    this.remove = function (index) {
+      this.list.splice(index, 1);
+    };
   })
 
-  .factory("dateIsInRange", [ function () {
-/**
- * check if date is in range
- * @param {Date} date
- * @param {String} strStartDate
- * @return {String} strEndDate
- */
-    return function (date, strStartDate, strEndDate) {
-// strStartDate, strEndDate can either be empty string or date in ISO 8601 format "2014-05-14T00:00:00.000Z"
-// empty means no there is no specific start or/and end date is set
+  .factory("dateIsInRange", [
+    function () {
+      /**
+       * check if date is in range
+       * @param {Date} date
+       * @param {String} strStartDate
+       * @return {String} strEndDate
+       */
+      return function (date, strStartDate, strEndDate) {
+        // strStartDate, strEndDate can either be empty string or date in ISO 8601 format "2014-05-14T00:00:00.000Z"
+        // empty means no there is no specific start or/and end date is set
 
-// When parsing time, we don't want to convert Universal time to the current TimeZone
-// example new Date(Date.parse("2014-05-14T00:00:00.000")); returns "Tue May 13 2014 20:00:00 GMT-0400 (EDT)"
-// what we want is to pretennd that date already comes adjusted to the current TimeZone
-// example "2014-05-14T00:00:00.000" show be converted to "Tue May 14 2014 00:00:00 GMT-0400 (EDT)"
+        // When parsing time, we don't want to convert Universal time to the current TimeZone
+        // example new Date(Date.parse("2014-05-14T00:00:00.000")); returns "Tue May 13 2014 20:00:00 GMT-0400 (EDT)"
+        // what we want is to pretennd that date already comes adjusted to the current TimeZone
+        // example "2014-05-14T00:00:00.000" show be converted to "Tue May 14 2014 00:00:00 GMT-0400 (EDT)"
 
-      var res = true;
-      var re, dt;
+        var res = true;
+        var re, dt;
 
-      try {
+        try {
           if (strStartDate) {
-              re = strStartDate.match(/(\d{4})\-(\d{2})\-(\d{2})/);
-              dt = new Date(re[1], parseInt(re[2]) - 1, re[3], 0, 0, 0, 0);
-              res = (date >= dt);
+            re = strStartDate.match(/(\d{4})\-(\d{2})\-(\d{2})/);
+            dt = new Date(re[1], parseInt(re[2]) - 1, re[3], 0, 0, 0, 0);
+            res = (date >= dt);
           }
 
           if (res && strEndDate) {
-              re = strEndDate.match(/(\d{4})\-(\d{2})\-(\d{2})/);
-              dt = new Date(re[1], parseInt(re[2]) - 1, re[3], 0, 0, 0, 0);
-              res = (date <= dt);
+            re = strEndDate.match(/(\d{4})\-(\d{2})\-(\d{2})/);
+            dt = new Date(re[1], parseInt(re[2]) - 1, re[3], 0, 0, 0, 0);
+            res = (date <= dt);
           }
 
-      } catch (e) {
+        } catch (e) {
           res = false;
+        }
+
+        return res;
+
+      };
+
+    }
+  ])
+    .factory("objectHelper", [
+      function () {
+        var factory = {};
+
+        factory.follow = function (source) {
+          var Follower = function () {};
+          Follower.prototype = source;
+          return new Follower();
+        };
+
+        factory.clearObj = function (obj) {
+          for (var member in obj) {
+            delete obj[member];
+          }
+        };
+
+        factory.clearAndCopy = function (src, dest) {
+          factory.clearObj(dest);
+          angular.extend(dest, src);
+        };
+
+        return factory;
       }
-
-      return res;
-
-    };
-
-  }])
-  .factory("objectHelper", [function() {
-    var factory = {};
-    
-    factory.follow = function(source) {
-      var Follower = function(){};
-      Follower.prototype = source;
-      return new Follower();
-    };
-    
-    factory.clearObj = function (obj) {
-      for (var member in obj) {
-        delete obj[member];
-      }
-    };
-    
-    factory.clearAndCopy = function (src, dest) {
-      factory.clearObj(dest);
-      angular.extend(dest, src);
-    };
-    
-    return factory;    
-  }]);
+    ]);
 })(angular);
 
 angular.module("risevision.common.geodata", [])
-    .value("REGIONS_CA", [
-        ["Alberta", "AB"],
-        ["British Columbia", "BC"],
-        ["Manitoba", "MB"],
-        ["New Brunswick", "NB"],
-        ["Newfoundland and Labrador", "NL"],
-        ["Northwest Territories", "NT"],
-        ["Nova Scotia", "NS"],
-        ["Nunavut", "NV"],
-        ["Ontario", "ON"],
-        ["Prince Edward Island", "PE"],
-        ["Quebec", "QC"],
-        ["Saskatchewan", "SK"],
-        ["Yukon Territory", "YT"]])
+  .value("REGIONS_CA", [
+    ["Alberta", "AB"],
+    ["British Columbia", "BC"],
+    ["Manitoba", "MB"],
+    ["New Brunswick", "NB"],
+    ["Newfoundland and Labrador", "NL"],
+    ["Northwest Territories", "NT"],
+    ["Nova Scotia", "NS"],
+    ["Nunavut", "NV"],
+    ["Ontario", "ON"],
+    ["Prince Edward Island", "PE"],
+    ["Quebec", "QC"],
+    ["Saskatchewan", "SK"],
+    ["Yukon Territory", "YT"]
+  ])
 
-    .value("REGIONS_US", [
-        ["Alabama", "AL"],
-        ["Alaska", "AK"],
-        ["Arizona", "AZ"],
-        ["Arkansas", "AR"],
-        ["California", "CA"],
-        ["Colorado", "CO"],
-        ["Connecticut", "CT"],
-        ["Delaware", "DE"],
-        ["District of Columbia", "DC"],
-        ["Florida", "FL"],
-        ["Georgia", "GA"],
-        ["Hawaii", "HI"],
-        ["Idaho", "ID"],
-        ["Illinois", "IL"],
-        ["Indiana", "IN"],
-        ["Iowa", "IA"],
-        ["Kansas", "KS"],
-        ["Kentucky", "KY"],
-        ["Louisiana", "LA"],
-        ["Maine", "ME"],
-        ["Maryland", "MD"],
-        ["Massachusetts", "MA"],
-        ["Michigan", "MI"],
-        ["Minnesota", "MN"],
-        ["Mississippi", "MS"],
-        ["Missouri", "MO"],
-        ["Montana", "MT"],
-        ["Nebraska", "NE"],
-        ["Nevada", "NV"],
-        ["New Hampshire", "NH"],
-        ["New Jersey", "NJ"],
-        ["New Mexico", "NM"],
-        ["New York", "NY"],
-        ["North Carolina", "NC"],
-        ["North Dakota", "ND"],
-        ["Ohio", "OH"],
-        ["Oklahoma", "OK"],
-        ["Oregon", "OR"],
-        ["Pennsylvania", "PA"],
-        ["Rhode Island", "RI"],
-        ["South Carolina", "SC"],
-        ["South Dakota", "SD"],
-        ["Tennessee", "TN"],
-        ["Texas", "TX"],
-        ["Utah", "UT"],
-        ["Vermont", "VT"],
-        ["Virginia", "VA"],
-        ["Washington", "WA"],
-        ["West Virginia", "WV"],
-        ["Wisconsin", "WI"],
-        ["Wyoming", "WY"]])
-      
-    .value("TIMEZONES", [
-        ["(GMT -12:00) International Dateline West", "-720"],
-        ["(GMT -11:00) Midway Island, Samoa", "-660"],
-        ["(GMT -10:00) Hawaii", "-600"],
-        ["(GMT -09:00) Alaska", "-540"],
-        ["(GMT -08:00) Pacific Time (US & Canada], Tijuana", "-480"],
-        ["(GMT -07:00) Mountain Time (US & Canada)", "-420"],
-        ["(GMT -06:00) Central Time (US & Canada)", "-360"],
-        ["(GMT -05:00) Eastern Time (US & Canada)", "-300"],
-        ["(GMT -04:00) Atlantic Time (Canada)", "-240"],
-        ["(GMT -03:30) NewfoundLand Time (Canada)", "-210"],
-        ["(GMT -03:00) Buenos Aires, Georgetown", "-180"],
-        ["(GMT -02:00) Mid-Atlantic", "-120"],
-        ["(GMT -01:00) Cape Verde Is.", "-60"],
-        ["(GMT  00:00) Dublin, Edinburgh, Lisbon, London", "0"],
-        ["(GMT +01:00) Amsterdam, Berlin, Bern, Rome, Paris, Stockholm, Vienna", "60"],
-        ["(GMT +02:00) Athens, Bucharest, Istanbul, Minsk", "120"],
-        ["(GMT +03:00) Moscow, St. Petersburg, Volgograd", "180"],
-        ["(GMT +03:30) Tehran", "210"],
-        ["(GMT +04:00) Abu Dhabi, Muscat", "240"],
-        ["(GMT +04:30) Kabul", "270"],
-        ["(GMT +05:00) Islamabad, Karachi, Tashkent", "300"],
-        ["(GMT +05:30) Calcutta, Chennai, Mumbai,New Delhi", "330"],
-        ["(GMT +05:45) Kathmandu", "345"],
-        ["(GMT +06:00) Astana,Almaty, Dhaka, Novosibirsk", "360"],
-        ["(GMT +06:30) Rangoon (Yangon, Burma)", "390"],
-        ["(GMT +07:00) Bangkok, Hanoi, Jakarta", "420"],
-        ["(GMT +08:00) Beijing, Chongqing, Hong Kong, Urumqi", "480"],
-        ["(GMT +09:00) Osaka, Sapporo, Tokyo", "540"],
-        ["(GMT +09:30) Adelaide, Darwin", "570"],
-        ["(GMT +10:00) Canberra, Melbourne, Sydney, Vladvostok", "600"],
-        ["(GMT +11:00) Magadan, Solomon Is., New Caledonia", "660"],
-        ["(GMT +12:00) Auckland, Fiji, Kamchatka, Marshall Is.", "720"],
-        ["(GMT +13:00) Nuku'alofa", "780"],
-    ]);
+.value("REGIONS_US", [
+  ["Alabama", "AL"],
+  ["Alaska", "AK"],
+  ["Arizona", "AZ"],
+  ["Arkansas", "AR"],
+  ["California", "CA"],
+  ["Colorado", "CO"],
+  ["Connecticut", "CT"],
+  ["Delaware", "DE"],
+  ["District of Columbia", "DC"],
+  ["Florida", "FL"],
+  ["Georgia", "GA"],
+  ["Hawaii", "HI"],
+  ["Idaho", "ID"],
+  ["Illinois", "IL"],
+  ["Indiana", "IN"],
+  ["Iowa", "IA"],
+  ["Kansas", "KS"],
+  ["Kentucky", "KY"],
+  ["Louisiana", "LA"],
+  ["Maine", "ME"],
+  ["Maryland", "MD"],
+  ["Massachusetts", "MA"],
+  ["Michigan", "MI"],
+  ["Minnesota", "MN"],
+  ["Mississippi", "MS"],
+  ["Missouri", "MO"],
+  ["Montana", "MT"],
+  ["Nebraska", "NE"],
+  ["Nevada", "NV"],
+  ["New Hampshire", "NH"],
+  ["New Jersey", "NJ"],
+  ["New Mexico", "NM"],
+  ["New York", "NY"],
+  ["North Carolina", "NC"],
+  ["North Dakota", "ND"],
+  ["Ohio", "OH"],
+  ["Oklahoma", "OK"],
+  ["Oregon", "OR"],
+  ["Pennsylvania", "PA"],
+  ["Rhode Island", "RI"],
+  ["South Carolina", "SC"],
+  ["South Dakota", "SD"],
+  ["Tennessee", "TN"],
+  ["Texas", "TX"],
+  ["Utah", "UT"],
+  ["Vermont", "VT"],
+  ["Virginia", "VA"],
+  ["Washington", "WA"],
+  ["West Virginia", "WV"],
+  ["Wisconsin", "WI"],
+  ["Wyoming", "WY"]
+])
+
+.value("TIMEZONES", [
+  ["(GMT -12:00) International Dateline West", "-720"],
+  ["(GMT -11:00) Midway Island, Samoa", "-660"],
+  ["(GMT -10:00) Hawaii", "-600"],
+  ["(GMT -09:00) Alaska", "-540"],
+  ["(GMT -08:00) Pacific Time (US & Canada], Tijuana", "-480"],
+  ["(GMT -07:00) Mountain Time (US & Canada)", "-420"],
+  ["(GMT -06:00) Central Time (US & Canada)", "-360"],
+  ["(GMT -05:00) Eastern Time (US & Canada)", "-300"],
+  ["(GMT -04:00) Atlantic Time (Canada)", "-240"],
+  ["(GMT -03:30) NewfoundLand Time (Canada)", "-210"],
+  ["(GMT -03:00) Buenos Aires, Georgetown", "-180"],
+  ["(GMT -02:00) Mid-Atlantic", "-120"],
+  ["(GMT -01:00) Cape Verde Is.", "-60"],
+  ["(GMT  00:00) Dublin, Edinburgh, Lisbon, London", "0"],
+  ["(GMT +01:00) Amsterdam, Berlin, Bern, Rome, Paris, Stockholm, Vienna",
+    "60"
+  ],
+  ["(GMT +02:00) Athens, Bucharest, Istanbul, Minsk", "120"],
+  ["(GMT +03:00) Moscow, St. Petersburg, Volgograd", "180"],
+  ["(GMT +03:30) Tehran", "210"],
+  ["(GMT +04:00) Abu Dhabi, Muscat", "240"],
+  ["(GMT +04:30) Kabul", "270"],
+  ["(GMT +05:00) Islamabad, Karachi, Tashkent", "300"],
+  ["(GMT +05:30) Calcutta, Chennai, Mumbai,New Delhi", "330"],
+  ["(GMT +05:45) Kathmandu", "345"],
+  ["(GMT +06:00) Astana,Almaty, Dhaka, Novosibirsk", "360"],
+  ["(GMT +06:30) Rangoon (Yangon, Burma)", "390"],
+  ["(GMT +07:00) Bangkok, Hanoi, Jakarta", "420"],
+  ["(GMT +08:00) Beijing, Chongqing, Hong Kong, Urumqi", "480"],
+  ["(GMT +09:00) Osaka, Sapporo, Tokyo", "540"],
+  ["(GMT +09:30) Adelaide, Darwin", "570"],
+  ["(GMT +10:00) Canberra, Melbourne, Sydney, Vladvostok", "600"],
+  ["(GMT +11:00) Magadan, Solomon Is., New Caledonia", "660"],
+  ["(GMT +12:00) Auckland, Fiji, Kamchatka, Marshall Is.", "720"],
+  ["(GMT +13:00) Nuku'alofa", "780"],
+]);
 
 (function (angular) {
   "use strict";
 
-  angular.module("risevision.common.popupdetector",
-  [])
+  angular.module("risevision.common.popupdetector", [])
 
   .factory("popupTest", ["$q", "$window", "$timeout",
     function ($q, $window, $timeout) {
-    return function () {
-      var deferred = $q.defer();
+      return function () {
+        var deferred = $q.defer();
 
-      var errorMsg = "<strong>Sign In Pop-Up Blocked</strong> - " +
-        "Allow pop-ups from store.risevision.com in the browser settings and Sign In again.";
+        var errorMsg = "<strong>Sign In Pop-Up Blocked</strong> - " +
+          "Allow pop-ups from store.risevision.com in the browser settings and Sign In again.";
         $timeout(function () {
-          var popup = $window.open("","","width=50, height=50",true);
-          $timeout(function() {
-             try {
-               if(!popup || popup.outerHeight === 0) {
-                 //First Checking Condition Works For IE & Firefox
-                 //Second Checking Condition Works For Chrome
-                 deferred.reject(errorMsg);
-               } else {
-                 popup.close();
-                 deferred.resolve(true);
-               }
-             }
-             catch (e) {
-               deferred.reject(errorMsg);
-               try {popup.close(); } catch(e1) {}
-             }
+          var popup = $window.open("", "", "width=50, height=50", true);
+          $timeout(function () {
+            try {
+              if (!popup || popup.outerHeight === 0) {
+                //First Checking Condition Works For IE & Firefox
+                //Second Checking Condition Works For Chrome
+                deferred.reject(errorMsg);
+              } else {
+                popup.close();
+                deferred.resolve(true);
+              }
+            } catch (e) {
+              deferred.reject(errorMsg);
+              try {
+                popup.close();
+              } catch (e1) {}
+            }
           }, 25);
         }, 2500);
-      return deferred.promise;
-    };
-  }]);
+        return deferred.promise;
+      };
+    }
+  ]);
 
 })(angular);
 
@@ -3341,7 +3510,9 @@ angular.module("risevision.common.geodata", [])
   // var pendingAccessToken, pendingState;
 
   var stripLeadingSlash = function (str) {
-    if(str[0] === "/") { str = str.slice(1); }
+    if (str[0] === "/") {
+      str = str.slice(1);
+    }
     return str;
   };
 
@@ -3356,37 +3527,49 @@ angular.module("risevision.common.geodata", [])
 
   var _userStateReady;
 
-  angular.module("risevision.common.userstate",
-    ["risevision.common.companystate", "risevision.common.util",
+  angular.module("risevision.common.userstate", [
+    "risevision.common.companystate", "risevision.common.util",
     "risevision.common.gapi", "risevision.common.localstorage",
     "risevision.common.config", "risevision.core.cache",
     "risevision.core.oauth2", "ngBiscuit",
     "risevision.core.util", "risevision.core.userprofile",
-    "risevision.common.loading", "LocalStorageModule", 
+    "risevision.common.loading", "LocalStorageModule",
     "risevision.ui-flow"
   ])
 
   // constants (you can override them in your app as needed)
-  .value("DEFAULT_PROFILE_PICTURE", "http://api.randomuser.me/portraits/med/men/33.jpg")
-  .value("OAUTH2_SCOPES", "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile")
-  .value("GOOGLE_OAUTH2_URL", "https://accounts.google.com/o/oauth2/auth")
+  .value("DEFAULT_PROFILE_PICTURE",
+    "http://api.randomuser.me/portraits/med/men/33.jpg")
+    .value("OAUTH2_SCOPES",
+      "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
+  )
+    .value("GOOGLE_OAUTH2_URL", "https://accounts.google.com/o/oauth2/auth")
 
-  .factory("userStateReady", [function (){
-     return _userStateReady.promise; }])
+  .factory("userStateReady", [
+    function () {
+      return _userStateReady.promise;
+    }
+  ])
 
-   .run(["$q", function ($q) {  _userStateReady = $q.defer(); }])
+  .run(["$q",
+    function ($q) {
+      _userStateReady = $q.defer();
+    }
+  ])
 
   .run(["$location", "$window", "userState", "$log", "gapiLoader",
-      function ($location, $window, userState, $log, gapiLoader) {
+    function ($location, $window, userState, $log, gapiLoader) {
       var path = $location.path();
       var params = parseParams(stripLeadingSlash(path));
       var resolveHandled = false;
       $log.debug("URL params", params);
-      if(params.access_token) {
+      if (params.access_token) {
         resolveHandled = true;
         gapiLoader().then(function (gApi) {
           $log.debug("Setting token", params.access_token);
-          gApi.auth.setToken( {access_token: params.access_token});
+          gApi.auth.setToken({
+            access_token: params.access_token
+          });
           userState._setUserToken(params.access_token);
           userState.authenticate().then().finally(_userStateReady.resolve);
         });
@@ -3394,14 +3577,13 @@ angular.module("risevision.common.geodata", [])
       userState._restoreState();
       if (params.state) {
         var state = JSON.parse(decodeURIComponent(params.state));
-        if ((state.p && $window.location.pathname === "/") || 
+        if ((state.p && $window.location.pathname === "/") ||
           (state.s && $window.location.search === "")) {
-          $window.location.replace(state.p + 
+          $window.location.replace(state.p +
             (state.s ? "?" + state.s : "") +
             "#" + encodeURIComponent($location.path())
           );
-        }
-        else {
+        } else {
           $location.path(state.u ? state.u : "");
           $location.replace();
         }
@@ -3410,7 +3592,8 @@ angular.module("risevision.common.geodata", [])
         _userStateReady.resolve();
       }
 
-    }])
+    }
+  ])
 
   .factory("userState", [
     "$q", "$log", "$location", "CLIENT_ID",
@@ -3419,577 +3602,628 @@ angular.module("risevision.common.geodata", [])
     "$rootScope", "$interval", "$loading", "$window", "GOOGLE_OAUTH2_URL",
     "localStorageService", "$document", "uiFlowManager",
     function ($q, $log, $location, CLIENT_ID,
-    gapiLoader, cookieStore, OAUTH2_SCOPES, userInfoCache,
-    getOAuthUserInfo, getUserProfile, companyState, objectHelper,
-    $rootScope, $interval, $loading, $window, GOOGLE_OAUTH2_URL,
-    localStorageService, $document, uiFlowManager) {
-    //singleton factory that represents userState throughout application
+      gapiLoader, cookieStore, OAUTH2_SCOPES, userInfoCache,
+      getOAuthUserInfo, getUserProfile, companyState, objectHelper,
+      $rootScope, $interval, $loading, $window, GOOGLE_OAUTH2_URL,
+      localStorageService, $document, uiFlowManager) {
+      //singleton factory that represents userState throughout application
 
-    var _readRvToken = function () {
-      return cookieStore.get("rv-token");
-    };
+      var _readRvToken = function () {
+        return cookieStore.get("rv-token");
+      };
 
-    var _state = {
-      profile: {}, //Rise vision profile
-      user: {}, //Google user
-      roleMap: {},
-      userToken: _readRvToken(),
-      inRVAFrame: angular.isDefined($location.search().inRVA)
-    };
+      var _state = {
+        profile: {}, //Rise vision profile
+        user: {}, //Google user
+        roleMap: {},
+        userToken: _readRvToken(),
+        inRVAFrame: angular.isDefined($location.search().inRVA)
+      };
 
-    var _accessTokenRefreshHandler = null;
+      var _accessTokenRefreshHandler = null;
 
-    var _detectUserOrAuthChange = function() {
-      var tocken = _readRvToken();
-      if (tocken !== _state.userToken) {
-        //token change indicates that user either signed in, or signed out, or changed account in other app
-        $window.location.reload();
-      } else if (_state.userToken) {
-        //make sure user is not signed out of Google account outside of the CH enabled apps
-        
-        // [AD] Do not show spinner for this
-        // $loading.startGlobal("risevision.user.authenticate"); //spinner will be stop inside authenticate()
-        authenticate(false).finally(function() {
-          if (!_state.userToken) {
-            $log.debug("Authentication failed. Reloading...");
-            $window.location.reload();
+      var _detectUserOrAuthChange = function () {
+        var tocken = _readRvToken();
+        if (tocken !== _state.userToken) {
+          //token change indicates that user either signed in, or signed out, or changed account in other app
+          $window.location.reload();
+        } else if (_state.userToken) {
+          //make sure user is not signed out of Google account outside of the CH enabled apps
+
+          // [AD] Do not show spinner for this
+          // $loading.startGlobal("risevision.user.authenticate"); //spinner will be stop inside authenticate()
+          authenticate(false).finally(function () {
+            if (!_state.userToken) {
+              $log.debug("Authentication failed. Reloading...");
+              $window.location.reload();
+            }
+          });
+        }
+      };
+
+      var _addEventListenerVisibilityAPI = function () {
+        var visibilityState, visibilityChange;
+        var document = $document[0];
+        if (typeof document.hidden !== "undefined") {
+          visibilityChange = "visibilitychange";
+          visibilityState = "visibilityState";
+        } else if (typeof document.mozHidden !== "undefined") {
+          visibilityChange = "mozvisibilitychange";
+          visibilityState = "mozVisibilityState";
+        } else if (typeof document.msHidden !== "undefined") {
+          visibilityChange = "msvisibilitychange";
+          visibilityState = "msVisibilityState";
+        } else if (typeof document.webkitHidden !== "undefined") {
+          visibilityChange = "webkitvisibilitychange";
+          visibilityState = "webkitVisibilityState";
+        }
+
+        document.addEventListener(visibilityChange, function () {
+          $log.debug("visibility: " + document[visibilityState]);
+          if ("visible" === document[visibilityState]) {
+            _detectUserOrAuthChange();
           }
         });
-      }
-    };
 
-    var _addEventListenerVisibilityAPI = function() {
-      var visibilityState, visibilityChange;
-      var document = $document[0];
-      if (typeof document.hidden !== "undefined") {
-        visibilityChange = "visibilitychange";
-        visibilityState = "visibilityState";
-      }
-      else if (typeof document.mozHidden !== "undefined") {
-        visibilityChange = "mozvisibilitychange";
-        visibilityState = "mozVisibilityState";
-      }
-      else if (typeof document.msHidden !== "undefined") {
-        visibilityChange = "msvisibilitychange";
-        visibilityState = "msVisibilityState";
-      }
-      else if (typeof document.webkitHidden !== "undefined") {
-        visibilityChange = "webkitvisibilitychange";
-        visibilityState = "webkitVisibilityState";
-      }
+      };
 
-      document.addEventListener(visibilityChange, function() {
-        $log.debug("visibility: " + document[visibilityState]);
-        if ("visible" === document[visibilityState]) {
-          _detectUserOrAuthChange();
-        }
-      });
+      _addEventListenerVisibilityAPI();
 
-    };
+      var _getUserId = function () {
+        return _state.user ? _state.user.userId : null;
+      };
 
-    _addEventListenerVisibilityAPI();
+      var _setUserToken = function () {
+        _state.userToken = _getUserId();
+        _writeRvToken(_state.userToken);
+      };
 
-    var _getUserId = function () {
-      return _state.user ? _state.user.userId : null;
-    };
+      var _clearUserToken = function () {
+        $log.debug("Clearing user token...");
+        _cancelAccessTokenAutoRefresh();
+        _state.userToken = null;
+        _clearRvToken();
+        return gapiLoader().then(function (gApi) {
+          gApi.auth.setToken();
+        });
+      };
 
-    var _setUserToken = function () {
-      _state.userToken = _getUserId();
-      _writeRvToken(_state.userToken);
-    };
-
-    var _clearUserToken = function () {
-      $log.debug("Clearing user token...");
-      _cancelAccessTokenAutoRefresh();
-      _state.userToken = null;
-      _clearRvToken();
-      return gapiLoader().then(function (gApi) {
-        gApi.auth.setToken();
-      });
-    };
-
-    var _scheduleAccessTokenAutoRefresh = function () {
-      //cancel any existing $interval(s)
-      $interval.cancel(_accessTokenRefreshHandler);
-      _accessTokenRefreshHandler = $interval(function(){
-        //cancel current $interval. It will be re-sheduled if authentication succeeds
+      var _scheduleAccessTokenAutoRefresh = function () {
+        //cancel any existing $interval(s)
         $interval.cancel(_accessTokenRefreshHandler);
-        //refresh Access Token
-        _authorize(true);
-      }, 55 * 60 * 1000); //refresh every 55 minutes
-    };
+        _accessTokenRefreshHandler = $interval(function () {
+          //cancel current $interval. It will be re-sheduled if authentication succeeds
+          $interval.cancel(_accessTokenRefreshHandler);
+          //refresh Access Token
+          _authorize(true);
+        }, 55 * 60 * 1000); //refresh every 55 minutes
+      };
 
-    var _cancelAccessTokenAutoRefresh = function () {
-      $interval.cancel(_accessTokenRefreshHandler);
-      _accessTokenRefreshHandler = null;
-    };
+      var _cancelAccessTokenAutoRefresh = function () {
+        $interval.cancel(_accessTokenRefreshHandler);
+        _accessTokenRefreshHandler = null;
+      };
 
-    var _looksLikeIp = function (addr)
-    {
-     if (/^([0-9])+\.([0-9])+\.([0-9])+\.([0-9])+$/.test(addr))
-      {
-        return (true);
-      }
-      return (false);
-    };
-
-    var _getBaseDomain = function () {
-      var result;
-      if(!result) {
-        var hostname = $location.host();
-
-        if(_looksLikeIp(hostname)) {
-          result = hostname;
+      var _looksLikeIp = function (addr) {
+        if (/^([0-9])+\.([0-9])+\.([0-9])+\.([0-9])+$/.test(addr)) {
+          return (true);
         }
-        else {
-          var parts = hostname.split(".");
-          if(parts.length > 1) {
-            // Somehow, cookies don't persist if we set the domain to appspot.com. 
-            // It requires a sub-domain to be set, ie. rva-test.appspot.com.
-            if (parts[parts.length - 2] === "appspot") {
-              result = parts.slice(parts.length -3).join(".");
-            }
-            else {
-              result = parts.slice(parts.length -2).join(".");
-            }
-          }
-          else {
-            //localhost
+        return (false);
+      };
+
+      var _getBaseDomain = function () {
+        var result;
+        if (!result) {
+          var hostname = $location.host();
+
+          if (_looksLikeIp(hostname)) {
             result = hostname;
+          } else {
+            var parts = hostname.split(".");
+            if (parts.length > 1) {
+              // Somehow, cookies don't persist if we set the domain to appspot.com. 
+              // It requires a sub-domain to be set, ie. rva-test.appspot.com.
+              if (parts[parts.length - 2] === "appspot") {
+                result = parts.slice(parts.length - 3).join(".");
+              } else {
+                result = parts.slice(parts.length - 2).join(".");
+              }
+            } else {
+              //localhost
+              result = hostname;
+            }
           }
+
+          $log.debug("baseDomain", result);
         }
+        return result;
+      };
 
-        $log.debug("baseDomain", result);
-      }
-      return result;
-    };
+      var _resetUserState = function () {
+        objectHelper.clearObj(_state.user);
+        objectHelper.clearObj(_state.profile);
+        _state.roleMap = {};
 
-    var _resetUserState = function () {
-       objectHelper.clearObj(_state.user);
-       objectHelper.clearObj(_state.profile);
-       _state.roleMap = {};
-       
-       companyState.resetCompanyState();
-       $log.debug("User state has been reset.");
-     };
+        companyState.resetCompanyState();
+        $log.debug("User state has been reset.");
+      };
 
-     var refreshProfile = function () {
-       var deferred = $q.defer();
-         getOAuthUserInfo().then(function (oauthUserInfo) {
-         //populate profile if the current user is a rise vision user
-         getUserProfile(_state.user.username, true).then(
-           function (profile) {
-             objectHelper.clearAndCopy(angular.extend({
-               username: oauthUserInfo.email
-             }, profile), _state.profile);
+      var refreshProfile = function () {
+        var deferred = $q.defer();
+        getOAuthUserInfo().then(function (oauthUserInfo) {
+          //populate profile if the current user is a rise vision user
+          getUserProfile(_state.user.username, true).then(
+            function (profile) {
+              objectHelper.clearAndCopy(angular.extend({
+                username: oauthUserInfo.email
+              }, profile), _state.profile);
 
-             //set role map
-             _state.roleMap = {};
-             if(_state.profile.roles) {
-                _state.profile.roles.forEach(function (val){
+              //set role map
+              _state.roleMap = {};
+              if (_state.profile.roles) {
+                _state.profile.roles.forEach(function (val) {
                   _state.roleMap[val] = true;
                 });
-             }
-             deferred.resolve();
-           }, deferred.reject);
-       }, deferred.reject);
-       return deferred.promise;
-     };
+              }
+              deferred.resolve();
+            }, deferred.reject);
+        }, deferred.reject);
+        return deferred.promise;
+      };
 
-     /*
-     * Responsible for triggering the Google OAuth process.
-     *
-     */
-     var _authorize = function(attemptImmediate) {
-       var authorizeDeferred = $q.defer();
+      /*
+       * Responsible for triggering the Google OAuth process.
+       *
+       */
+      var _authorize = function (attemptImmediate) {
+        var authorizeDeferred = $q.defer();
 
-       var opts = {
-         client_id: CLIENT_ID,
-         scope: OAUTH2_SCOPES,
-         cookie_policy: $location.protocol() + "://" +
-           _getBaseDomain()
-       };
+        var opts = {
+          client_id: CLIENT_ID,
+          scope: OAUTH2_SCOPES,
+          cookie_policy: $location.protocol() + "://" +
+            _getBaseDomain()
+        };
 
-       if (attemptImmediate) {
-         opts.immediate = true;
-       }
-       else {
-         opts.prompt = "select_account";
-       }
-       gapiLoader().then(function (gApi) {
-           gApi.auth.authorize(opts, function (authResult) {
-             $log.debug("authResult", authResult);
-             if (authResult && !authResult.error) {
-               _scheduleAccessTokenAutoRefresh();
-                 getOAuthUserInfo().then(function (oauthUserInfo) {
-                   if(!_state.user.username || !_state.profile.username ||
-                     _state.user.username !== oauthUserInfo.email) {
-
-                     //populate user
-                     objectHelper.clearAndCopy({
-                       userId: oauthUserInfo.id, //TODO: ideally we should not use real user ID or email, but use hash value instead
-                       username: oauthUserInfo.email,
-                       picture: oauthUserInfo.picture
-                     }, _state.user);
-
-                     _setUserToken();
-                     refreshProfile().then(function () {
-                       //populate company info
-                       return companyState.init();
-                     })
-                     .finally(function () {
-                       authorizeDeferred.resolve(authResult);
-                       $rootScope.$broadcast("risevision.user.authorized");
-                       if(!attemptImmediate) {
-                         $rootScope.$broadcast("risevision.user.userSignedIn");
-                       }
-                     });
-                   }
-                   else {authorizeDeferred.resolve(authResult); }
-                 }, function(err){
-                   objectHelper.clearObj(_state.user);
-                 authorizeDeferred.reject(err); });
-             }
-             else {
-               objectHelper.clearObj(_state.user);
-               authorizeDeferred.reject("not authorized");
-             }
-           });
-       }, authorizeDeferred.reject); //gapiLoader
-
-       return authorizeDeferred.promise;
-     };
-
-     var authenticateRedirect = function(forceAuth) {
-
-       if(!forceAuth) {
-         return authenticate(forceAuth);
-       }
-
-       else {
-        // _persist();
-
-        var loc, path, search, state;
-        
-        // Redirect to full URL path
-        if ($rootScope.redirectToRoot === false) {
-          loc = $window.location.href.substr(0, $window.location.href.indexOf("#")) || $window.location.href;
+        if (attemptImmediate) {
+          opts.immediate = true;
+        } else {
+          opts.prompt = "select_account";
         }
-        // Redirect to the URL root and append pathname back to the URL
-        // on Authentication success
-        // This prevents Domain authentication errors for sub-folders
-        // Warning: Root folder must have CH available for this to work,
-        // otherwise no redirect is performed!
-        else {
-          loc = $window.location.origin + "/";
-          // Remove first character (/) from path since we're adding it to loc
-          path = $window.location.pathname ? $window.location.pathname.substring(1) : "";
-          // Remove first character (?) from search since it causes a parsing error
-          // when the object is returned
-          search = $window.location.search ? $window.location.search.substring(1) : "";
-        }
-        
-        // double encode since response gets decoded once!
-        state = encodeURIComponent(encodeURIComponent(JSON.stringify({p:path, u: $location.path(), s: search})));
+        gapiLoader().then(function (gApi) {
+          gApi.auth.authorize(opts, function (authResult) {
+            $log.debug("authResult", authResult);
+            if (authResult && !authResult.error) {
+              _scheduleAccessTokenAutoRefresh();
+              getOAuthUserInfo().then(function (oauthUserInfo) {
+                if (!_state.user.username || !_state.profile.username ||
+                  _state.user.username !== oauthUserInfo.email) {
 
-        localStorageService.set("risevision.common.userState", _state);
-        uiFlowManager.persist();
+                  //populate user
+                  objectHelper.clearAndCopy({
+                    userId: oauthUserInfo.id, //TODO: ideally we should not use real user ID or email, but use hash value instead
+                    username: oauthUserInfo.email,
+                    picture: oauthUserInfo.picture
+                  }, _state.user);
 
-        $window.location = GOOGLE_OAUTH2_URL +
-          "?response_type=token" +
-          "&scope=" + encodeURIComponent(OAUTH2_SCOPES) +
-          "&client_id=" + CLIENT_ID +
-          "&redirect_uri=" + encodeURIComponent(loc) +
+                  _setUserToken();
+                  refreshProfile().then(function () {
+                    //populate company info
+                    return companyState.init();
+                  })
+                    .finally(function () {
+                      authorizeDeferred.resolve(authResult);
+                      $rootScope.$broadcast(
+                        "risevision.user.authorized");
+                      if (!attemptImmediate) {
+                        $rootScope.$broadcast(
+                          "risevision.user.userSignedIn");
+                      }
+                    });
+                } else {
+                  authorizeDeferred.resolve(authResult);
+                }
+              }, function (err) {
+                objectHelper.clearObj(_state.user);
+                authorizeDeferred.reject(err);
+              });
+            } else {
+              objectHelper.clearObj(_state.user);
+              authorizeDeferred.reject("not authorized");
+            }
+          });
+        }, authorizeDeferred.reject); //gapiLoader
+
+        return authorizeDeferred.promise;
+      };
+
+      var authenticateRedirect = function (forceAuth) {
+
+        if (!forceAuth) {
+          return authenticate(forceAuth);
+        } else {
+          // _persist();
+
+          var loc, path, search, state;
+
+          // Redirect to full URL path
+          if ($rootScope.redirectToRoot === false) {
+            loc = $window.location.href.substr(0, $window.location.href.indexOf(
+              "#")) || $window.location.href;
+          }
+          // Redirect to the URL root and append pathname back to the URL
+          // on Authentication success
+          // This prevents Domain authentication errors for sub-folders
+          // Warning: Root folder must have CH available for this to work,
+          // otherwise no redirect is performed!
+          else {
+            loc = $window.location.origin + "/";
+            // Remove first character (/) from path since we're adding it to loc
+            path = $window.location.pathname ? $window.location.pathname.substring(
+              1) : "";
+            // Remove first character (?) from search since it causes a parsing error
+            // when the object is returned
+            search = $window.location.search ? $window.location.search.substring(
+              1) : "";
+          }
+
+          // double encode since response gets decoded once!
+          state = encodeURIComponent(encodeURIComponent(JSON.stringify({
+            p: path,
+            u: $location.path(),
+            s: search
+          })));
+
+          localStorageService.set("risevision.common.userState", _state);
+          uiFlowManager.persist();
+
+          $window.location = GOOGLE_OAUTH2_URL +
+            "?response_type=token" +
+            "&scope=" + encodeURIComponent(OAUTH2_SCOPES) +
+            "&client_id=" + CLIENT_ID +
+            "&redirect_uri=" + encodeURIComponent(loc) +
           //http://stackoverflow.com/a/14393492
           "&prompt=select_account" +
-          "&state=" + state;
+            "&state=" + state;
 
-        var deferred = $q.defer();
-        // returns a promise that never get fulfilled since we are redirecting
-        // to that google oauth2 page
-        return deferred.promise;
-       }
-     };
-
-     var authenticate = function(forceAuth) {
-       var authenticateDeferred = $q.defer();
-       $log.debug("authentication called");
-
-       var _proceed = function () {
-         if(forceAuth) {
-           _resetUserState();
-           userInfoCache.removeAll();
-         }
-         // This flag indicates a potentially authenticated user.
-         gapiLoader().then(function () {
-          var userAuthed = (angular.isDefined(_state.userToken) && _state.userToken !== null);
-          //var userAuthed = gApi.auth.getToken() !== null;
-          $log.debug("userAuthed", userAuthed);
-
-          if (forceAuth || userAuthed === true) {
-            _authorize(!forceAuth)
-            .then(function(authResult) {
-              if (authResult && ! authResult.error) {
-                authenticateDeferred.resolve();
-              }
-              else {
-                _clearUserToken();
-                $log.debug("Authentication Error: " + authResult.error);
-                authenticateDeferred.reject("Authentication Error: " + authResult.error);
-              }
-            }, function () {
-              _clearUserToken();
-              authenticateDeferred.reject();
-            })
-            .finally(function (){
-              $loading.stopGlobal("risevision.user.authenticate");
-            });
-          }
-          else {
-            var msg = "user is not authenticated";
-            $log.debug(msg);
-           //  _clearUserToken();
-            authenticateDeferred.reject(msg);
-            objectHelper.clearObj(_state.user);
-            $loading.stopGlobal("risevision.user.authenticate");
-          }
-         });
-       };
-       _proceed();
-
-       if(forceAuth) {
-         $loading.startGlobal("risevision.user.authenticate");
-       }
-
-       return authenticateDeferred.promise;
-     };
-
-     var signOut = function(signOutGoogle) {
-       var deferred = $q.defer();
-       userInfoCache.removeAll();
-       gapiLoader().then(function (gApi) {
-         if (signOutGoogle) {
-           $window.logoutFrame.location = "https://accounts.google.com/Logout";
-         }
-         gApi.auth.signOut();
-         // The flag the indicates a user is potentially
-         // authenticated already, must be destroyed.
-         _clearUserToken().then(function () {
-           //clear auth token
-           // The majority of state is in here
-           _resetUserState();
-           objectHelper.clearObj(_state.user);
-           //call google api to sign out
-           $rootScope.$broadcast("risevision.user.signedOut");
-           $log.debug("User is signed out.");
-           deferred.resolve();
-         }, function () {
-           deferred.reject();
-         });
-       });
-       return deferred.promise;
-     };
-
-    var isLoggedIn = function () {
-      if(!_state.user.username) {return false; }
-      else { return true; }
-    };
-
-    var isRiseVisionUser = function () {
-      return _state.profile.username !== null &&
-        _state.profile.username !== undefined;
-    };
-
-    var hasRole = function (role) {
-      return angular.isDefined(_state.roleMap[role]);
-    };
-
-    var getAccessToken = function () {
-      return $window.gapi ? $window.gapi.auth.getToken() : null;
-    };
-
-    var _writeRvToken = function (value) {
-      var baseDomain = _getBaseDomain();
-      if (baseDomain === "localhost") {
-        cookieStore.put("rv-token", value);
-      } else {
-        cookieStore.put("rv-token", value, {domain: baseDomain, path: "/"});
-      }
-    };
-
-    var _clearRvToken = function () {
-      var baseDomain = _getBaseDomain();
-      if (baseDomain === "localhost") {
-        cookieStore.remove("rv-token");
-      } else {
-        cookieStore.remove("rv-token", {domain: baseDomain, path: "/"});
-      }
-    };
-
-    var _restoreState = function () {
-      var sFromStorage = localStorageService.get("risevision.common.userState");
-      if(sFromStorage) {
-        angular.extend(_state, sFromStorage);
-        localStorageService.remove("risevision.common.userState"); //clear
-        $log.debug("userState restored with", sFromStorage);
-      }
-    };
-
-    var userState = {
-      getUserCompanyId: companyState.getUserCompanyId,
-      getUserCompanyName: companyState.getUserCompanyName,
-      getSelectedCompanyId: companyState.getSelectedCompanyId,
-      getSelectedCompanyName: companyState.getSelectedCompanyName,
-      updateCompanySettings: companyState.updateCompanySettings,
-      getSelectedCompanyCountry: companyState.getSelectedCompanyCountry,
-      getUsername: function () {
-        return (_state.user && _state.user.username) || null; },
-      getUserEmail: function () { return _state.profile.email; },
-      getCopyOfProfile: function () { return objectHelper.follow(_state.profile); },
-      resetCompany: companyState.resetCompany,
-      getCopyOfUserCompany: companyState.getCopyOfUserCompany,
-      getCopyOfSelectedCompany: companyState.getCopyOfSelectedCompany,
-      switchCompany: companyState.switchCompany,
-      isSubcompanySelected: companyState.isSubcompanySelected,
-      isTestCompanySelected: companyState.isTestCompanySelected,
-      getUserPicture: function () { return _state.user.picture; },
-      hasRole: hasRole,
-      inRVAFrame: function () {return _state.inRVAFrame; },
-      isRiseAdmin: function () {return hasRole("sa"); },
-      isRiseStoreAdmin: function () {return hasRole("ba"); },
-      isUserAdmin: function () {return hasRole("ua"); },
-      isPurchaser: function () {return hasRole("pu"); },
-      isSeller: companyState.isSeller,
-      isRiseVisionUser: isRiseVisionUser,
-      isLoggedIn: isLoggedIn,
-      authenticate: _state.inRVAFrame ? authenticate : authenticateRedirect,
-      signOut: signOut,
-      refreshProfile: refreshProfile,
-      getAccessToken: getAccessToken,
-      _restoreState: _restoreState,
-      _setUserToken: function (token) {
-        _state.userToken = token; }
-    };
-
-    window.userState = userState;
-    return userState;
-  }]);
-
-})(angular);
-
-(function (angular){
-  
-  "use strict";
-  
-  angular.module("risevision.common.companystate", ["risevision.core.company",
-    "risevision.common.util"])
-  
-  .factory("companyState", ["$location", "getCompany", "objectHelper", 
-    "$rootScope", "$log", "$q",
-  function ($location, getCompany, objectHelper, $rootScope, $log, $q) {
-    var pendingSelectedCompany;
-    
-    var _state = {
-      userCompany: {},
-      selectedCompany: {}
-    };
-    
-    var _resetCompanyState = function () {
-      objectHelper.clearObj(_state.selectedCompany);
-      objectHelper.clearObj(_state.userCompany);
-      $log.debug("Company state has been reset.");
-    };
-    
-    if($location.search().cid) {
-      $log.debug("cid", $location.search().cid, "saved for later processing.");
-      pendingSelectedCompany = $location.search().cid;
-    }
-    
-    var _init = function () {
-      var deferred = $q.defer();
-      
-      //populate userCompany
-      getCompany().then(function(company) {
-        objectHelper.clearAndCopy(company, _state.userCompany);
-        
-        return _switchCompany(pendingSelectedCompany);
-      })
-      .then(null, function() {
-        _companyState.resetCompany();
-      })
-      .finally(function () {
-        pendingSelectedCompany = null;
-        
-        deferred.resolve(null);
-      });  
-      
-      return deferred.promise;
-    };
-    
-    var _switchCompany = function (companyId) {
-      var deferred = $q.defer();
-      
-      if (companyId && companyId !== _state.userCompany.id) {
-        getCompany(companyId)
-        .then(function (company) {
-          objectHelper.clearAndCopy(company, _state.selectedCompany);
-          
-          deferred.resolve();
-        })
-        .then(null, function(resp) {
-          $log.error("Failed to load selected company.", resp);
-          
-          deferred.reject(resp);
-        });
-      }
-      else {
-        _companyState.resetCompany();
-        
-        deferred.resolve();
-      }
-      
-      return deferred.promise;
-    };
-    
-    var _companyState = {
-      init: _init,
-      switchCompany: _switchCompany,
-      updateCompanySettings: function (company) {
-        if (company && _state.selectedCompany) {
-          objectHelper.clearAndCopy(company, _state.selectedCompany);
-          if (_state.userCompany.id === _state.selectedCompany.id) {
-            objectHelper.clearAndCopy(company, _state.userCompany);
-          }
+          var deferred = $q.defer();
+          // returns a promise that never get fulfilled since we are redirecting
+          // to that google oauth2 page
+          return deferred.promise;
         }
-      },
-      resetCompany: function () { 
-        objectHelper.clearAndCopy(_state.userCompany, _state.selectedCompany); 
-      },
-      resetCompanyState: _resetCompanyState,
-      getUserCompanyId: function () {
-        return (_state.userCompany && _state.userCompany.id) || null; },
-      getUserCompanyName: function () {
-        return (_state.userCompany && _state.userCompany.name) || null;},
-      getSelectedCompanyId: function () {
-        return (_state.selectedCompany && _state.selectedCompany.id) || null; },
-      getSelectedCompanyName: function () {
-        return (_state.selectedCompany && _state.selectedCompany.name) || null;},
-      getSelectedCompanyCountry: function () {
-        return (_state.selectedCompany && _state.selectedCompany.country) || null;},
-      getCopyOfUserCompany: function () { return objectHelper.follow(_state.userCompany); },
-      getCopyOfSelectedCompany: function () { return objectHelper.follow(_state.selectedCompany); },
-      isSubcompanySelected: function () {
-        return _state.selectedCompany && _state.selectedCompany.id !== (_state.userCompany && _state.userCompany.id); },
-      isTestCompanySelected: function () {
-        return _state.selectedCompany && _state.selectedCompany.isTest === true; },
-      isSeller: function () {return (_state.selectedCompany && _state.selectedCompany.sellerId) ? true : false; },
-    };
-    
-    return _companyState;
-  }]);
-  
+      };
+
+      var authenticate = function (forceAuth) {
+        var authenticateDeferred = $q.defer();
+        $log.debug("authentication called");
+
+        var _proceed = function () {
+          if (forceAuth) {
+            _resetUserState();
+            userInfoCache.removeAll();
+          }
+          // This flag indicates a potentially authenticated user.
+          gapiLoader().then(function () {
+            var userAuthed = (angular.isDefined(_state.userToken) &&
+              _state.userToken !== null);
+            //var userAuthed = gApi.auth.getToken() !== null;
+            $log.debug("userAuthed", userAuthed);
+
+            if (forceAuth || userAuthed === true) {
+              _authorize(!forceAuth)
+                .then(function (authResult) {
+                  if (authResult && !authResult.error) {
+                    authenticateDeferred.resolve();
+                  } else {
+                    _clearUserToken();
+                    $log.debug("Authentication Error: " +
+                      authResult.error);
+                    authenticateDeferred.reject(
+                      "Authentication Error: " + authResult.error);
+                  }
+                }, function () {
+                  _clearUserToken();
+                  authenticateDeferred.reject();
+                })
+                .finally(function () {
+                  $loading.stopGlobal(
+                    "risevision.user.authenticate");
+                });
+            } else {
+              var msg = "user is not authenticated";
+              $log.debug(msg);
+              //  _clearUserToken();
+              authenticateDeferred.reject(msg);
+              objectHelper.clearObj(_state.user);
+              $loading.stopGlobal("risevision.user.authenticate");
+            }
+          });
+        };
+        _proceed();
+
+        if (forceAuth) {
+          $loading.startGlobal("risevision.user.authenticate");
+        }
+
+        return authenticateDeferred.promise;
+      };
+
+      var signOut = function (signOutGoogle) {
+        var deferred = $q.defer();
+        userInfoCache.removeAll();
+        gapiLoader().then(function (gApi) {
+          if (signOutGoogle) {
+            $window.logoutFrame.location =
+              "https://accounts.google.com/Logout";
+          }
+          gApi.auth.signOut();
+          // The flag the indicates a user is potentially
+          // authenticated already, must be destroyed.
+          _clearUserToken().then(function () {
+            //clear auth token
+            // The majority of state is in here
+            _resetUserState();
+            objectHelper.clearObj(_state.user);
+            //call google api to sign out
+            $rootScope.$broadcast("risevision.user.signedOut");
+            $log.debug("User is signed out.");
+            deferred.resolve();
+          }, function () {
+            deferred.reject();
+          });
+        });
+        return deferred.promise;
+      };
+
+      var isLoggedIn = function () {
+        if (!_state.user.username) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      var isRiseVisionUser = function () {
+        return _state.profile.username !== null &&
+          _state.profile.username !== undefined;
+      };
+
+      var hasRole = function (role) {
+        return angular.isDefined(_state.roleMap[role]);
+      };
+
+      var getAccessToken = function () {
+        return $window.gapi ? $window.gapi.auth.getToken() : null;
+      };
+
+      var _writeRvToken = function (value) {
+        var baseDomain = _getBaseDomain();
+        if (baseDomain === "localhost") {
+          cookieStore.put("rv-token", value);
+        } else {
+          cookieStore.put("rv-token", value, {
+            domain: baseDomain,
+            path: "/"
+          });
+        }
+      };
+
+      var _clearRvToken = function () {
+        var baseDomain = _getBaseDomain();
+        if (baseDomain === "localhost") {
+          cookieStore.remove("rv-token");
+        } else {
+          cookieStore.remove("rv-token", {
+            domain: baseDomain,
+            path: "/"
+          });
+        }
+      };
+
+      var _restoreState = function () {
+        var sFromStorage = localStorageService.get(
+          "risevision.common.userState");
+        if (sFromStorage) {
+          angular.extend(_state, sFromStorage);
+          localStorageService.remove("risevision.common.userState"); //clear
+          $log.debug("userState restored with", sFromStorage);
+        }
+      };
+
+      var userState = {
+        getUserCompanyId: companyState.getUserCompanyId,
+        getUserCompanyName: companyState.getUserCompanyName,
+        getSelectedCompanyId: companyState.getSelectedCompanyId,
+        getSelectedCompanyName: companyState.getSelectedCompanyName,
+        updateCompanySettings: companyState.updateCompanySettings,
+        getSelectedCompanyCountry: companyState.getSelectedCompanyCountry,
+        getUsername: function () {
+          return (_state.user && _state.user.username) || null;
+        },
+        getUserEmail: function () {
+          return _state.profile.email;
+        },
+        getCopyOfProfile: function () {
+          return objectHelper.follow(_state.profile);
+        },
+        resetCompany: companyState.resetCompany,
+        getCopyOfUserCompany: companyState.getCopyOfUserCompany,
+        getCopyOfSelectedCompany: companyState.getCopyOfSelectedCompany,
+        switchCompany: companyState.switchCompany,
+        isSubcompanySelected: companyState.isSubcompanySelected,
+        isTestCompanySelected: companyState.isTestCompanySelected,
+        getUserPicture: function () {
+          return _state.user.picture;
+        },
+        hasRole: hasRole,
+        inRVAFrame: function () {
+          return _state.inRVAFrame;
+        },
+        isRiseAdmin: function () {
+          return hasRole("sa");
+        },
+        isRiseStoreAdmin: function () {
+          return hasRole("ba");
+        },
+        isUserAdmin: function () {
+          return hasRole("ua");
+        },
+        isPurchaser: function () {
+          return hasRole("pu");
+        },
+        isSeller: companyState.isSeller,
+        isRiseVisionUser: isRiseVisionUser,
+        isLoggedIn: isLoggedIn,
+        authenticate: _state.inRVAFrame ? authenticate : authenticateRedirect,
+        signOut: signOut,
+        refreshProfile: refreshProfile,
+        getAccessToken: getAccessToken,
+        _restoreState: _restoreState,
+        _setUserToken: function (token) {
+          _state.userToken = token;
+        }
+      };
+
+      window.userState = userState;
+      return userState;
+    }
+  ]);
+
 })(angular);
-  
+
+(function (angular) {
+
+  "use strict";
+
+  angular.module("risevision.common.companystate", ["risevision.core.company",
+    "risevision.common.util"
+  ])
+
+  .factory("companyState", ["$location", "getCompany", "objectHelper",
+    "$rootScope", "$log", "$q",
+    function ($location, getCompany, objectHelper, $rootScope, $log, $q) {
+      var pendingSelectedCompany;
+
+      var _state = {
+        userCompany: {},
+        selectedCompany: {}
+      };
+
+      var _resetCompanyState = function () {
+        objectHelper.clearObj(_state.selectedCompany);
+        objectHelper.clearObj(_state.userCompany);
+        $log.debug("Company state has been reset.");
+      };
+
+      if ($location.search().cid) {
+        $log.debug("cid", $location.search().cid,
+          "saved for later processing.");
+        pendingSelectedCompany = $location.search().cid;
+      }
+
+      var _init = function () {
+        var deferred = $q.defer();
+
+        //populate userCompany
+        getCompany().then(function (company) {
+          objectHelper.clearAndCopy(company, _state.userCompany);
+
+          return _switchCompany(pendingSelectedCompany);
+        })
+          .then(null, function () {
+            _companyState.resetCompany();
+          })
+          .finally(function () {
+            pendingSelectedCompany = null;
+
+            deferred.resolve(null);
+          });
+
+        return deferred.promise;
+      };
+
+      var _switchCompany = function (companyId) {
+        var deferred = $q.defer();
+
+        if (companyId && companyId !== _state.userCompany.id) {
+          getCompany(companyId)
+            .then(function (company) {
+              objectHelper.clearAndCopy(company, _state.selectedCompany);
+
+              deferred.resolve();
+            })
+            .then(null, function (resp) {
+              $log.error("Failed to load selected company.", resp);
+
+              deferred.reject(resp);
+            });
+        } else {
+          _companyState.resetCompany();
+
+          deferred.resolve();
+        }
+
+        return deferred.promise;
+      };
+
+      var _companyState = {
+        init: _init,
+        switchCompany: _switchCompany,
+        updateCompanySettings: function (company) {
+          if (company && _state.selectedCompany) {
+            objectHelper.clearAndCopy(company, _state.selectedCompany);
+            if (_state.userCompany.id === _state.selectedCompany.id) {
+              objectHelper.clearAndCopy(company, _state.userCompany);
+            }
+          }
+        },
+        resetCompany: function () {
+          objectHelper.clearAndCopy(_state.userCompany, _state.selectedCompany);
+        },
+        resetCompanyState: _resetCompanyState,
+        getUserCompanyId: function () {
+          return (_state.userCompany && _state.userCompany.id) || null;
+        },
+        getUserCompanyName: function () {
+          return (_state.userCompany && _state.userCompany.name) || null;
+        },
+        getSelectedCompanyId: function () {
+          return (_state.selectedCompany && _state.selectedCompany.id) ||
+            null;
+        },
+        getSelectedCompanyName: function () {
+          return (_state.selectedCompany && _state.selectedCompany.name) ||
+            null;
+        },
+        getSelectedCompanyCountry: function () {
+          return (_state.selectedCompany && _state.selectedCompany.country) ||
+            null;
+        },
+        getCopyOfUserCompany: function () {
+          return objectHelper.follow(_state.userCompany);
+        },
+        getCopyOfSelectedCompany: function () {
+          return objectHelper.follow(_state.selectedCompany);
+        },
+        isSubcompanySelected: function () {
+          return _state.selectedCompany && _state.selectedCompany.id !==
+            (_state.userCompany && _state.userCompany.id);
+        },
+        isTestCompanySelected: function () {
+          return _state.selectedCompany && _state.selectedCompany.isTest ===
+            true;
+        },
+        isSeller: function () {
+          return (_state.selectedCompany && _state.selectedCompany.sellerId) ?
+            true : false;
+        },
+      };
+
+      return _companyState;
+    }
+  ]);
+
+})(angular);
 
 (function (angular) {
   "use strict";
@@ -4208,182 +4442,196 @@ angular.module("risevision.ui-flow", ["LocalStorageModule"])
 
   "use strict";
   angular.module("risevision.common.account", [
-  "risevision.common.gapi", "risevision.core.oauth2",
-  "risevision.common.company",
-  "risevision.core.cache"])
+    "risevision.common.gapi", "risevision.core.oauth2",
+    "risevision.common.company",
+    "risevision.core.cache"
+  ])
 
   .factory("agreeToTerms", ["$q", "riseAPILoader", "$log", "userInfoCache",
-  function ($q, riseAPILoader, $log, userInfoCache) {
-    return function () {
-      $log.debug("agreeToTerms called.");
-      var deferred = $q.defer();
-      riseAPILoader().then(function (riseApi) {
-        var request = riseApi.account.agreeToTerms();
-        request.execute(function (resp) {
-          $log.debug("agreeToTerms resp", resp);
-          userInfoCache.removeAll();
-          if(!resp.error) {
-            deferred.resolve();
-          }
-          else {
-            deferred.reject(resp.error);
-          }
+    function ($q, riseAPILoader, $log, userInfoCache) {
+      return function () {
+        $log.debug("agreeToTerms called.");
+        var deferred = $q.defer();
+        riseAPILoader().then(function (riseApi) {
+          var request = riseApi.account.agreeToTerms();
+          request.execute(function (resp) {
+            $log.debug("agreeToTerms resp", resp);
+            userInfoCache.removeAll();
+            if (!resp.error) {
+              deferred.resolve();
+            } else {
+              deferred.reject(resp.error);
+            }
+          });
         });
-      });
-      return deferred.promise;
-    };
-  }])
+        return deferred.promise;
+      };
+    }
+  ])
 
   .factory("agreeToTermsAndUpdateUser", ["$q", "$log",
-  "createCompany", "agreeToTerms", "updateUser",
-  function ($q, $log, createCompany, agreeToTerms, updateUser) {
-    return function (username, basicProfile) {
-      $log.debug("registerAccount called.", username, basicProfile);
-      var deferred = $q.defer();
-      agreeToTerms().then().finally(function () {
-        updateUser(username, basicProfile).then(function (resp) {
-          if(resp.result) { deferred.resolve(); }
-          else { deferred.reject(); }
-        }, deferred.reject).finally("registerAccount ended");
-      });
-      return deferred.promise;
-    };
-  }])
+    "createCompany", "agreeToTerms", "updateUser",
+    function ($q, $log, createCompany, agreeToTerms, updateUser) {
+      return function (username, basicProfile) {
+        $log.debug("registerAccount called.", username, basicProfile);
+        var deferred = $q.defer();
+        agreeToTerms().then().finally(function () {
+          updateUser(username, basicProfile).then(function (resp) {
+            if (resp.result) {
+              deferred.resolve();
+            } else {
+              deferred.reject();
+            }
+          }, deferred.reject).finally("registerAccount ended");
+        });
+        return deferred.promise;
+      };
+    }
+  ])
 
   .factory("registerAccount", ["$q", "$log",
-  "createCompany", "addAccount", "updateUser",
-  function ($q, $log, createCompany, addAccount, updateUser) {
-    return function (username, basicProfile) {
-      $log.debug("registerAccount called.", username, basicProfile);
-      var deferred = $q.defer();
-      addAccount().then().finally(function () {
-        updateUser(username, basicProfile).then(function (resp) {
-          if(resp.result) { deferred.resolve(); }
-          else { deferred.reject(); }
-        }, deferred.reject).finally("registerAccount ended");
-      });
-      return deferred.promise;
-    };
-  }])
+    "createCompany", "addAccount", "updateUser",
+    function ($q, $log, createCompany, addAccount, updateUser) {
+      return function (username, basicProfile) {
+        $log.debug("registerAccount called.", username, basicProfile);
+        var deferred = $q.defer();
+        addAccount().then().finally(function () {
+          updateUser(username, basicProfile).then(function (resp) {
+            if (resp.result) {
+              deferred.resolve();
+            } else {
+              deferred.reject();
+            }
+          }, deferred.reject).finally("registerAccount ended");
+        });
+        return deferred.promise;
+      };
+    }
+  ])
 
   .factory("addAccount", ["$q", "riseAPILoader", "$log",
-  function ($q, riseAPILoader, $log) {
-    return function () {
-      $log.debug("addAccount called.");
-      var deferred = $q.defer();
-      riseAPILoader().then(function (riseApi) {
-        var request = riseApi.account.add();
-        request.execute(function (resp) {
+    function ($q, riseAPILoader, $log) {
+      return function () {
+        $log.debug("addAccount called.");
+        var deferred = $q.defer();
+        riseAPILoader().then(function (riseApi) {
+          var request = riseApi.account.add();
+          request.execute(function (resp) {
             $log.debug("addAccount resp", resp);
-            if(resp.result) {
+            if (resp.result) {
               deferred.resolve();
-            }
-            else {
+            } else {
               deferred.reject("addAccount");
             }
+          });
         });
-      });
-      return deferred.promise;
-    };
-  }])
+        return deferred.promise;
+      };
+    }
+  ])
 
   .factory("getAccount", ["$q", "riseAPILoader", "$log",
-  function ($q, riseAPILoader, $log) {
-    return function () {
-      $log.debug("getAccount called.");
-      var deferred = $q.defer();
-      riseAPILoader().then(function (riseApi) {
-        var request = riseApi.account.get();
-        request.execute(function (resp) {
+    function ($q, riseAPILoader, $log) {
+      return function () {
+        $log.debug("getAccount called.");
+        var deferred = $q.defer();
+        riseAPILoader().then(function (riseApi) {
+          var request = riseApi.account.get();
+          request.execute(function (resp) {
             $log.debug("getAccount resp", resp);
-            if(resp.item) {
+            if (resp.item) {
               deferred.resolve(resp.item);
-            }
-            else {
+            } else {
               deferred.reject("getAccount");
             }
+          });
         });
-      });
-      return deferred.promise;
-    };
-  }]);
+        return deferred.promise;
+      };
+    }
+  ]);
 
 })(angular);
 
 (function (angular) {
   "use strict";
 
-  angular.module("risevision.common.registration",
-  ["risevision.common.userstate", "risevision.ui-flow",
-  "risevision.core.userprofile", "risevision.common.gapi"])
+  angular.module("risevision.common.registration", [
+    "risevision.common.userstate", "risevision.ui-flow",
+    "risevision.core.userprofile", "risevision.common.gapi"
+  ])
 
-  .config(["uiStatusDependencies", function (uiStatusDependencies) {
-    uiStatusDependencies.addDependencies({
-      "registerdAsRiseVisionUser" : "signedInWithGoogle",
-      "registeredAsRiseVisionUser" : "signedInWithGoogle",
-      "registrationComplete": ["notLoggedIn", "registeredAsRiseVisionUser"]
-    });
-
-    uiStatusDependencies.setMaximumRetryCount("signedInWithGoogle", 1);
-  }])
-
-  .factory("signedInWithGoogle", ["$q", "getOAuthUserInfo", "userState",
-  function ($q, getOAuthUserInfo, userState) {
-    return function () {
-      var deferred = $q.defer();
-      // userState.authenticate(false).then().finally(function () {
-        if(userState.isLoggedIn()){
-          deferred.resolve();
-        }
-        else {
-          deferred.reject("signedInWithGoogle");
-        }
-      // });
-      return deferred.promise;
-    };
-  }])
-
-  .factory("notLoggedIn", ["$q", "$log", "signedInWithGoogle",
-  function ($q, $log, signedInWithGoogle) {
-    return function () {
-      var deferred = $q.defer();
-      signedInWithGoogle().then(function () {
-        deferred.reject("notLoggedIn");
-      }, deferred.resolve);
-      return deferred.promise;
-    };
-  }])
-
-  .factory("registeredAsRiseVisionUser", ["$q", "getUserProfile", "cookieStore", "$log", "userState",
-  function ($q, getUserProfile, cookieStore, $log, userState) {
-    return function () {
-      var deferred = $q.defer();
-
-      getUserProfile(userState.getUsername()).then(function (profile) {
-        if(angular.isDefined(profile.email) &&
-          angular.isDefined(profile.mailSyncEnabled)) {
-          deferred.resolve(profile);
-        }
-        else if (cookieStore.get("surpressRegistration")){
-          deferred.resolve({});
-        }
-        else {
-          deferred.reject("registeredAsRiseVisionUser");
-        }
-      }, function (err) {
-        if (cookieStore.get("surpressRegistration")){
-          deferred.resolve({});
-        }
-        else {
-          $log.debug("registeredAsRiseVisionUser rejected", err);
-          deferred.reject("registeredAsRiseVisionUser");
-        }
+  .config(["uiStatusDependencies",
+    function (uiStatusDependencies) {
+      uiStatusDependencies.addDependencies({
+        "registerdAsRiseVisionUser": "signedInWithGoogle",
+        "registeredAsRiseVisionUser": "signedInWithGoogle",
+        "registrationComplete": ["notLoggedIn",
+          "registeredAsRiseVisionUser"
+        ]
       });
 
-      return deferred.promise;
-    };
-  }]);
-  
+      uiStatusDependencies.setMaximumRetryCount("signedInWithGoogle", 1);
+    }
+  ])
+
+  .factory("signedInWithGoogle", ["$q", "getOAuthUserInfo", "userState",
+    function ($q, getOAuthUserInfo, userState) {
+      return function () {
+        var deferred = $q.defer();
+        // userState.authenticate(false).then().finally(function () {
+        if (userState.isLoggedIn()) {
+          deferred.resolve();
+        } else {
+          deferred.reject("signedInWithGoogle");
+        }
+        // });
+        return deferred.promise;
+      };
+    }
+  ])
+
+  .factory("notLoggedIn", ["$q", "$log", "signedInWithGoogle",
+    function ($q, $log, signedInWithGoogle) {
+      return function () {
+        var deferred = $q.defer();
+        signedInWithGoogle().then(function () {
+          deferred.reject("notLoggedIn");
+        }, deferred.resolve);
+        return deferred.promise;
+      };
+    }
+  ])
+
+  .factory("registeredAsRiseVisionUser", ["$q", "getUserProfile",
+    "cookieStore", "$log", "userState",
+    function ($q, getUserProfile, cookieStore, $log, userState) {
+      return function () {
+        var deferred = $q.defer();
+
+        getUserProfile(userState.getUsername()).then(function (profile) {
+          if (angular.isDefined(profile.email) &&
+            angular.isDefined(profile.mailSyncEnabled)) {
+            deferred.resolve(profile);
+          } else if (cookieStore.get("surpressRegistration")) {
+            deferred.resolve({});
+          } else {
+            deferred.reject("registeredAsRiseVisionUser");
+          }
+        }, function (err) {
+          if (cookieStore.get("surpressRegistration")) {
+            deferred.resolve({});
+          } else {
+            $log.debug("registeredAsRiseVisionUser rejected", err);
+            deferred.reject("registeredAsRiseVisionUser");
+          }
+        });
+
+        return deferred.promise;
+      };
+    }
+  ]);
+
 })(angular);
 
 (function (angular){
@@ -5079,306 +5327,327 @@ function ($q, $http, $document, $timeout, GSFP_URL, $log) {
   }]);
 
 angular.module("risevision.common.header")
-.directive("fastpass", ["loadFastpass", "userState",
-function (loadFastpass, userState) {
-  return {
-    restrict: "AE",
-    scope: {},
-    link: function ($scope) {
-      $scope.$watch(function () { return userState.getUserEmail(); }, function (email) {
-        if(email) {
-          loadFastpass(userState.getUsername(), userState.getUserEmail());
+  .directive("fastpass", ["loadFastpass", "userState",
+    function (loadFastpass, userState) {
+      return {
+        restrict: "AE",
+        scope: {},
+        link: function ($scope) {
+          $scope.$watch(function () {
+            return userState.getUserEmail();
+          }, function (email) {
+            if (email) {
+              loadFastpass(userState.getUsername(), userState.getUserEmail());
+            }
+          });
         }
-      });
+      };
     }
-  };
-}]);
+  ]);
 
 angular.module("risevision.common.header")
-.directive("linkCid", ["userState",
-function (userState) {
-  return {
-    link: function($scope, ele, attr){
-      var updateLinkCompanyId = function(companyId) {
-        var index = attr.href.indexOf("cid=");
-        var value;
-        if (index > -1) {
-          value = attr.href.substring(0, index + 4) + companyId;
-        }
-        else {
-          value = attr.href + 
-            (attr.href.indexOf("?") === -1 ? "?": "&") + 
-            "cid=" + companyId;
-        }
-        attr.$set("href", value);
-      };
-      
-      $scope.$watch(function () {
-        return userState.getSelectedCompanyId();
-      }, function(newValue, oldValue) {
-        if (newValue && newValue !== oldValue) {
-          updateLinkCompanyId(newValue);
-        }
-      });
-    }
-  };
-}]);
+  .directive("linkCid", ["userState",
+    function (userState) {
+      return {
+        link: function ($scope, ele, attr) {
+          var updateLinkCompanyId = function (companyId) {
+            var index = attr.href.indexOf("cid=");
+            var value;
+            if (index > -1) {
+              value = attr.href.substring(0, index + 4) + companyId;
+            } else {
+              value = attr.href +
+                (attr.href.indexOf("?") === -1 ? "?" : "&") +
+                "cid=" + companyId;
+            }
+            attr.$set("href", value);
+          };
 
-(function (angular){
+          $scope.$watch(function () {
+            return userState.getSelectedCompanyId();
+          }, function (newValue, oldValue) {
+            if (newValue && newValue !== oldValue) {
+              updateLinkCompanyId(newValue);
+            }
+          });
+        }
+      };
+    }
+  ]);
+
+(function (angular) {
 
   "use strict";
 
   angular.module("risevision.common.company", [])
 
-    .service("selectedCompanyUrlHandler", ["$location", "userState",
-      function ($location, userState) {
-        this.updateUrl = function () {
-          var selectedCompanyId = userState.getSelectedCompanyId();
-          // This parameter is only appended to the url if the user is logged in
-          if (selectedCompanyId && $location.search().cid !== selectedCompanyId) {
-            $location.search("cid", selectedCompanyId);
-          }
-        };
-        
-        this.updateSelectedCompanyFromUrl = function () {
-          var newCompanyId = $location.search().cid;
-          if(newCompanyId && userState.getUserCompanyId() && 
-            newCompanyId !== userState.getSelectedCompanyId()) {
-            userState.switchCompany(newCompanyId);
-          }
-          else if (!newCompanyId && userState.getSelectedCompanyId()) {
-            $location.search("cid", userState.getSelectedCompanyId());
-            $location.replace();
-          }
-        };
-    }]);
-  }
-)(angular);
+  .service("selectedCompanyUrlHandler", ["$location", "userState",
+    function ($location, userState) {
+      this.updateUrl = function () {
+        var selectedCompanyId = userState.getSelectedCompanyId();
+        // This parameter is only appended to the url if the user is logged in
+        if (selectedCompanyId && $location.search().cid !==
+          selectedCompanyId) {
+          $location.search("cid", selectedCompanyId);
+        }
+      };
+
+      this.updateSelectedCompanyFromUrl = function () {
+        var newCompanyId = $location.search().cid;
+        if (newCompanyId && userState.getUserCompanyId() &&
+          newCompanyId !== userState.getSelectedCompanyId()) {
+          userState.switchCompany(newCompanyId);
+        } else if (!newCompanyId && userState.getSelectedCompanyId()) {
+          $location.search("cid", userState.getSelectedCompanyId());
+          $location.replace();
+        }
+      };
+    }
+  ]);
+})(angular);
 
 (function (angular) {
   "use strict";
 
-  angular.module("risevision.common.shoppingcart", ["risevision.common.gapi", "risevision.common.userstate"])
+  angular.module("risevision.common.shoppingcart", ["risevision.common.gapi",
+    "risevision.common.userstate"
+  ])
 
-  .factory("shoppingCart", ["rvStorage", "storeAPILoader", "$log", "$q", "userState",
-    function (rvStorage, storeAPILoader, $log, $q, userState){
-    var _items = [];
+  .factory("shoppingCart", ["rvStorage", "storeAPILoader", "$log", "$q",
+    "userState",
+    function (rvStorage, storeAPILoader, $log, $q, userState) {
+      var _items = [];
 
-    var readFromStorage = function() {
-      var deferred = $q.defer();
-      if (userState.isLoggedIn()) {
+      var readFromStorage = function () {
+        var deferred = $q.defer();
+        if (userState.isLoggedIn()) {
 
-        storeAPILoader().then(function (storeApi) {
-          var obj = {"id": userState.getUsername()};
-          var request = storeApi.cart.get(obj);
-          request.execute(function (resp) {
-            if(!resp.error) {
-              clearItems();
-              addItems(resp.items);
-              deferred.resolve();
-            }
-            else {
-              $log.warn("Error loading cart items. Error: " + resp.error);
-              deferred.resolve();
-            }
-          });
-        });
-
-      } else {
-        clearItems();
-        deferred.resolve();
-      }
-      return deferred.promise;
-    };
-
-    var persistToStorage = function() {
-      var deferred = $q.defer();
-      if (userState.isLoggedIn()) {
-        storeAPILoader().then(function (storeApi) {
-          //remove try/catch after API is implemented
-          try {
-            var obj = { "data": {
-              //"id": userState.getUsername(),
-              "jsonItems": getJsonItems(_items),
-              "shipToAttention": "",
-              "useBillToAddress": true
-            }};
-            var request = storeApi.cart.put(obj);
+          storeAPILoader().then(function (storeApi) {
+            var obj = {
+              "id": userState.getUsername()
+            };
+            var request = storeApi.cart.get(obj);
             request.execute(function (resp) {
-              if(!resp.error) {
+              if (!resp.error) {
+                clearItems();
+                addItems(resp.items);
                 deferred.resolve();
-              }
-              else {
-                $log.warn("Error persisting cart items. Error: " + resp.error);
+              } else {
+                $log.warn("Error loading cart items. Error: " + resp.error);
                 deferred.resolve();
               }
             });
-          } catch (e) {
-              deferred.resolve();
-              $log.error("[persistToStorage] - Unimplemented API method " + e.message);
-          }
-        });
-      }
-      return deferred.promise;
+          });
 
-    };
-
-    var clearItems = function() {
-      while(_items.length > 0) { _items.pop(); }
-    };
-
-    var addItems = function(items) {
-      if (items) {
-        for (var i = 0; i < items.length; i++) {
-          _items.push(items[i]);
+        } else {
+          clearItems();
+          deferred.resolve();
         }
-      }
-    };
+        return deferred.promise;
+      };
 
-    var cleanProducts = function(items) {
-      var item;
-      var res = [];
-      for (var i = 0; i < items.length; i++) {
-        item = {
-          "productId": items[i].productId,
-          "qty": items[i].qty,
-          "accountingId": items[i].selected.accountingId
-        };
-        res.push(item);
-      }
-      return res;
-    };
+      var persistToStorage = function () {
+        var deferred = $q.defer();
+        if (userState.isLoggedIn()) {
+          storeAPILoader().then(function (storeApi) {
+            //remove try/catch after API is implemented
+            try {
+              var obj = {
+                "data": {
+                  //"id": userState.getUsername(),
+                  "jsonItems": getJsonItems(_items),
+                  "shipToAttention": "",
+                  "useBillToAddress": true
+                }
+              };
+              var request = storeApi.cart.put(obj);
+              request.execute(function (resp) {
+                if (!resp.error) {
+                  deferred.resolve();
+                } else {
+                  $log.warn("Error persisting cart items. Error: " +
+                    resp.error);
+                  deferred.resolve();
+                }
+              });
+            } catch (e) {
+              deferred.resolve();
+              $log.error(
+                "[persistToStorage] - Unimplemented API method " + e.message
+              );
+            }
+          });
+        }
+        return deferred.promise;
 
-    var getJsonItems = function(items) {
-      var cleanedItems = cleanProducts(items);
-      return JSON.stringify(cleanedItems);
-    };
+      };
 
-    var loadReady = $q.defer();
+      var clearItems = function () {
+        while (_items.length > 0) {
+          _items.pop();
+        }
+      };
 
-    var cartManager = {
-      loadReady: loadReady.promise,
-      getSubTotal: function (isCAD) {
-        var shipping = 0;
-        var subTotal = 0;
-        if(_items) {
-          for (var i = 0; i < _items.length; i++) {
-              var shippingCost = (isCAD) ? _items[i].selected.shippingCAD : _items[i].selected.shippingUSD;
-              var productCost = (isCAD) ? _items[i].selected.priceCAD : _items[i].selected.priceUSD;
+      var addItems = function (items) {
+        if (items) {
+          for (var i = 0; i < items.length; i++) {
+            _items.push(items[i]);
+          }
+        }
+      };
+
+      var cleanProducts = function (items) {
+        var item;
+        var res = [];
+        for (var i = 0; i < items.length; i++) {
+          item = {
+            "productId": items[i].productId,
+            "qty": items[i].qty,
+            "accountingId": items[i].selected.accountingId
+          };
+          res.push(item);
+        }
+        return res;
+      };
+
+      var getJsonItems = function (items) {
+        var cleanedItems = cleanProducts(items);
+        return JSON.stringify(cleanedItems);
+      };
+
+      var loadReady = $q.defer();
+
+      var cartManager = {
+        loadReady: loadReady.promise,
+        getSubTotal: function (isCAD) {
+          var shipping = 0;
+          var subTotal = 0;
+          if (_items) {
+            for (var i = 0; i < _items.length; i++) {
+              var shippingCost = (isCAD) ? _items[i].selected.shippingCAD :
+                _items[i].selected.shippingUSD;
+              var productCost = (isCAD) ? _items[i].selected.priceCAD :
+                _items[i].selected.priceUSD;
               if (_items[i].paymentTerms !== "Metered") {
                 shipping += shippingCost * _items[i].qty || 0;
                 subTotal += productCost * _items[i].qty || 0;
               }
+            }
           }
-        }
 
-        return subTotal + shipping;
-      },
-      getShippingTotal: function (isCAD) {
-        var shipping = 0;
-        if(_items) {
-          for (var i = 0; i < _items.length; i++) {
+          return subTotal + shipping;
+        },
+        getShippingTotal: function (isCAD) {
+          var shipping = 0;
+          if (_items) {
+            for (var i = 0; i < _items.length; i++) {
               if (_items[i].paymentTerms !== "Metered") {
-                var shippingCost = (isCAD) ? _items[i].selected.shippingCAD : _items[i].selected.shippingUSD;
+                var shippingCost = (isCAD) ? _items[i].selected.shippingCAD :
+                  _items[i].selected.shippingUSD;
                 shipping += shippingCost * _items[i].qty || 0;
               }
+            }
           }
-        }
-        return shipping;
-      },
-      clear: function () {
-        clearItems();
-        persistToStorage();
-        $log.debug("Shopping cart cleared.");
-      },
-      getItems: function () {
-        return _items;
-      },
-      setItems: function (items) {
-        $log.debug("Setting cart items", items);
-        //check if they are pointing to the same object
-        if (items !== _items) {
+          return shipping;
+        },
+        clear: function () {
           clearItems();
-          addItems(items);
-        }
-        persistToStorage();
-      },
-      initialize: function () {
-        readFromStorage().then(loadReady.resolve);
-        return _items;
-      },
-      getItemCount: function () {
-        if(_items !== null) {
-          return _items.length;
-        }
-        else {
-          return 0;
-        }
-      },
-      removeItem: function(itemToRemove) {
-        if (itemToRemove) {          
-          for (var i = 0; i < _items.length; i++) {
-            if (_items[i].productId === itemToRemove.productId) {
-              _items.splice(i, 1);
-              break;
-            }
+          persistToStorage();
+          $log.debug("Shopping cart cleared.");
+        },
+        getItems: function () {
+          return _items;
+        },
+        setItems: function (items) {
+          $log.debug("Setting cart items", items);
+          //check if they are pointing to the same object
+          if (items !== _items) {
+            clearItems();
+            addItems(items);
           }
           persistToStorage();
-        }
-      },
-      adjustItemQuantity: function(itemToAdjust, qty) {
-        if (itemToAdjust && $.isNumeric(qty) && qty > 0) {
-          persistToStorage();
-        }
-      },
-      addItem: function(itemToAdd, qty, pricingIndex) {
-
-        if(!userState.isRiseVisionUser()) {return; }
-        var item = this.findItem(itemToAdd);
-
-        if (item && (itemToAdd.paymentTerms === "Subscription" || itemToAdd.paymentTerms === "Metered")) {
-          return;
-        }
-
-        if (itemToAdd && $.isNumeric(qty) && itemToAdd.orderedPricing.length > pricingIndex) {
-          if (item) {
-            // qty for existing item is increased
-            item.qty = parseInt(item.qty) + parseInt(qty);
+        },
+        initialize: function () {
+          readFromStorage().then(loadReady.resolve);
+          return _items;
+        },
+        getItemCount: function () {
+          if (_items !== null) {
+            return _items.length;
           } else {
-            // item is not already in the cart
-            item = angular.copy(itemToAdd);
-            item.qty = qty;
-            _items.push(item);
+            return 0;
           }
-          item.selected = itemToAdd.orderedPricing[pricingIndex];
-          persistToStorage();
-        }
-      },
-      findItem: function(item) {
-        //returns instance of the object from _items array
+        },
+        removeItem: function (itemToRemove) {
+          if (itemToRemove) {
+            for (var i = 0; i < _items.length; i++) {
+              if (_items[i].productId === itemToRemove.productId) {
+                _items.splice(i, 1);
+                break;
+              }
+            }
+            persistToStorage();
+          }
+        },
+        adjustItemQuantity: function (itemToAdjust, qty) {
+          if (itemToAdjust && $.isNumeric(qty) && qty > 0) {
+            persistToStorage();
+          }
+        },
+        addItem: function (itemToAdd, qty, pricingIndex) {
 
-        if (item) {
-          for (var i = 0; i < _items.length; i++) {
-            if (item.productId === _items[i].productId) {
-              return _items[i];
+          if (!userState.isRiseVisionUser()) {
+            return;
+          }
+          var item = this.findItem(itemToAdd);
+
+          if (item && (itemToAdd.paymentTerms === "Subscription" ||
+            itemToAdd.paymentTerms === "Metered")) {
+            return;
+          }
+
+          if (itemToAdd && $.isNumeric(qty) && itemToAdd.orderedPricing.length >
+            pricingIndex) {
+            if (item) {
+              // qty for existing item is increased
+              item.qty = parseInt(item.qty) + parseInt(qty);
+            } else {
+              // item is not already in the cart
+              item = angular.copy(itemToAdd);
+              item.qty = qty;
+              _items.push(item);
+            }
+            item.selected = itemToAdd.orderedPricing[pricingIndex];
+            persistToStorage();
+          }
+        },
+        findItem: function (item) {
+          //returns instance of the object from _items array
+
+          if (item) {
+            for (var i = 0; i < _items.length; i++) {
+              if (item.productId === _items[i].productId) {
+                return _items[i];
+              }
             }
           }
+
+          return null;
+        },
+        itemExists: function (item) {
+          if (userState.isRiseVisionUser() && item && this.findItem(item) !==
+            null) {
+            return true;
+          }
+          return false;
         }
+      };
+      cartManager.initialize();
 
-        return null;
-      },
-      itemExists: function(item) {
-        if (userState.isRiseVisionUser() && item && this.findItem(item) !== null) {
-          return true;
-        }
-        return false;
-      }
-    };
-    cartManager.initialize();
+      return cartManager;
 
-    return cartManager;
-
-  }]);
+    }
+  ]);
 })(angular);
 
 /*
@@ -5390,24 +5659,30 @@ function (userState) {
  * dev.js, stage.js & prod.js
  *
  */
-(function (angular){
+(function (angular) {
   "use strict";
 
-  try { angular.module("risevision.common.config"); }
-catch(err) { angular.module("risevision.common.config", []); }
+  try {
+    angular.module("risevision.common.config");
+  } catch (err) {
+    angular.module("risevision.common.config", []);
+  }
 
   angular.module("risevision.common.config")
     .value("CORE_URL", "https://rvaserver2.appspot.com/_ah/api")
     .value("STORE_URL", "https://store.risevision.com")
-    .value("STORE_ENDPOINT_URL", "https://store-dot-rvaserver2.appspot.com/_ah/api")
-    .value("GSFP_URL", "https://gsfp-dot-rvaserver2.appspot.com/fp")
-  ;
+    .value("STORE_ENDPOINT_URL",
+      "https://store-dot-rvaserver2.appspot.com/_ah/api")
+    .value("GSFP_URL", "https://gsfp-dot-rvaserver2.appspot.com/fp");
 })(angular);
 
 "use strict";
 
-try { angular.module("risevision.common.config"); }
-catch(err) { angular.module("risevision.common.config", []); }
+try {
+  angular.module("risevision.common.config");
+} catch (err) {
+  angular.module("risevision.common.config", []);
+}
 
 angular.module("risevision.common.config")
   .value("CLIENT_ID", "614513768474.apps.googleusercontent.com");
@@ -5525,37 +5800,40 @@ angular.module("risevision.common.gapi", [])
       return gapiClientLoaderGenerator("monitoring", "v0", baseUrl);
   }]);
 
-(function (angular){
+(function (angular) {
 
   "use strict";
 
   angular.module("risevision.common.localstorage", ["ngStorage"])
-    .factory("localStorageService", ["$localStorage", "$sessionStorage", function ($localStorage, $sessionStorage) {
+    .factory("localStorageService", ["$localStorage", "$sessionStorage",
+      function ($localStorage, $sessionStorage) {
 
-      var storageImpl = localStorage ? localStorage : sessionStorage;
-      var storageImplWrapper = localStorage ? $localStorage : $sessionStorage;
+        var storageImpl = localStorage ? localStorage : sessionStorage;
+        var storageImplWrapper = localStorage ? $localStorage :
+          $sessionStorage;
 
-      var factory = {};
+        var factory = {};
 
-      factory.getStorage = function() {
-        return storageImplWrapper;
-      };
+        factory.getStorage = function () {
+          return storageImplWrapper;
+        };
 
-      factory.setItemImmediate = function(key, value) {
-        storageImpl.setItem(key, value);
-      };
+        factory.setItemImmediate = function (key, value) {
+          storageImpl.setItem(key, value);
+        };
 
-      factory.removeItemImmediate = function(key) {
-        storageImpl.removeItem(key);
-      };
+        factory.removeItemImmediate = function (key) {
+          storageImpl.removeItem(key);
+        };
 
-      factory.getItem = function(key) {
-        return storageImpl.getItem(key);
-      };
+        factory.getItem = function (key) {
+          return storageImpl.getItem(key);
+        };
 
-      return factory;
+        return factory;
 
-    }]);
+      }
+    ]);
 
 })(angular);
 
@@ -5565,19 +5843,20 @@ angular.module("risevision.common.gapi", [])
 
   angular.module("risevision.common.systemmessages", [])
 
-    .factory("systemMessages", ["$log", "$q", function ($log, $q) {
+  .factory("systemMessages", ["$log", "$q",
+    function ($log, $q) {
 
       var messages = [];
       var _retrievers = [];
 
-      function pushMessage (m, list) {
+      function pushMessage(m, list) {
         //TODO add more sophisticated, sorting-based logic here
         $log.debug("pushing message", m);
         list.push(m);
       }
 
       messages.addMessages = function (newMessages) {
-        if(newMessages && newMessages instanceof Array) {
+        if (newMessages && newMessages instanceof Array) {
           newMessages = (function filterNewMessages(items) {
             var _newItems = [];
 
@@ -5587,7 +5866,7 @@ angular.module("risevision.common.gapi", [])
               var endTime = new Date(msg.endDate || "2199-12-31");
               var startTime = new Date(msg.startDate || 0);
               endTime.setDate(endTime.getDate() + 1);
-              if(currentTime > startTime && currentTime < endTime ) {
+              if (currentTime > startTime && currentTime < endTime) {
                 _newItems.push(msg);
               }
             });
@@ -5597,17 +5876,23 @@ angular.module("risevision.common.gapi", [])
             //temporary logic to avoid duplicate messages
             var duplicate = false;
             messages.forEach(function (um) {
-              if(um.text === m.text) {duplicate = true; }
+              if (um.text === m.text) {
+                duplicate = true;
+              }
             });
-            if(!duplicate) {
+            if (!duplicate) {
               pushMessage(m, messages);
             }
           });
 
           messages.sort(function (a, b) {
-            if (!a.startDate || a.startDate > b.startDate) {return 1; }
-            else if (a.startDate && a.startDate === b.startDate) {return 0; }
-            else { return -1; }
+            if (!a.startDate || a.startDate > b.startDate) {
+              return 1;
+            } else if (a.startDate && a.startDate === b.startDate) {
+              return 0;
+            } else {
+              return -1;
+            }
           }).reverse();
         }
       };
@@ -5625,7 +5910,9 @@ angular.module("risevision.common.gapi", [])
 
       messages.resetAndGetMessages = function () {
         messages.clear();
-        var promises = _retrievers.map(function (func) {return func.call(); });
+        var promises = _retrievers.map(function (func) {
+          return func.call();
+        });
         return $q.all(promises).then(function (messageArrays) {
           messageArrays.forEach(messages.addMessages);
         });
@@ -5633,7 +5920,8 @@ angular.module("risevision.common.gapi", [])
 
       return messages;
 
-    }]);
+    }
+  ]);
 
 })(angular);
 
@@ -5641,22 +5929,30 @@ angular.module("risevision.common.gapi", [])
 /*global gadgets: false */
 
 angular.module("risevision.store.data-gadgets", [])
-  .service("gadgetsService", ["$q", function ($q) {
+  .service("gadgetsService", ["$q",
+    function ($q) {
 
-    this.closeIFrame = function () {
-      var deferred = $q.defer();
-      gadgets.rpc.call("", "rscmd_closeSettings", function() { deferred.resolve(true); });
-      return deferred.promise;
-    };
+      this.closeIFrame = function () {
+        var deferred = $q.defer();
+        gadgets.rpc.call("", "rscmd_closeSettings", function () {
+          deferred.resolve(true);
+        });
+        return deferred.promise;
+      };
 
-    this.sendProductCode = function (productCode) {
-      var deferred = $q.defer();
-      var data = { params: productCode };
-      gadgets.rpc.call("", "rscmd_saveSettings", function() { deferred.resolve(true); }, data);
-      return deferred.promise;
-    };
+      this.sendProductCode = function (productCode) {
+        var deferred = $q.defer();
+        var data = {
+          params: productCode
+        };
+        gadgets.rpc.call("", "rscmd_saveSettings", function () {
+          deferred.resolve(true);
+        }, data);
+        return deferred.promise;
+      };
 
-  }]);
+    }
+  ]);
 
 (function () {
   "use strict";
