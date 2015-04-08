@@ -2226,7 +2226,7 @@ angular.module("risevision.common.header")
 
           action.then(
             function () {
-              userState.authenticate(false).then()
+              userState.refreshProfile().then()
                 .finally(function () {
                   $modalInstance.close("success");
                   $loading.stop("registration-modal");
@@ -2238,7 +2238,7 @@ angular.module("risevision.common.header")
             })
             .finally(function () {
               $scope.registering = false;
-              userState.authenticate(false);
+              userState.refreshProfile();
             });
         }
 
@@ -3693,17 +3693,16 @@ angular.module("risevision.common.geodata", [])
 
       var _accessTokenRefreshHandler = null;
 
+      var _authenticateDeferred;
+
       var _detectUserOrAuthChange = function () {
-        var tocken = rvTokenStore.read();
-        if (tocken !== _state.userToken) {
+        var token = rvTokenStore.read();
+        if (token !== _state.userToken) {
           //token change indicates that user either signed in, or signed out, or changed account in other app
           $window.location.reload();
         } else if (_state.userToken) {
           //make sure user is not signed out of Google account outside of the CH enabled apps
-
-          // [AD] Do not show spinner for this
-          // $loading.startGlobal("risevision.user.authenticate"); //spinner will be stop inside authenticate()
-          authenticate(false).finally(function () {
+          _authorize(true).finally(function () {
             if (!_state.userToken) {
               $log.debug("Authentication failed. Reloading...");
               $window.location.reload();
@@ -3773,6 +3772,7 @@ angular.module("risevision.common.geodata", [])
       };
 
       var _resetUserState = function () {
+        _authenticateDeferred = null;
         objectHelper.clearObj(_state.user);
         objectHelper.clearObj(_state.profile);
         _state.roleMap = {};
@@ -3798,8 +3798,12 @@ angular.module("risevision.common.geodata", [])
                   _state.roleMap[val] = true;
                 });
               }
-              deferred.resolve();
-            }, deferred.reject);
+
+              //populate company info
+              return companyState.init();
+            }).then(function () {
+            deferred.resolve();
+          }, deferred.reject);
         }, deferred.reject);
         return deferred.promise;
       };
@@ -3840,10 +3844,7 @@ angular.module("risevision.common.geodata", [])
                   }, _state.user);
 
                   _setUserToken();
-                  refreshProfile().then(function () {
-                    //populate company info
-                    return companyState.init();
-                  })
+                  refreshProfile()
                     .finally(function () {
                       authorizeDeferred.resolve(authResult);
                       $rootScope.$broadcast(
@@ -3862,6 +3863,7 @@ angular.module("risevision.common.geodata", [])
               });
             } else {
               objectHelper.clearObj(_state.user);
+              _clearUserToken();
               authorizeDeferred.reject("not authorized");
             }
           });
@@ -3875,8 +3877,6 @@ angular.module("risevision.common.geodata", [])
         if (!forceAuth) {
           return authenticate(forceAuth);
         } else {
-          // _persist();
-
           var loc, path, search, state;
 
           // Redirect to full URL path
@@ -3924,49 +3924,60 @@ angular.module("risevision.common.geodata", [])
       };
 
       var authenticate = function (forceAuth) {
-        var authenticateDeferred = $q.defer();
+        var authenticateDeferred;
+
+        // Clear User state
+        if (forceAuth) {
+          _resetUserState();
+          userInfoCache.removeAll();
+        }
+
+        // Return cached promise
+        if (_authenticateDeferred) {
+          return _authenticateDeferred.promise;
+        } else {
+          _authenticateDeferred = $q.defer();
+        }
+
+        // Always resolve local copy of promise
+        // in case cached version is cleared
+        authenticateDeferred = _authenticateDeferred;
         $log.debug("authentication called");
 
         var _proceed = function () {
-          if (forceAuth) {
-            _resetUserState();
-            userInfoCache.removeAll();
-          }
           // This flag indicates a potentially authenticated user.
-          gapiLoader().then(function () {
-            var userAuthed = (angular.isDefined(_state.userToken) &&
-              _state.userToken !== null);
-            $log.debug("userAuthed", userAuthed);
+          var userAuthed = (angular.isDefined(_state.userToken) &&
+            _state.userToken !== null);
+          $log.debug("userAuthed", userAuthed);
 
-            if (forceAuth || userAuthed === true) {
-              _authorize(!forceAuth)
-                .then(function (authResult) {
-                  if (authResult && !authResult.error) {
-                    authenticateDeferred.resolve();
-                  } else {
-                    _clearUserToken();
-                    $log.debug("Authentication Error: " +
-                      authResult.error);
-                    authenticateDeferred.reject(
-                      "Authentication Error: " + authResult.error);
-                  }
-                }, function () {
+          if (forceAuth || userAuthed === true) {
+            _authorize(!forceAuth)
+              .then(function (authResult) {
+                if (authResult && !authResult.error) {
+                  authenticateDeferred.resolve();
+                } else {
                   _clearUserToken();
-                  authenticateDeferred.reject();
-                })
-                .finally(function () {
-                  $loading.stopGlobal(
-                    "risevision.user.authenticate");
-                });
-            } else {
-              var msg = "user is not authenticated";
-              $log.debug(msg);
-              //  _clearUserToken();
-              authenticateDeferred.reject(msg);
-              objectHelper.clearObj(_state.user);
-              $loading.stopGlobal("risevision.user.authenticate");
-            }
-          });
+                  $log.debug("Authentication Error: " +
+                    authResult.error);
+                  authenticateDeferred.reject(
+                    "Authentication Error: " + authResult.error);
+                }
+              }, function () {
+                _clearUserToken();
+                authenticateDeferred.reject();
+              })
+              .finally(function () {
+                $loading.stopGlobal(
+                  "risevision.user.authenticate");
+              });
+          } else {
+            var msg = "user is not authenticated";
+            $log.debug(msg);
+            //  _clearUserToken();
+            authenticateDeferred.reject(msg);
+            objectHelper.clearObj(_state.user);
+            $loading.stopGlobal("risevision.user.authenticate");
+          }
         };
         _proceed();
 
@@ -4092,7 +4103,6 @@ angular.module("risevision.common.geodata", [])
         }
       };
 
-      window.userState = userState;
       return userState;
     }
   ]);
