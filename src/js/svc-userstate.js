@@ -41,6 +41,7 @@
     .value("GOOGLE_OAUTH2_URL", "https://accounts.google.com/o/oauth2/auth")
 
   .factory("userStateReady", [
+
     function () {
       return _userStateReady.promise;
     }

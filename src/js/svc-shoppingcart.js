@@ -108,40 +108,10 @@
       };
 
       var loadReady = $q.defer();
+      var username = null;
 
       var cartManager = {
         loadReady: loadReady.promise,
-        getSubTotal: function (isCAD) {
-          var shipping = 0;
-          var subTotal = 0;
-          if (_items) {
-            for (var i = 0; i < _items.length; i++) {
-              var shippingCost = (isCAD) ? _items[i].selected.shippingCAD :
-                _items[i].selected.shippingUSD;
-              var productCost = (isCAD) ? _items[i].selected.priceCAD :
-                _items[i].selected.priceUSD;
-              if (_items[i].paymentTerms !== "Metered") {
-                shipping += shippingCost * _items[i].qty || 0;
-                subTotal += productCost * _items[i].qty || 0;
-              }
-            }
-          }
-
-          return subTotal + shipping;
-        },
-        getShippingTotal: function (isCAD) {
-          var shipping = 0;
-          if (_items) {
-            for (var i = 0; i < _items.length; i++) {
-              if (_items[i].paymentTerms !== "Metered") {
-                var shippingCost = (isCAD) ? _items[i].selected.shippingCAD :
-                  _items[i].selected.shippingUSD;
-                shipping += shippingCost * _items[i].qty || 0;
-              }
-            }
-          }
-          return shipping;
-        },
         clear: function () {
           clearItems();
           persistToStorage();
@@ -160,7 +130,11 @@
           persistToStorage();
         },
         initialize: function () {
-          readFromStorage().then(loadReady.resolve);
+          if (username !== userState.getUsername()) {
+            username = userState.getUsername();
+            clearItems();
+            readFromStorage().then(loadReady.resolve);
+          }
           return _items;
         },
         getItemCount: function () {

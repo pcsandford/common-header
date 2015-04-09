@@ -48,6 +48,7 @@
   })
 
   .factory("dateIsInRange", [
+
     function () {
       /**
        * check if date is in range
@@ -91,6 +92,7 @@
     }
   ])
     .factory("objectHelper", [
+
       function () {
         var factory = {};
 

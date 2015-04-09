@@ -1,5 +1,6 @@
 angular.module("risevision.common.header")
   .filter("humanReadableDateTime", [
+
     function () {
       return function (d) {
         if (d) {

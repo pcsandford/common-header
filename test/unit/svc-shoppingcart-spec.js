@@ -17,6 +17,7 @@ describe("Services: Shopping Cart", function() {
     $provide.value("userState", {
       isLoggedIn: function () {return true; },
       isRiseVisionUser: function () {return true; },
+      getUsername: function () {return "John"; },
       _restoreState: function () {}
     });
 
