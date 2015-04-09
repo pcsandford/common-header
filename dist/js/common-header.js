@@ -91,9 +91,9 @@ catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("app-nav-buttons.html",
-    "<li class=\"dropdown hidden-xs\">\n" +
-    "  <a href=\"\" class=\"dropdown-toggle\"><i class=\"fa fa-th\"></i></a>\n" +
-    "  <div class=\"dropdown-menu app-navigation\">\n" +
+    "<li dropdown class=\"dropdown hidden-xs\">\n" +
+    "  <a href=\"\" dropdown-toggle class=\"dropdown-toggle\"><i class=\"fa fa-th\"></i></a>\n" +
+    "  <div class=\"dropdown-menu app-navigation\" role=\"menu\">\n" +
     "    <ng-include \n" +
     "      replace-include\n" +
     "      src=\"'app-nav-buttons-menu.html'\">\n" +
@@ -161,11 +161,12 @@ app.run(["$templateCache", function($templateCache) {
     "  </a>\n" +
     "</li>\n" +
     "<li\n" +
+    "  dropdown\n" +
     "  class=\"dropdown user-profile-dropdown desktop-menu-item\"\n" +
     "  ng-class=\"{'hidden-xs': isLoggedIn}\"\n" +
     "  ng-show=\"isLoggedIn\"\n" +
     "  >\n" +
-    "    <a href=\"\" class=\"dropdown-toggle\">\n" +
+    "    <a href=\"\" dropdown-toggle class=\"dropdown-toggle\">\n" +
     "      <div class=\"user-id pull-left add-right\">\n" +
     "        <span class=\"username\">{{username}}</span>\n" +
     "        <span><strong>{{companyName}}</strong></span>\n" +
@@ -173,7 +174,7 @@ app.run(["$templateCache", function($templateCache) {
     "      <img ng-src=\"{{userPicture}}\"\n" +
     "        class=\"profile-pic\" width=\"30\" height=\"30\" alt=\"User\" />\n" +
     "    </a>\n" +
-    "    <div class=\"dropdown-menu\">\n" +
+    "    <div class=\"dropdown-menu\" role=\"menu\">\n" +
     "      <ng-include\n" +
     "        src=\"'auth-buttons-menu.html'\"\n" +
     "        replace-include\n" +
@@ -182,11 +183,12 @@ app.run(["$templateCache", function($templateCache) {
     "</li>\n" +
     "<!-- Mobile -->\n" +
     "<li\n" +
+    "  dropdown\n" +
     "  class=\"dropdown user-profile-dropdown mobile-menu-item\"\n" +
     "  ng-class=\"{'visible-xs-inline-block': isLoggedIn}\"\n" +
     "  ng-show=\"isLoggedIn\"\n" +
     "  >\n" +
-    "    <a href=\"\" class=\"visible-xs dropdown-toggle\" action-sheet=\"'auth-buttons-menu.html'\"\n" +
+    "    <a href=\"\" dropdown-toggle class=\"visible-xs dropdown-toggle\" action-sheet=\"'auth-buttons-menu.html'\"\n" +
     "      action-sheet-class=\"user-profile-dropdown\">\n" +
     "      <div class=\"user-id\">\n" +
     "        <span style=\"max-width:90px\">{{username}}</span>\n" +
@@ -1316,13 +1318,13 @@ app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("system-messages-button.html",
     "<!-- Desktop and tablet -->\n" +
-    "<li class=\"dropdown system-messages hidden-xs\"\n" +
+    "<li dropdown class=\"dropdown system-messages hidden-xs\"\n" +
     "ng-show=\"isRiseVisionUser && messages.length > 0\">\n" +
-    "  <a href=\"\" class=\"dropdown-toggle system-messages-button\">\n" +
+    "  <a href=\"\" dropdown-toggle class=\"dropdown-toggle system-messages-button\">\n" +
     "    <i class=\"fa fa-bell\"></i>\n" +
     "    <span class=\"label label-danger system-messages-badge\">{{messages.length | surpressZero}}</span>\n" +
     "  </a>\n" +
-    "  <div class=\"dropdown-menu system-messages system-message-list\">\n" +
+    "  <div class=\"dropdown-menu system-messages system-message-list\" role=\"menu\">\n" +
     "    <ng-include\n" +
     "      src=\"'system-messages-button-menu.html'\"\n" +
     "    ></ng-include>\n" +
