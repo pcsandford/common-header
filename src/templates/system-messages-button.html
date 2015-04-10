@@ -1,11 +1,11 @@
 <!-- Desktop and tablet -->
-<li class="dropdown system-messages hidden-xs"
+<li dropdown class="dropdown system-messages hidden-xs"
 ng-show="isRiseVisionUser && messages.length > 0">
-  <a href="" class="dropdown-toggle system-messages-button">
+  <a href="" dropdown-toggle class="dropdown-toggle system-messages-button">
     <i class="fa fa-bell"></i>
     <span class="label label-danger system-messages-badge">{{messages.length | surpressZero}}</span>
   </a>
-  <div class="dropdown-menu system-messages system-message-list">
+  <div class="dropdown-menu system-messages system-message-list" role="menu">
     <ng-include
       src="'system-messages-button-menu.html'"
     ></ng-include>
