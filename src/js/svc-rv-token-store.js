@@ -15,7 +15,9 @@
       var _writeRvToken = function (value) {
         var baseDomain = getBaseDomain();
         if (baseDomain === "localhost") {
-          cookieStore.put("rv-token", value);
+          cookieStore.put("rv-token", value, {
+            path: "/"
+          });
         } else {
           cookieStore.put("rv-token", value, {
             domain: baseDomain,
@@ -27,7 +29,9 @@
       var _clearRvToken = function () {
         var baseDomain = getBaseDomain();
         if (baseDomain === "localhost") {
-          cookieStore.remove("rv-token");
+          cookieStore.remove("rv-token", {
+            path: "/"
+          });
         } else {
           cookieStore.remove("rv-token", {
             domain: baseDomain,
