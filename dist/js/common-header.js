@@ -3334,31 +3334,72 @@ angular.module("risevision.common.header")
 
     }
   ])
-    .factory("objectHelper", [
 
-      function () {
-        var factory = {};
+  .factory("objectHelper", [
 
-        factory.follow = function (source) {
-          var Follower = function () {};
-          Follower.prototype = source;
-          return new Follower();
-        };
+    function () {
+      var factory = {};
 
-        factory.clearObj = function (obj) {
-          for (var member in obj) {
-            delete obj[member];
+      factory.follow = function (source) {
+        var Follower = function () {};
+        Follower.prototype = source;
+        return new Follower();
+      };
+
+      factory.clearObj = function (obj) {
+        for (var member in obj) {
+          delete obj[member];
+        }
+      };
+
+      factory.clearAndCopy = function (src, dest) {
+        factory.clearObj(dest);
+        angular.extend(dest, src);
+      };
+
+      return factory;
+    }
+  ])
+
+  .factory("getBaseDomain", ["$log", "$location",
+    function ($log, $location) {
+      var _looksLikeIp = function (addr) {
+        if (/^([0-9])+\.([0-9])+\.([0-9])+\.([0-9])+$/.test(addr)) {
+          return (true);
+        }
+        return (false);
+      };
+
+      return function () {
+        var result;
+        if (!result) {
+          var hostname = $location.host();
+
+          if (_looksLikeIp(hostname)) {
+            result = hostname;
+          } else {
+            var parts = hostname.split(".");
+            if (parts.length > 1) {
+              // Somehow, cookies don't persist if we set the domain to appspot.com. 
+              // It requires a sub-domain to be set, ie. rva-test.appspot.com.
+              if (parts[parts.length - 2] === "appspot") {
+                result = parts.slice(parts.length - 3).join(".");
+              } else {
+                result = parts.slice(parts.length - 2).join(".");
+              }
+            } else {
+              //localhost
+              result = hostname;
+            }
           }
-        };
 
-        factory.clearAndCopy = function (src, dest) {
-          factory.clearObj(dest);
-          angular.extend(dest, src);
-        };
+          $log.debug("baseDomain", result);
+        }
+        return result;
+      };
 
-        return factory;
-      }
-    ]);
+    }
+  ]);
 })(angular);
 
 angular.module("risevision.common.geodata", [])
@@ -3512,8 +3553,55 @@ angular.module("risevision.common.geodata", [])
 (function (angular) {
   "use strict";
 
+  angular.module("risevision.common.rvtokenstore", [
+    "risevision.common.util", "LocalStorageModule"
+  ])
 
-  // var pendingAccessToken, pendingState;
+  .service("rvTokenStore", ["$log", "$location", "cookieStore",
+    "getBaseDomain",
+    function ($log, $location, cookieStore, getBaseDomain) {
+      var _readRvToken = function () {
+        return cookieStore.get("rv-token");
+      };
+
+      var _writeRvToken = function (value) {
+        var baseDomain = getBaseDomain();
+        if (baseDomain === "localhost") {
+          cookieStore.put("rv-token", value);
+        } else {
+          cookieStore.put("rv-token", value, {
+            domain: baseDomain,
+            path: "/"
+          });
+        }
+      };
+
+      var _clearRvToken = function () {
+        var baseDomain = getBaseDomain();
+        if (baseDomain === "localhost") {
+          cookieStore.remove("rv-token");
+        } else {
+          cookieStore.remove("rv-token", {
+            domain: baseDomain,
+            path: "/"
+          });
+        }
+      };
+
+      var rvToken = {
+        read: _readRvToken,
+        write: _writeRvToken,
+        clear: _clearRvToken
+      };
+
+      return rvToken;
+    }
+  ]);
+
+})(angular);
+
+(function (angular) {
+  "use strict";
 
   var stripLeadingSlash = function (str) {
     if (str[0] === "/") {
@@ -3531,16 +3619,14 @@ angular.module("risevision.common.geodata", [])
     return params;
   };
 
-  var _userStateReady;
-
   angular.module("risevision.common.userstate", [
     "risevision.common.companystate", "risevision.common.util",
     "risevision.common.gapi", "risevision.common.localstorage",
     "risevision.common.config", "risevision.core.cache",
     "risevision.core.oauth2", "ngBiscuit",
     "risevision.core.util", "risevision.core.userprofile",
-    "risevision.common.loading", "LocalStorageModule",
-    "risevision.ui-flow"
+    "risevision.common.loading", "risevision.ui-flow",
+    "risevision.common.rvtokenstore"
   ])
 
   // constants (you can override them in your app as needed)
@@ -3551,34 +3637,19 @@ angular.module("risevision.common.geodata", [])
   )
     .value("GOOGLE_OAUTH2_URL", "https://accounts.google.com/o/oauth2/auth")
 
-  .factory("userStateReady", [
-
-    function () {
-      return _userStateReady.promise;
-    }
-  ])
-
-  .run(["$q",
-    function ($q) {
-      _userStateReady = $q.defer();
-    }
-  ])
-
   .run(["$location", "$window", "userState", "$log", "gapiLoader",
     function ($location, $window, userState, $log, gapiLoader) {
       var path = $location.path();
       var params = parseParams(stripLeadingSlash(path));
-      var resolveHandled = false;
       $log.debug("URL params", params);
       if (params.access_token) {
-        resolveHandled = true;
         gapiLoader().then(function (gApi) {
           $log.debug("Setting token", params.access_token);
           gApi.auth.setToken({
             access_token: params.access_token
           });
           userState._setUserToken(params.access_token);
-          userState.authenticate().then().finally(_userStateReady.resolve);
+          userState.authenticate();
         });
       }
       userState._restoreState();
@@ -3595,42 +3666,37 @@ angular.module("risevision.common.geodata", [])
           $location.replace();
         }
       }
-      if (!resolveHandled) {
-        _userStateReady.resolve();
-      }
 
     }
   ])
 
   .factory("userState", [
     "$q", "$log", "$location", "CLIENT_ID",
-    "gapiLoader", "cookieStore", "OAUTH2_SCOPES", "userInfoCache",
+    "gapiLoader", "OAUTH2_SCOPES", "userInfoCache",
     "getOAuthUserInfo", "getUserProfile", "companyState", "objectHelper",
     "$rootScope", "$interval", "$loading", "$window", "GOOGLE_OAUTH2_URL",
-    "localStorageService", "$document", "uiFlowManager",
+    "localStorageService", "$document", "uiFlowManager", "getBaseDomain",
+    "rvTokenStore",
     function ($q, $log, $location, CLIENT_ID,
-      gapiLoader, cookieStore, OAUTH2_SCOPES, userInfoCache,
+      gapiLoader, OAUTH2_SCOPES, userInfoCache,
       getOAuthUserInfo, getUserProfile, companyState, objectHelper,
       $rootScope, $interval, $loading, $window, GOOGLE_OAUTH2_URL,
-      localStorageService, $document, uiFlowManager) {
+      localStorageService, $document, uiFlowManager, getBaseDomain,
+      rvTokenStore) {
       //singleton factory that represents userState throughout application
-
-      var _readRvToken = function () {
-        return cookieStore.get("rv-token");
-      };
 
       var _state = {
         profile: {}, //Rise vision profile
         user: {}, //Google user
         roleMap: {},
-        userToken: _readRvToken(),
+        userToken: rvTokenStore.read(),
         inRVAFrame: angular.isDefined($location.search().inRVA)
       };
 
       var _accessTokenRefreshHandler = null;
 
       var _detectUserOrAuthChange = function () {
-        var tocken = _readRvToken();
+        var tocken = rvTokenStore.read();
         if (tocken !== _state.userToken) {
           //token change indicates that user either signed in, or signed out, or changed account in other app
           $window.location.reload();
@@ -3682,14 +3748,14 @@ angular.module("risevision.common.geodata", [])
 
       var _setUserToken = function () {
         _state.userToken = _getUserId();
-        _writeRvToken(_state.userToken);
+        rvTokenStore.write(_state.userToken);
       };
 
       var _clearUserToken = function () {
         $log.debug("Clearing user token...");
         _cancelAccessTokenAutoRefresh();
         _state.userToken = null;
-        _clearRvToken();
+        rvTokenStore.clear();
         return gapiLoader().then(function (gApi) {
           gApi.auth.setToken();
         });
@@ -3709,41 +3775,6 @@ angular.module("risevision.common.geodata", [])
       var _cancelAccessTokenAutoRefresh = function () {
         $interval.cancel(_accessTokenRefreshHandler);
         _accessTokenRefreshHandler = null;
-      };
-
-      var _looksLikeIp = function (addr) {
-        if (/^([0-9])+\.([0-9])+\.([0-9])+\.([0-9])+$/.test(addr)) {
-          return (true);
-        }
-        return (false);
-      };
-
-      var _getBaseDomain = function () {
-        var result;
-        if (!result) {
-          var hostname = $location.host();
-
-          if (_looksLikeIp(hostname)) {
-            result = hostname;
-          } else {
-            var parts = hostname.split(".");
-            if (parts.length > 1) {
-              // Somehow, cookies don't persist if we set the domain to appspot.com. 
-              // It requires a sub-domain to be set, ie. rva-test.appspot.com.
-              if (parts[parts.length - 2] === "appspot") {
-                result = parts.slice(parts.length - 3).join(".");
-              } else {
-                result = parts.slice(parts.length - 2).join(".");
-              }
-            } else {
-              //localhost
-              result = hostname;
-            }
-          }
-
-          $log.debug("baseDomain", result);
-        }
-        return result;
       };
 
       var _resetUserState = function () {
@@ -3789,7 +3820,7 @@ angular.module("risevision.common.geodata", [])
           client_id: CLIENT_ID,
           scope: OAUTH2_SCOPES,
           cookie_policy: $location.protocol() + "://" +
-            _getBaseDomain()
+            getBaseDomain()
         };
 
         if (attemptImmediate) {
@@ -4001,30 +4032,6 @@ angular.module("risevision.common.geodata", [])
 
       var getAccessToken = function () {
         return $window.gapi ? $window.gapi.auth.getToken() : null;
-      };
-
-      var _writeRvToken = function (value) {
-        var baseDomain = _getBaseDomain();
-        if (baseDomain === "localhost") {
-          cookieStore.put("rv-token", value);
-        } else {
-          cookieStore.put("rv-token", value, {
-            domain: baseDomain,
-            path: "/"
-          });
-        }
-      };
-
-      var _clearRvToken = function () {
-        var baseDomain = _getBaseDomain();
-        if (baseDomain === "localhost") {
-          cookieStore.remove("rv-token");
-        } else {
-          cookieStore.remove("rv-token", {
-            domain: baseDomain,
-            path: "/"
-          });
-        }
       };
 
       var _restoreState = function () {

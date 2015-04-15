@@ -91,29 +91,70 @@
 
     }
   ])
-    .factory("objectHelper", [
 
-      function () {
-        var factory = {};
+  .factory("objectHelper", [
 
-        factory.follow = function (source) {
-          var Follower = function () {};
-          Follower.prototype = source;
-          return new Follower();
-        };
+    function () {
+      var factory = {};
 
-        factory.clearObj = function (obj) {
-          for (var member in obj) {
-            delete obj[member];
+      factory.follow = function (source) {
+        var Follower = function () {};
+        Follower.prototype = source;
+        return new Follower();
+      };
+
+      factory.clearObj = function (obj) {
+        for (var member in obj) {
+          delete obj[member];
+        }
+      };
+
+      factory.clearAndCopy = function (src, dest) {
+        factory.clearObj(dest);
+        angular.extend(dest, src);
+      };
+
+      return factory;
+    }
+  ])
+
+  .factory("getBaseDomain", ["$log", "$location",
+    function ($log, $location) {
+      var _looksLikeIp = function (addr) {
+        if (/^([0-9])+\.([0-9])+\.([0-9])+\.([0-9])+$/.test(addr)) {
+          return (true);
+        }
+        return (false);
+      };
+
+      return function () {
+        var result;
+        if (!result) {
+          var hostname = $location.host();
+
+          if (_looksLikeIp(hostname)) {
+            result = hostname;
+          } else {
+            var parts = hostname.split(".");
+            if (parts.length > 1) {
+              // Somehow, cookies don't persist if we set the domain to appspot.com. 
+              // It requires a sub-domain to be set, ie. rva-test.appspot.com.
+              if (parts[parts.length - 2] === "appspot") {
+                result = parts.slice(parts.length - 3).join(".");
+              } else {
+                result = parts.slice(parts.length - 2).join(".");
+              }
+            } else {
+              //localhost
+              result = hostname;
+            }
           }
-        };
 
-        factory.clearAndCopy = function (src, dest) {
-          factory.clearObj(dest);
-          angular.extend(dest, src);
-        };
+          $log.debug("baseDomain", result);
+        }
+        return result;
+      };
 
-        return factory;
-      }
-    ]);
+    }
+  ]);
 })(angular);
