@@ -3567,7 +3567,9 @@ angular.module("risevision.common.geodata", [])
       var _writeRvToken = function (value) {
         var baseDomain = getBaseDomain();
         if (baseDomain === "localhost") {
-          cookieStore.put("rv-token", value);
+          cookieStore.put("rv-token", value, {
+            path: "/"
+          });
         } else {
           cookieStore.put("rv-token", value, {
             domain: baseDomain,
@@ -3579,7 +3581,9 @@ angular.module("risevision.common.geodata", [])
       var _clearRvToken = function () {
         var baseDomain = getBaseDomain();
         if (baseDomain === "localhost") {
-          cookieStore.remove("rv-token");
+          cookieStore.remove("rv-token", {
+            path: "/"
+          });
         } else {
           cookieStore.remove("rv-token", {
             domain: baseDomain,
@@ -3637,33 +3641,27 @@ angular.module("risevision.common.geodata", [])
   )
     .value("GOOGLE_OAUTH2_URL", "https://accounts.google.com/o/oauth2/auth")
 
-  .run(["$location", "$window", "userState", "$log", "gapiLoader",
-    function ($location, $window, userState, $log, gapiLoader) {
+  .run(["$location", "$window", "userState", "$log",
+    function ($location, $window, userState, $log) {
       var path = $location.path();
       var params = parseParams(stripLeadingSlash(path));
       $log.debug("URL params", params);
-      if (params.access_token) {
-        gapiLoader().then(function (gApi) {
-          $log.debug("Setting token", params.access_token);
-          gApi.auth.setToken({
-            access_token: params.access_token
-          });
-          userState._setUserToken(params.access_token);
-          userState.authenticate();
-        });
-      }
       userState._restoreState();
+      if (params.access_token) {
+        $log.debug("Setting token", params.access_token);
+        userState._setUserToken(params.access_token);
+      }
       if (params.state) {
         var state = JSON.parse(decodeURIComponent(params.state));
-        if ((state.p && $window.location.pathname === "/") ||
-          (state.s && $window.location.search === "")) {
+        if (state.p || state.s) {
+          userState._persistState();
+
           $window.location.replace(state.p +
-            (state.s ? "?" + state.s : "") +
-            "#" + encodeURIComponent($location.path())
+            state.s +
+            state.u
           );
         } else {
-          $location.path(state.u ? state.u : "");
-          $location.replace();
+          $window.location.hash = state.u;
         }
       }
 
@@ -3756,9 +3754,6 @@ angular.module("risevision.common.geodata", [])
         _cancelAccessTokenAutoRefresh();
         _state.userToken = null;
         rvTokenStore.clear();
-        return gapiLoader().then(function (gApi) {
-          gApi.auth.setToken();
-        });
       };
 
       var _scheduleAccessTokenAutoRefresh = function () {
@@ -3899,16 +3894,13 @@ angular.module("risevision.common.geodata", [])
             // Remove first character (/) from path since we're adding it to loc
             path = $window.location.pathname ? $window.location.pathname.substring(
               1) : "";
-            // Remove first character (?) from search since it causes a parsing error
-            // when the object is returned
-            search = $window.location.search ? $window.location.search.substring(
-              1) : "";
+            search = $window.location.search;
           }
 
           // double encode since response gets decoded once!
           state = encodeURIComponent(encodeURIComponent(JSON.stringify({
             p: path,
-            u: $location.path(),
+            u: $window.location.hash,
             s: search
           })));
 
@@ -3944,7 +3936,6 @@ angular.module("risevision.common.geodata", [])
           gapiLoader().then(function () {
             var userAuthed = (angular.isDefined(_state.userToken) &&
               _state.userToken !== null);
-            //var userAuthed = gApi.auth.getToken() !== null;
             $log.debug("userAuthed", userAuthed);
 
             if (forceAuth || userAuthed === true) {
@@ -3997,18 +3988,17 @@ angular.module("risevision.common.geodata", [])
           gApi.auth.signOut();
           // The flag the indicates a user is potentially
           // authenticated already, must be destroyed.
-          _clearUserToken().then(function () {
-            //clear auth token
-            // The majority of state is in here
-            _resetUserState();
-            objectHelper.clearObj(_state.user);
-            //call google api to sign out
-            $rootScope.$broadcast("risevision.user.signedOut");
-            $log.debug("User is signed out.");
-            deferred.resolve();
-          }, function () {
-            deferred.reject();
-          });
+          _clearUserToken();
+          //clear auth token
+          // The majority of state is in here
+          _resetUserState();
+          objectHelper.clearObj(_state.user);
+          //call google api to sign out
+          $rootScope.$broadcast("risevision.user.signedOut");
+          $log.debug("User is signed out.");
+          deferred.resolve();
+        }, function () {
+          deferred.reject();
         });
         return deferred.promise;
       };
@@ -4095,6 +4085,10 @@ angular.module("risevision.common.geodata", [])
         _restoreState: _restoreState,
         _setUserToken: function (token) {
           _state.userToken = token;
+        },
+        _persistState: function () {
+          // persist user state
+          localStorageService.set("risevision.common.userState", _state);
         }
       };
 
