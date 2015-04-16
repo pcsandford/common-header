@@ -52,6 +52,7 @@
 
           browser.executeScript("gapi.setPendingSignInUser('michael.sanchez@awesome.io')");
           element(by.css("button.sign-in")).click();
+          browser.sleep(500);
           assert.eventually.isFalse(element(by.css("button.sign-in")).isDisplayed(), "sign in button should not show");
 
           browser.get("/test/e2e/index.html#/shopping-cart?cid=" +
@@ -63,8 +64,9 @@
             
           browser.get("/test/e2e/index.html#/shopping-cart");
           browser.refresh();
-          assert.eventually.isFalse(element(by.css(".sub-company-alert")).isPresent() &&
-            element(by.css(".sub-company-alert")).isDisplayed(),
+          browser.sleep(500);
+          assert.eventually.isFalse(element(by.css(".common-header-alert.sub-company-alert")).isPresent() &&
+            element(by.css(".common-header-alert.sub-company-alert")).isDisplayed(),
             "subcompany alert should hide");
         });
       });
@@ -72,17 +74,17 @@
       describe("Add subcompany & move company", function () {
         it("Opens Add Subcompany dialog", function () {
           element(by.css(".user-profile-dropdown img.profile-pic")).click();
-          assert.eventually.isTrue(element(by.css(".add-subcompany-menu-button")).isDisplayed(),
+          assert.eventually.isTrue(element(by.css(".dropdown-menu .add-subcompany-menu-button")).isDisplayed(),
             "Add subcompany menu item should show");
-          element(by.css(".add-subcompany-menu-button")).click();
+          element(by.css(".dropdown-menu .add-subcompany-menu-button")).click();
+          browser.sleep(500);
           assert.eventually.isTrue(element(by.css(".pt-add-subcompany-modal")).isDisplayed(),
             "Add subcompany dialog should show");
-            browser.sleep(500);
         });
 
         it("Opens Move Company Dialog", function() {
           element(by.css(".move-subcompany-button")).click();
-
+          browser.sleep(500);
           assert.eventually.isTrue(element(by.css(".move-company-modal")).isDisplayed(),
             "Move company dialog should show");
         });
@@ -106,6 +108,7 @@
 
         it("Should Move Company", function () {
           element(by.css(".move-company-button")).click();
+          browser.sleep(500);
           assert.eventually.isTrue(element(by.css(".alert.alert-success")).isDisplayed(),
             "Success message should show");
           assert.eventually.isFalse(element(by.css(".move-company-button")).isDisplayed(),
@@ -125,6 +128,5 @@
             "Add subcompany dialog should hide");
         });
       });
-
   });
 })();

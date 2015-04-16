@@ -27,24 +27,28 @@
 
       it("should not show system message icon when not logged in", function() {
         assert.eventually.isTrue(element(by.css("button.sign-in")).isDisplayed(), "Sign in button should show");
-        assert.eventually.isFalse(element(by.css(".system-messages-button")).isDisplayed(), "Should not show system messages icon");
-        assert.eventually.strictEqual(element(by.css(".system-messages-badge")).getText(), "", "Should not show system message badge");
+        assert.eventually.isFalse(element(by.css(".dropdown .system-messages-button")).isDisplayed(), "Should not show system messages icon");
+        assert.eventually.strictEqual(element(by.css(".dropdown .system-messages-badge")).getText(), "", "Should not show system message badge");
       });
 
       it("should show system messages when logged in", function() {
         //log in
         browser.executeScript("gapi.setPendingSignInUser('michael.sanchez@awesome.io')");
         element(by.css("button.sign-in")).click();
+        
+        browser.sleep(500);
 
-        assert.eventually.isTrue(element(by.css(".system-messages-button")).isDisplayed(), "Should show system messages icon");
-        assert.eventually.strictEqual(element(by.css(".system-messages-badge")).getText(), "14", "Badge should show correct number of system messages");
+        assert.eventually.isTrue(element(by.css(".dropdown .system-messages-button")).isDisplayed(), "Should show system messages icon");
+        assert.eventually.strictEqual(element(by.css(".dropdown .system-messages-badge")).getText(), "14", "Badge should show correct number of system messages");
       });
 
       it("should hide system messages icon when there are no messages", function() {
         element(by.id("clear-system-messages-button")).click();
         browser.refresh();
+        
+        browser.sleep(500);
 
-        assert.eventually.isFalse(element(by.css(".system-messages-button")).isDisplayed(), "Should hide system messages icon");
+        assert.eventually.isFalse(element(by.css(".dropdown .system-messages-button")).isDisplayed(), "Should hide system messages icon");
       });
   });
 })();

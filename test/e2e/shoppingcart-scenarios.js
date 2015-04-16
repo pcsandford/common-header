@@ -86,9 +86,9 @@
 
         element(by.css(".desktop-menu-item img.profile-pic")).click();
         //shows sign-out menu item
-        expect(element(by.css(".sign-out-button")).isDisplayed()).to.eventually.equal(true);
+        expect(element(by.css(".dropdown-menu .sign-out-button")).isDisplayed()).to.eventually.equal(true);
         //click sign out
-        element(by.css(".sign-out-button")).click();
+        element(by.css(".dropdown-menu .sign-out-button")).click();
         assert.eventually.isTrue(element(by.css(".sign-out-modal")).isDisplayed(), "sign-out dialog should show");
         element(by.css(".sign-out-modal .sign-out-rv-only-button")).click();
 
@@ -97,7 +97,9 @@
         //log in
         browser.executeScript("gapi.setPendingSignInUser('michael.sanchez@awesome.io')");
         element(by.css("button.sign-in")).click();
-
+        
+        browser.sleep(500);
+        
         assert.eventually.strictEqual(element(by.id("cartBadge")).getText(), "2", "Cart badge should display 2");
       });
 

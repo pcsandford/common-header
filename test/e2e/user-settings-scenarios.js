@@ -34,10 +34,12 @@
         assert.eventually.isFalse(element(by.css("button.sign-in")).isDisplayed(), "sign in button should not show");
 
         element(by.css(".user-profile-dropdown img.profile-pic")).click();
-        assert.eventually.isTrue(element(by.css(".user-settings-button")).isDisplayed(), "User settings menu item should show");
+        assert.eventually.isTrue(element(by.css(".dropdown-menu .user-settings-button")).isDisplayed(), "User settings menu item should show");
 
         //click on user settings button
-        element(by.css(".user-settings-button")).click();
+        element(by.css(".dropdown-menu .user-settings-button")).click();
+        
+        browser.sleep(500);
 
         assert.eventually.isTrue(element(by.css(".user-settings-modal"))
           .isDisplayed(), "User settings modal should show after clicking on menu item");

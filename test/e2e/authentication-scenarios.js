@@ -39,9 +39,12 @@
 
     it("should retain auth status upon refresh", function () {
       browser.refresh();
+      
+      browser.sleep(500);
+
       assert.eventually.isFalse(element(by.css("button.sign-in")).isDisplayed(), "sign in button should not show");
       assert.eventually.isTrue(element(by.css(".user-profile-dropdown img.profile-pic")).isDisplayed(), "profile pic should show");
-      assert.eventually.isFalse((element(by.css(".sign-out-button")).isDisplayed()), "sign out button should not show");
+      assert.eventually.isFalse((element(by.css(".dropdown-menu .sign-out-button")).isDisplayed()), "sign out button should not show");
     });
 
     it("should log out", function() {
@@ -55,10 +58,13 @@
       element(by.css(".user-profile-dropdown img.profile-pic")).click();
 
       //shows sign-out menu item
-      expect(element(by.css(".sign-out-button")).isDisplayed()).to.eventually.equal(true);
+      expect(element(by.css(".dropdown-menu .sign-out-button")).isDisplayed()).to.eventually.equal(true);
 
       //click sign out
-      element(by.css(".sign-out-button")).click();
+      element(by.css(".dropdown-menu .sign-out-button")).click();
+      
+      browser.sleep(500);
+      
       assert.eventually.isTrue(element(by.css(".sign-out-modal")).isDisplayed(), "sign-out dialog should show");
       element(by.css(".sign-out-modal .sign-out-rv-only-button")).click();
 
