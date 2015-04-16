@@ -75,7 +75,7 @@ angular.module("risevision.common.header")
 
           action.then(
             function () {
-              userState.authenticate(false).then()
+              userState.refreshProfile().then()
                 .finally(function () {
                   $modalInstance.close("success");
                   $loading.stop("registration-modal");
@@ -87,7 +87,7 @@ angular.module("risevision.common.header")
             })
             .finally(function () {
               $scope.registering = false;
-              userState.authenticate(false);
+              userState.refreshProfile();
             });
         }
 
