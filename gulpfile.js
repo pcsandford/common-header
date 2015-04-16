@@ -301,7 +301,8 @@ gulp.task("server-watch", ["html-inject-watch", "html2js-watch", "config", "font
 gulp.task("server-close", factory.testServerClose());
 gulp.task("test:webdrive_update", factory.webdriveUpdate());
 gulp.task("test:e2e:core", ["test:webdrive_update"], factory.testE2EAngular({
-  browser: "chrome"
+  browser: "chrome",
+  testFiles: ["./test/e2e/**/*-scenarios.js"]
 }));
 gulp.task("test:e2e", function (cb) {
   runSequence("server", "test:e2e:core", "server-close", cb);

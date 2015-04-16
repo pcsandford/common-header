@@ -34,6 +34,7 @@
         //log in
         browser.executeScript("gapi.setPendingSignInUser('michael.sanchez@awesome.io')");
         element(by.id("ps-become-superman")).click();
+        browser.sleep(500);
         assert.eventually.isFalse(element(by.id("ps-become-superman")).isDisplayed(), "Should show Become Superman button");
         //superman!
         assert.eventually.isTrue(element(by.id("ps-superman-badge")).isDisplayed(), "Should show Become Superman button");
@@ -42,9 +43,12 @@
       it("should hide superman identity when user is logged out", function() {
         element(by.css(".desktop-menu-item img.profile-pic")).click();
         //shows sign-out menu item
-        expect(element(by.css(".sign-out-button")).isDisplayed()).to.eventually.equal(true);
+        expect(element(by.css(".dropdown-menu .sign-out-button")).isDisplayed()).to.eventually.equal(true);
         //click sign out
-        element(by.css(".sign-out-button")).click();
+        element(by.css(".dropdown-menu .sign-out-button")).click();
+        
+        browser.sleep(500);
+        
         assert.eventually.isTrue(element(by.css(".sign-out-modal")).isDisplayed(), "sign-out dialog should show");
         element(by.css(".sign-out-modal .sign-out-rv-only-button")).click();
 

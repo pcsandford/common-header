@@ -32,14 +32,16 @@
         it("logs in", function () {
           browser.executeScript("gapi.setPendingSignInUser('michael.sanchez@awesome.io')");
           element(by.css("button.sign-in")).click();
+          browser.sleep(500);
           assert.eventually.isFalse(element(by.css("button.sign-in")).isDisplayed(), "sign in button should not show");
         });
 
         it("Opens Company Settings Dialog", function() {
           element(by.css(".user-profile-dropdown img.profile-pic")).click();
-          assert.eventually.isTrue(element(by.css(".company-settings-menu-button")).isDisplayed(),
+          assert.eventually.isTrue(element(by.css(".dropdown-menu .company-settings-menu-button")).isDisplayed(),
             "Company settings menu item should present");
-          element(by.css(".company-settings-menu-button")).click();
+          element(by.css(".dropdown-menu .company-settings-menu-button")).click();
+          browser.sleep(500);
           assert.eventually.isTrue(element(by.css(".company-settings-modal")).isDisplayed(),
             "Company settings dialog should show");
         });
@@ -66,9 +68,10 @@
       describe("Delete Company", function () {
         it("Opens Company Settings Dialog", function() {
           element(by.css(".user-profile-dropdown img.profile-pic")).click();
-          assert.eventually.isTrue(element(by.css(".company-settings-menu-button")).isDisplayed(),
+          assert.eventually.isTrue(element(by.css(".dropdown-menu .company-settings-menu-button")).isDisplayed(),
             "Company settings menu item should present");
-          element(by.css(".company-settings-menu-button")).click();
+          element(by.css(".dropdown-menu .company-settings-menu-button")).click();
+          browser.sleep(500);
           assert.eventually.isTrue(element(by.css(".company-settings-modal")).isDisplayed(),
             "Company settings dialog should show");
         });

@@ -36,9 +36,12 @@
 
         it("Opens Company Users Dialog and load company users", function() {
           element(by.css(".user-profile-dropdown img.profile-pic")).click();
-          assert.eventually.isTrue(element(by.css(".company-users-menu-button")).isDisplayed(),
+          assert.eventually.isTrue(element(by.css(".dropdown-menu .company-users-menu-button")).isDisplayed(),
             "Company users menu item should present");
-          element(by.css(".company-users-menu-button")).click();
+          element(by.css(".dropdown-menu .company-users-menu-button")).click();
+
+          browser.sleep(500);
+
           assert.eventually.isTrue(element(by.css(".company-users-modal")).isDisplayed(),
             "Company users dialog should show");
         });
@@ -50,6 +53,9 @@
 
         it("opens up Add User dialog", function () {
           element(by.css("button.add-company-user-button")).click();
+          
+          browser.sleep(500);
+
           assert.eventually.isTrue(element(by.css(".user-settings-modal")).isPresent(), "Add user dialog should show");
         });
 

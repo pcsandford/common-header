@@ -33,7 +33,9 @@
         //click on sign in button
         browser.executeScript("gapi.setPendingSignInUser('john.doe@awesome.io')");
         element(by.css("button.sign-in")).click();
-
+        
+        browser.sleep(500);
+        
         //dialog shows
         assert.eventually.isTrue(element(by.css(".registration-modal")).isPresent(), "registration dialog should show");
 
@@ -50,11 +52,11 @@
       it("allow me to register when I've changed my mind", function() {
         assert.eventually.isTrue(element(by.css(".register-user-menu-button")).isDisplayed(), "Create Account button should show");
         element(by.css(".register-user-menu-button")).click();
+        browser.sleep(500);
         assert.eventually.isTrue(element(by.css(".registration-modal")).isPresent(), "registration dialog should show");
       });
 
       it("should show validation errors if i have not agreed to terms and entered an email", function () {
-        browser.sleep(500);
         element(by.css(".registration-save-button")).click();
         assert.eventually.isTrue(element(by.css(".validation-error-message-accepted")).isPresent(), "t&c validation error should show");
         assert.eventually.isTrue(element(by.css(".validation-error-message-first-name")).isPresent(), "first name validation error should show");
