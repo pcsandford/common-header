@@ -2585,13 +2585,11 @@ angular.module("risevision.common.header")
     $scope.inRVAFrame = userState.inRVAFrame();
 
     $scope.$watch(function () {
-        return userState.getSelectedCompanyId();
+        return userState.isSubcompanySelected();
       },
-      function (selectedCompanyId) {
-        if (selectedCompanyId) {
-          $scope.isSubcompanySelected = userState.isSubcompanySelected();
-          $scope.selectedCompanyName = userState.getSelectedCompanyName();
-        }
+      function (value) {
+        $scope.isSubcompanySelected = value;
+        $scope.selectedCompanyName = userState.getSelectedCompanyName();
       });
 
     $scope.switchToMyCompany = function () {
