@@ -179,37 +179,31 @@
 
       var refreshProfile = function () {
         var deferred = $q.defer();
-        getOAuthUserInfo().then(function (oauthUserInfo) {
-          //populate profile if the current user is a rise vision user
-          getUserProfile(_state.user.username, true).then(
-            function (profile) {
-              objectHelper.clearAndCopy(angular.extend({
-                username: oauthUserInfo.email
-              }, profile), _state.profile);
+        //populate profile if the current user is a rise vision user
+        getUserProfile(_state.user.username, true).then(
+          function (profile) {
+            objectHelper.clearAndCopy(angular.extend({
+              username: _state.user.username
+            }, profile), _state.profile);
 
-              //set role map
-              _state.roleMap = {};
-              if (_state.profile.roles) {
-                _state.profile.roles.forEach(function (val) {
-                  _state.roleMap[val] = true;
-                });
-              }
+            //set role map
+            _state.roleMap = {};
+            if (_state.profile.roles) {
+              _state.profile.roles.forEach(function (val) {
+                _state.roleMap[val] = true;
+              });
+            }
 
-              //populate company info
-              return companyState.init();
-            }).then(function () {
-            deferred.resolve();
-          }, deferred.reject);
+            //populate company info
+            return companyState.init();
+          }).then(function () {
+          deferred.resolve();
         }, deferred.reject);
         return deferred.promise;
       };
 
-      /*
-       * Responsible for triggering the Google OAuth process.
-       *
-       */
-      var _authorize = function (attemptImmediate) {
-        var authorizeDeferred = $q.defer();
+      var _gapiAuthorize = function (attemptImmediate) {
+        var deferred = $q.defer();
 
         var opts = {
           client_id: CLIENT_ID,
@@ -223,47 +217,71 @@
         } else {
           opts.prompt = "select_account";
         }
-        gapiLoader().then(function (gApi) {
-          gApi.auth.authorize(opts, function (authResult) {
-            $log.debug("authResult", authResult);
-            if (authResult && !authResult.error) {
-              _scheduleAccessTokenAutoRefresh();
-              getOAuthUserInfo().then(function (oauthUserInfo) {
-                if (!_state.user.username || !_state.profile.username ||
-                  _state.user.username !== oauthUserInfo.email) {
 
-                  //populate user
-                  objectHelper.clearAndCopy({
-                    userId: oauthUserInfo.id, //TODO: ideally we should not use real user ID or email, but use hash value instead
-                    username: oauthUserInfo.email,
-                    picture: oauthUserInfo.picture
-                  }, _state.user);
+        gapiLoader()
+          .then(function (gApi) {
+            gApi.auth.authorize(opts, function (authResult) {
+              $log.debug("authResult", authResult);
+              if (authResult && !authResult.error) {
+                _scheduleAccessTokenAutoRefresh();
 
-                  _setUserToken();
-                  refreshProfile()
-                    .finally(function () {
-                      authorizeDeferred.resolve(authResult);
-                      $rootScope.$broadcast(
-                        "risevision.user.authorized");
-                      if (!attemptImmediate) {
-                        $rootScope.$broadcast(
-                          "risevision.user.userSignedIn");
-                      }
-                    });
-                } else {
+                deferred.resolve(authResult);
+              } else {
+                _clearUserToken();
+
+                deferred.reject();
+              }
+            });
+          }, deferred.reject); //gapiLoader
+
+        return deferred.promise;
+      };
+
+      /*
+       * Responsible for triggering the Google OAuth process.
+       *
+       */
+      var _authorize = function (attemptImmediate) {
+        var authorizeDeferred = $q.defer();
+
+        var authResult;
+
+        _gapiAuthorize(attemptImmediate)
+          .then(function (res) {
+            authResult = res;
+
+            return getOAuthUserInfo();
+          })
+          .then(function (oauthUserInfo) {
+            if (!_state.user.username || !_state.profile.username ||
+              _state.user.username !== oauthUserInfo.email) {
+
+              //populate user
+              objectHelper.clearAndCopy({
+                userId: oauthUserInfo.id, //TODO: ideally we should not use real user ID or email, but use hash value instead
+                username: oauthUserInfo.email,
+                picture: oauthUserInfo.picture
+              }, _state.user);
+
+              _setUserToken();
+
+              refreshProfile()
+                .finally(function () {
                   authorizeDeferred.resolve(authResult);
-                }
-              }, function (err) {
-                objectHelper.clearObj(_state.user);
-                authorizeDeferred.reject(err);
-              });
+                  $rootScope.$broadcast("risevision.user.authorized");
+                  if (!attemptImmediate) {
+                    $rootScope.$broadcast(
+                      "risevision.user.userSignedIn");
+                  }
+                });
             } else {
-              objectHelper.clearObj(_state.user);
-              _clearUserToken();
-              authorizeDeferred.reject("not authorized");
+              authorizeDeferred.resolve(authResult);
             }
+          })
+          .then(null, function (err) {
+            objectHelper.clearObj(_state.user);
+            authorizeDeferred.reject(err);
           });
-        }, authorizeDeferred.reject); //gapiLoader
 
         return authorizeDeferred.promise;
       };
