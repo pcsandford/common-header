@@ -3409,7 +3409,7 @@ angular.module("risevision.common.geodata", [])
     ["Newfoundland and Labrador", "NL"],
     ["Northwest Territories", "NT"],
     ["Nova Scotia", "NS"],
-    ["Nunavut", "NV"],
+    ["Nunavut", "NU"],
     ["Ontario", "ON"],
     ["Prince Edward Island", "PE"],
     ["Quebec", "QC"],
