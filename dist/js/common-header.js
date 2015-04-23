@@ -1857,7 +1857,7 @@ angular.module("risevision.common.header")
       },
       function (isRvUser) {
         $scope.isRiseVisionUser = isRvUser;
-        shoppingCart.initialize();
+        shoppingCart.get();
       });
 
   }
@@ -5223,6 +5223,11 @@ angular.module("risevision.common.header")
     "userState",
     function (rvStorage, storeAPILoader, $log, $q, userState) {
       var _items = [];
+      var _cart = {
+        "items": _items,
+        "useBillToAddress": false,
+        "shipToAttention": ""
+      };
 
       var readFromStorage = function () {
         var deferred = $q.defer();
@@ -5237,6 +5242,9 @@ angular.module("risevision.common.header")
               if (!resp.error) {
                 clearItems();
                 addItems(resp.items);
+                _cart.useBillToAddress = resp.useBillToAddress;
+                _cart.shipToAttention = resp.shipToAttention ? resp.shipToAttention :
+                  "";
                 deferred.resolve();
               } else {
                 $log.warn("Error loading cart items. Error: " + resp.error);
@@ -5262,8 +5270,8 @@ angular.module("risevision.common.header")
                 "data": {
                   //"id": userState.getUsername(),
                   "jsonItems": getJsonItems(_items),
-                  "shipToAttention": "",
-                  "useBillToAddress": true
+                  "shipToAttention": _cart.shipToAttention,
+                  "useBillToAddress": _cart.useBillToAddress
                 }
               };
               var request = storeApi.cart.put(obj);
@@ -5286,6 +5294,12 @@ angular.module("risevision.common.header")
         }
         return deferred.promise;
 
+      };
+
+      var clearCart = function () {
+        _cart.useBillToAddress = false;
+        _cart.shipToAttention = "";
+        clearItems();
       };
 
       var clearItems = function () {
@@ -5321,11 +5335,28 @@ angular.module("risevision.common.header")
         return JSON.stringify(cleanedItems);
       };
 
-      var loadReady = $q.defer();
+      var loadReady = null;
       var username = null;
 
       var cartManager = {
-        loadReady: loadReady.promise,
+        get: function () {
+
+          if (loadReady !== null && username === userState.getUsername()) {
+            return loadReady;
+          }
+
+          username = userState.getUsername();
+          clearCart();
+
+          loadReady = $q.defer();
+          var deferred = loadReady;
+
+          readFromStorage().then(function () {
+            deferred.resolve(_cart);
+          });
+
+          return deferred;
+        },
         clear: function () {
           clearItems();
           persistToStorage();
@@ -5341,15 +5372,18 @@ angular.module("risevision.common.header")
             clearItems();
             addItems(items);
           }
-          persistToStorage();
+          return persistToStorage();
         },
-        initialize: function () {
-          if (username !== userState.getUsername()) {
-            username = userState.getUsername();
-            clearItems();
-            readFromStorage().then(loadReady.resolve);
-          }
-          return _items;
+        getShipToAttention: function () {
+          return _cart.shipToAttention;
+        },
+        getUseBillToAddress: function () {
+          return _cart.useBillToAddress;
+        },
+        setAddressFields: function (shipToAttention, useBillToAddress) {
+          _cart.shipToAttention = shipToAttention;
+          _cart.useBillToAddress = useBillToAddress;
+          return persistToStorage();
         },
         getItemCount: function () {
           if (_items !== null) {
@@ -5422,7 +5456,7 @@ angular.module("risevision.common.header")
           return false;
         }
       };
-      cartManager.initialize();
+      //cartManager.initialize();
 
       return cartManager;
 

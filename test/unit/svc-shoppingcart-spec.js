@@ -30,7 +30,7 @@ describe("Services: Shopping Cart", function() {
 
   it("should add items to cart", function (){
     inject(function(shoppingCart) {
-      shoppingCart.initialize();
+      shoppingCart.get();
       shoppingCart.addItem({productId: "aabbccccdd", orderedPricing: [100]}, 2, 0);
       expect(shoppingCart.getItemCount()).to.equal(1);
       shoppingCart.addItem({productId: "cdcds", orderedPricing: [100]}, 2, 0);
@@ -42,7 +42,7 @@ describe("Services: Shopping Cart", function() {
 
   it("should remove items from cart", function () {
     inject(function(shoppingCart) {
-      shoppingCart.initialize();
+      shoppingCart.get();
       shoppingCart.addItem({productId: "aabbccccdd", orderedPricing: [100]}, 2, 0);
       shoppingCart.addItem({productId: "cdcds", orderedPricing: [100]}, 2, 0);
       shoppingCart.addItem({productId: "vdvdv", orderedPricing: [100]}, 2, 0);
