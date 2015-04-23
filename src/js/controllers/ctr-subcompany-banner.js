@@ -6,10 +6,10 @@ angular.module("risevision.common.header")
     $scope.inRVAFrame = userState.inRVAFrame();
 
     $scope.$watch(function () {
-        return userState.isSubcompanySelected();
+        return userState.getSelectedCompanyId();
       },
-      function (value) {
-        $scope.isSubcompanySelected = value;
+      function () {
+        $scope.isSubcompanySelected = userState.isSubcompanySelected();
         $scope.selectedCompanyName = userState.getSelectedCompanyName();
       });
 
