@@ -4211,6 +4211,8 @@ angular.module("risevision.common.geodata", [])
             if (_state.userCompany.id === _state.selectedCompany.id) {
               objectHelper.clearAndCopy(company, _state.userCompany);
             }
+
+            $rootScope.$broadcast("risevision.company.updated");
           }
         },
         resetCompany: function () {
