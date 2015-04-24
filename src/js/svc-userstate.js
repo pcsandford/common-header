@@ -54,7 +54,9 @@
             state.s +
             state.u
           );
-        } else {
+        } else if ($location.$$html5) { // HTML5 mode, clear path
+          $location.path("");
+        } else { // non HTML5 mode, set hash
           $window.location.hash = state.u;
         }
       }
