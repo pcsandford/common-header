@@ -538,7 +538,7 @@ Observable.prototype._bind = function (subject, parent, prefix) {
   }
 
   this.onchange = onchange(parent || this, prefix);
-  Object.observe(this.subject, this.onchange);
+  Object.observe && Object.observe(this.subject, this.onchange);
 
   this._walk(parent || this, prefix);
 }

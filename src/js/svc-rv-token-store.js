@@ -2,7 +2,8 @@
   "use strict";
 
   angular.module("risevision.common.rvtokenstore", [
-    "risevision.common.util", "LocalStorageModule"
+    "risevision.common.util", "LocalStorageModule",
+    "ngBiscuit"
   ])
 
   .service("rvTokenStore", ["$log", "$location", "cookieStore",

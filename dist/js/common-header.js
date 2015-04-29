@@ -3552,7 +3552,8 @@ angular.module("risevision.common.geodata", [])
   "use strict";
 
   angular.module("risevision.common.rvtokenstore", [
-    "risevision.common.util", "LocalStorageModule"
+    "risevision.common.util", "LocalStorageModule",
+    "ngBiscuit"
   ])
 
   .service("rvTokenStore", ["$log", "$location", "cookieStore",
@@ -3625,7 +3626,7 @@ angular.module("risevision.common.geodata", [])
     "risevision.common.companystate", "risevision.common.util",
     "risevision.common.gapi", "risevision.common.localstorage",
     "risevision.common.config", "risevision.core.cache",
-    "risevision.core.oauth2", "ngBiscuit",
+    "risevision.core.oauth2",
     "risevision.core.util", "risevision.core.userprofile",
     "risevision.common.loading", "risevision.ui-flow",
     "risevision.common.rvtokenstore"
@@ -3833,10 +3834,11 @@ angular.module("risevision.common.geodata", [])
               } else {
                 _clearUserToken();
 
-                deferred.reject();
+                deferred.reject(authResult.error ||
+                  "failed to authorize user");
               }
             });
-          }, deferred.reject); //gapiLoader
+          }).then(null, deferred.reject); //gapiLoader
 
         return deferred.promise;
       };
@@ -3925,7 +3927,7 @@ angular.module("risevision.common.geodata", [])
           localStorageService.set("risevision.common.userState", _state);
           uiFlowManager.persist();
 
-          $window.location = GOOGLE_OAUTH2_URL +
+          $window.location.href = GOOGLE_OAUTH2_URL +
             "?response_type=token" +
             "&scope=" + encodeURIComponent(OAUTH2_SCOPES) +
             "&client_id=" + CLIENT_ID +
@@ -3980,9 +3982,10 @@ angular.module("risevision.common.geodata", [])
                   authenticateDeferred.reject(
                     "Authentication Error: " + authResult.error);
                 }
-              }, function () {
+              })
+              .then(null, function (err) {
                 _clearUserToken();
-                authenticateDeferred.reject();
+                authenticateDeferred.reject(err);
               })
               .finally(function () {
                 $loading.stopGlobal(
