@@ -17,9 +17,6 @@ describe("Services: company state", function() {
         }
       }
     });
-    $provide.factory("gapiLoader", [function () {
-
-    }]);
     $provide.factory("getCompany", [function () {
       return function(companyId) {
         var deferred = Q.defer();

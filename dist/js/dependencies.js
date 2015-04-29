@@ -1,5 +1,5 @@
 /*!
- * jQuery JavaScript Library v1.11.2
+ * jQuery JavaScript Library v1.11.3
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -9,7 +9,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-12-17T15:27Z
+ * Date: 2015-04-28T16:19Z
  */
 
 (function( global, factory ) {
@@ -64,7 +64,7 @@ var support = {};
 
 
 var
-	version = "1.11.2",
+	version = "1.11.3",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -569,7 +569,12 @@ jQuery.each("Boolean Number String Function Array Date RegExp Object Error".spli
 });
 
 function isArraylike( obj ) {
-	var length = obj.length,
+
+	// Support: iOS 8.2 (not reproducible in simulator)
+	// `in` check used to prevent JIT error (gh-2145)
+	// hasOwn isn't used here due to false negatives
+	// regarding Nodelist length in IE
+	var length = "length" in obj && obj.length,
 		type = jQuery.type( obj );
 
 	if ( type === "function" || jQuery.isWindow( obj ) ) {
@@ -48059,6 +48064,9 @@ angular.module('risevision.common.svg.icons', [])
       riseDocumentation:"M8 32h20.2c2.1 0 3.8-1.7 3.8-3.8V9L8 32zM19 29v-4h4.3L19 29zM25 23v-4h4.3L25 23zM24 31v-7h7.3L24 31z",
       riseCommunity:"M24 12.6v4.7c0 1.4 0.4 2.3 1.3 2.6v5.4h5.3v-5.4c0.9-0.3 1.3-1.1 1.3-2.6v-4.7H24zM28 11.3c1.5 0 2.7-1.2 2.7-2.7 0-1.5-1.2-2.7-2.7-2.7s-2.7 1.2-2.7 2.7C25.3 10.1 26.3 11.3 28 11.3zM0 17.3c0 1.4 0.4 2.3 1.3 2.6v5.4h5.3v-5.4c1-0.3 1.4-1.2 1.4-2.6v-4.7H0V17.3zM4 11.3c1.7 0 2.7-1.2 2.7-2.7 0-1.5-1.2-2.7-2.7-2.7S1.3 7.1 1.3 8.6C1.3 10.1 2.5 11.3 4 11.3z",
       riseStorageGraphic:"M29.4 5.9V4c0-0.1-0.1-0.2-0.2-0.2h-10L0.6 22.1 7.7 25l2.9 7 18.9-18.6V7.2h1.3v7.9L16.8 28.8l0.9 0.9L32 15.6V5.9H29.4z",
+      iconNewFolder:"M30.7 8c-0.8-0.8-1.9-1-3.1-1H15V5.9c0-1.2-0.5-2-1.4-2.8C12.8 2.2 11.7 2 10.5 2H4.3C3.1 2 2.1 2.2 1.3 3.1 0.4 3.9 0 4.7 0 5.9v18.5c0 1.2 0.4 2.3 1.3 3.2C2.1 28.5 3.1 29 4.3 29h23.3c1.2 0 2.2-0.5 3.1-1.4 0.9-0.9 1.3-2 1.3-3.2V10.8C32 9.6 31.6 8.9 30.7 8zM23 20h-5v5h-4v-5H9v-4h5v-5h4v5h5V20",
+      iconPresentation:"M27 2H5C3.3 2 2 3.3 2 5v22c0 1.7 1.3 3 3 3h22c1.7 0 3-1.3 3-3V5C30 3.3 28.7 2 27 2zM20 4h2c0.6 0 1 0.4 1 1 0 0.6-0.4 1-1 1h-2c-0.6 0-1-0.4-1-1C19 4.4 19.4 4 20 4zM13 19.6V13c0-1.2 0.7-1.6 1.7-1l4.7 3.1c1 0.6 1 1.7 0 2.3l-4.7 3.1C13.7 21.2 13 20.8 13 19.6zM15 4h2c0.6 0 1 0.4 1 1 0 0.6-0.4 1-1 1h-2c-0.6 0-1-0.4-1-1C14 4.4 14.4 4 15 4zM10 4h2c0.6 0 1 0.4 1 1 0 0.6-0.4 1-1 1h-2C9.4 6 9 5.6 9 5 9 4.4 9.4 4 10 4zM5 4h2c0.6 0 1 0.4 1 1 0 0.6-0.4 1-1 1H5C4.4 6 4 5.6 4 5 4 4.4 4.4 4 5 4zM7 28H5c-0.6 0-1-0.4-1-1 0-0.6 0.4-1 1-1h2c0.6 0 1 0.4 1 1C8 27.6 7.6 28 7 28zM12 28h-2c-0.6 0-1-0.4-1-1 0-0.6 0.4-1 1-1h2c0.6 0 1 0.4 1 1C13 27.6 12.6 28 12 28zM17 28h-2c-0.6 0-1-0.4-1-1 0-0.6 0.4-1 1-1h2c0.6 0 1 0.4 1 1C18 27.6 17.6 28 17 28zM22 28h-2c-0.6 0-1-0.4-1-1 0-0.6 0.4-1 1-1h2c0.6 0 1 0.4 1 1C23 27.6 22.6 28 22 28zM27 28h-2c-0.6 0-1-0.4-1-1 0-0.6 0.4-1 1-1h2c0.6 0 1 0.4 1 1C28 27.6 27.6 28 27 28zM27 6h-2c-0.6 0-1-0.4-1-1 0-0.6 0.4-1 1-1h2c0.6 0 1 0.4 1 1C28 5.6 27.6 6 27 6z",
+      iconWebsite:"M0 8v16c0 0.6 0.4 1 1 1h31V7H1C0.4 7 0 7.4 0 8zM29 11h2v10h-2V11zM26.3 17c0.4 0 0.8 0.4 0.8 0.8 0 0.4-0.4 0.8-0.8 0.8 -0.4 0-0.8-0.4-0.8-0.8C25.5 17.4 25.9 17 26.3 17zM3.9 13l0.8 3.7L5.7 13h1.1l0.9 3.7L8.5 13h1.5 0.1 1.5l0.8 3.7 0.9-3.7h1.1l0.9 3.7 0.8-3.7h1.5 0.1 1.5l0.8 3.7 0.9-3.7h1.1l0.9 3.7 0.8-3.7h1.6l-1.6 5h-1.5l-0.8-3.5L20.9 18h-1.5l-1.5-5.4L16.4 18h-1.5L14 14.5 13.2 18h-1.5l-1.5-5.4L8.6 18H7l-0.8-3.5L5.4 18H3.9l-1.6-5H3.9z"
     },
     icons2: { 
       riseLogo: "",
@@ -48073,6 +48081,9 @@ angular.module('risevision.common.svg.icons', [])
       riseDocumentation:"M6 4C5.4 4 5 4.4 5 5s0.4 1 1 1h17c0.6 0 1-0.4 1-1s-0.4-1-1-1H6zM26 11.9V8.8C26 8.2 25.6 8 25 8H6C4.3 8 3 6.7 3 5c0-1.7 1.3-3 3-3h19c0.6 0 1-0.4 1-1 0-0.6-0.4-1-1-1H6C3.2 0 0 2 0 4.8v21c0 2.4 2.5 5.4 4.9 6.1L26 11.9z",
       riseCommunity:"M9.4 18.9c0 2.4 0.7 3.8 2.2 4.3v9h8.8v-9c1.5-0.4 2.2-1.9 2.2-4.3v-7.7H9.4V18.9zM16 8.9c2.4 0 4.4-2 4.4-4.4s-2-4.4-4.4-4.4 -4.4 2-4.4 4.4S13.6 8.9 16 8.9z",
       riseStorageGraphic:"M19.8 5.1L2.9 21.7 8.6 24l2.4 5.8 17.1-16.9V5.1H19.8zM22.9 11.7c-1.1 0-1.9-0.9-1.9-1.9 0-1.1 0.9-1.9 1.9-1.9 1.1 0 1.9 0.9 1.9 1.9C24.8 10.9 23.9 11.7 22.9 11.7z",
+      iconNewFolder:"",
+      iconPresentation:"",
+      iconWebsite:"",
     }
   });
 
@@ -48377,12 +48388,12 @@ angular.module('ngBiscuit').
 );
 /**
  * @license
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Lo-Dash 2.4.2 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern -o ./dist/lodash.js`
  * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
+ * Available under MIT license <https://lodash.com/license>
  */
 ;(function() {
 
@@ -49871,6 +49882,7 @@ angular.module('ngBiscuit').
     var setBindData = !defineProperty ? noop : function(func, value) {
       descriptor.value = value;
       defineProperty(func, '__bindData__', descriptor);
+      descriptor.value = null;
     };
 
     /**
@@ -54516,7 +54528,7 @@ angular.module('ngBiscuit').
      * debugging. See http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/#toc-sourceurl
      *
      * For more information on precompiling templates see:
-     * http://lodash.com/custom-builds
+     * https://lodash.com/custom-builds
      *
      * For more information on Chrome extension sandboxes see:
      * http://developer.chrome.com/stable/extensions/sandboxingEval.html
@@ -55085,7 +55097,7 @@ angular.module('ngBiscuit').
      * @memberOf _
      * @type string
      */
-    lodash.VERSION = '2.4.1';
+    lodash.VERSION = '2.4.2';
 
     // add "Chaining" functions to the wrapper
     lodash.prototype.chain = wrapperChain;
