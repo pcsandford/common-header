@@ -8,7 +8,7 @@
       message = resp.message;
     } else if (resp.error) {
       if (resp.error.message) {
-        message = resp.message;
+        message = resp.error.message;
       } else {
         message = resp.error;
       }
@@ -54,7 +54,7 @@
        * check if date is in range
        * @param {Date} date
        * @param {String} strStartDate
-       * @return {String} strEndDate
+       * @param {String} strEndDate
        */
       return function (date, strStartDate, strEndDate) {
         // strStartDate, strEndDate can either be empty string or date in ISO 8601 format "2014-05-14T00:00:00.000Z"
@@ -62,7 +62,7 @@
 
         // When parsing time, we don't want to convert Universal time to the current TimeZone
         // example new Date(Date.parse("2014-05-14T00:00:00.000")); returns "Tue May 13 2014 20:00:00 GMT-0400 (EDT)"
-        // what we want is to pretennd that date already comes adjusted to the current TimeZone
+        // what we want is to pretend that date already comes adjusted to the current TimeZone
         // example "2014-05-14T00:00:00.000" show be converted to "Tue May 14 2014 00:00:00 GMT-0400 (EDT)"
 
         var res = true;
