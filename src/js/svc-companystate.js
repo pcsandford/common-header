@@ -44,6 +44,8 @@
             pendingSelectedCompany = null;
 
             deferred.resolve(null);
+            $rootScope.$broadcast(
+              "risevision.company.selectedCompanyChanged");
           });
 
         return deferred.promise;
@@ -58,6 +60,8 @@
               objectHelper.clearAndCopy(company, _state.selectedCompany);
 
               deferred.resolve();
+              $rootScope.$broadcast(
+                "risevision.company.selectedCompanyChanged");
             })
             .then(null, function (resp) {
               $log.error("Failed to load selected company.", resp);
@@ -68,6 +72,8 @@
           _companyState.resetCompany();
 
           deferred.resolve();
+          $rootScope.$broadcast(
+            "risevision.company.selectedCompanyChanged");
         }
 
         return deferred.promise;

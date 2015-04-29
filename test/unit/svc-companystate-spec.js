@@ -44,7 +44,7 @@ describe("Services: company state", function() {
     }]);
   }));
   
-  var companyState, subCompany, apiCount;
+  var companyState, subCompany, apiCount, rootScope, broadcastSpy;
   
   beforeEach(function() {
     apiCount = 0;
@@ -56,11 +56,14 @@ describe("Services: company state", function() {
       
       inject(function($injector){
         companyState = $injector.get("companyState");
+        rootScope = $injector.get("$rootScope");
+        broadcastSpy = sinon.spy(rootScope, "$broadcast");
       });
       
       companyState.init();
-      
+
       setTimeout(function() {
+        broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
         done();
       }, 10);
     });
@@ -93,7 +96,7 @@ describe("Services: company state", function() {
     
     it("should switch company", function(done) {
       companyState.switchCompany("RV_subcompany_id");
-      
+      broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
       setTimeout(function() {
         expect(apiCount).to.equal(2);
         expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
@@ -107,7 +110,7 @@ describe("Services: company state", function() {
     
     it("should reset company", function(done) {
       companyState.switchCompany("RV_subcompany_id");
-      
+      broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
       setTimeout(function() {
         expect(companyState.getSelectedCompanyId()).to.equal("RV_subcompany_id");
         expect(companyState.isSubcompanySelected()).to.be.true;
@@ -124,10 +127,29 @@ describe("Services: company state", function() {
     
     it("should not make an extra api call if parent is used", function() {
       companyState.switchCompany("RV_parent_id");
-      
+      broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
       expect(apiCount).to.equal(1);
       expect(companyState.getSelectedCompanyId()).to.equal("RV_parent_id");
       expect(companyState.isSubcompanySelected()).to.be.false;
+    });
+
+    it("should update company settings", function(done) {
+      var companyWithNewSettings = {
+          "id": "RV_parent_id",
+          "parentId": "fb788f1f",
+          "name": "Parent Company new name",
+          "country": "US"
+      };
+      companyState.updateCompanySettings(companyWithNewSettings);
+      setTimeout(function() {
+          broadcastSpy.should.have.been.calledWith("risevision.company.updated");
+          expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
+          expect(companyState.getSelectedCompanyId()).to.equal("RV_parent_id");
+          expect(companyState.getSelectedCompanyName()).to.equal("Parent Company new name");
+          expect(companyState.getSelectedCompanyCountry()).to.equal("US");
+          expect(companyState.isSubcompanySelected()).to.be.false;
+          done();
+      },10);
     });
   });
   
@@ -137,6 +159,8 @@ describe("Services: company state", function() {
       
       inject(function($injector){
         companyState = $injector.get("companyState");
+        rootScope = $injector.get("$rootScope");
+        broadcastSpy = sinon.spy(rootScope, "$broadcast");
       });
     });
     
@@ -144,8 +168,8 @@ describe("Services: company state", function() {
       subCompany = true;
       
       companyState.init();
-      
       setTimeout(function() {
+        broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
         expect(apiCount).to.equal(2);
         expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
         expect(companyState.getSelectedCompanyId()).to.equal("RV_subcompany_id");
@@ -156,5 +180,4 @@ describe("Services: company state", function() {
       },10);
     });
   });
-
 });

@@ -3,7 +3,7 @@
 "use strict";
 
 describe("Services: auth & user state", function() {
-  var $window, path = "";
+  var path = "";
 
   beforeEach(module("risevision.common.userstate"));
 
@@ -69,11 +69,13 @@ describe("Services: auth & user state", function() {
   });
   
   describe("user not logged in: ",function(){
-    var userState;
-    
+    var userState, rootScope, broadcastSpy;
+
     beforeEach(function() {      
       inject(function($injector){
         userState = $injector.get("userState");
+        rootScope = $injector.get("$rootScope");
+        broadcastSpy = sinon.spy(rootScope, "$broadcast");
       });
     });
     
@@ -81,7 +83,7 @@ describe("Services: auth & user state", function() {
       userState.authenticate().then(done, function(msg) {
         expect(userState.isLoggedIn()).to.be.false;
         expect(msg).to.equal("user is not authenticated");
-
+        broadcastSpy.should.not.have.been.calledWith("risevision.user.authorized");
         done();
       })
       .then(null,done);
@@ -89,7 +91,7 @@ describe("Services: auth & user state", function() {
   });
   
   describe("should remember user: ", function(){
-    var userState;
+    var userState, rootScope, broadcastSpy;
     
     beforeEach(function() {
       gapi.setPendingSignInUser("michael.sanchez@awesome.io");
@@ -97,7 +99,8 @@ describe("Services: auth & user state", function() {
 
       inject(function($injector){
         userState = $injector.get("userState");
-        
+        rootScope = $injector.get("$rootScope");
+        broadcastSpy = sinon.spy(rootScope, "$broadcast");
         // Fake user token being stored locally
         userState._setUserToken("1234");
       });
@@ -107,7 +110,7 @@ describe("Services: auth & user state", function() {
       userState.authenticate().then(function() {
         expect(userState.isLoggedIn()).to.be.true;
         expect(userState.isRiseVisionUser()).to.be.true;
-        
+        broadcastSpy.should.have.been.calledWith("risevision.user.authorized");
         expect(userState.getUsername()).to.equal("michael.sanchez@awesome.io");
 
         done();
@@ -136,11 +139,12 @@ describe("Services: auth & user state", function() {
     it("should sign out", function(done) {
       userState.authenticate().then(function() {
         expect(userState.isLoggedIn()).to.be.true;
-        
+        broadcastSpy.should.have.been.calledWith("risevision.user.authorized");
+
         userState.signOut().then(function() {
           expect(userState.isLoggedIn()).to.be.false;
           expect(userState.isRiseVisionUser()).to.be.false;
-          
+          broadcastSpy.should.have.been.calledWith("risevision.user.signedOut");
           expect(userState.getUsername()).to.not.be.truely;
 
           done();
@@ -160,7 +164,7 @@ describe("Services: auth & user state", function() {
   });
   
   describe("interpret auth result, new user: ", function(){
-    var userState;
+    var userState, rootScope, broadcastSpy;
     
     beforeEach(function() {
       gapi.setPendingSignInUser("john.doe@awesome.io");
@@ -168,6 +172,8 @@ describe("Services: auth & user state", function() {
 
       inject(function($injector){
         userState = $injector.get("userState");
+        rootScope = $injector.get("$rootScope");
+        broadcastSpy = sinon.spy(rootScope, "$broadcast");
       });
     });
     
@@ -175,7 +181,7 @@ describe("Services: auth & user state", function() {
       userState.authenticate().then(function() {
         expect(userState.isLoggedIn()).to.be.true;
         expect(userState.isRiseVisionUser()).to.be.false;
-        
+        broadcastSpy.should.have.been.calledWith("risevision.user.authorized");
         expect(userState.getUsername()).to.equal("john.doe@awesome.io");
 
         done();
@@ -187,7 +193,7 @@ describe("Services: auth & user state", function() {
   });
   
   describe("interpret auth result, existing user: ", function(){
-    var userState;
+    var userState, rootScope, broadcastSpy;
     
     beforeEach(function() {
       gapi.setPendingSignInUser("michael.sanchez@awesome.io");
@@ -195,14 +201,16 @@ describe("Services: auth & user state", function() {
 
       inject(function($injector){
         userState = $injector.get("userState");
+        rootScope = $injector.get("$rootScope");
+        broadcastSpy = sinon.spy(rootScope, "$broadcast");
       });
     });
-    
+
     it("should be authenticated", function(done) {
       userState.authenticate().then(function() {
         expect(userState.isLoggedIn()).to.be.true;
         expect(userState.isRiseVisionUser()).to.be.true;
-        
+        broadcastSpy.should.have.been.calledWith("risevision.user.authorized");
         expect(userState.getUsername()).to.equal("michael.sanchez@awesome.io");
 
         done();
@@ -266,9 +274,11 @@ describe("Services: auth & user state", function() {
     it("should throw error if gapi loader fails", function(done) {
       failGapiLoader = true;
 
-      inject(function(userState){
+      inject(function(userState,$rootScope){
+        var broadcastSpy = sinon.spy($rootScope, "$broadcast");
         userState.authenticate().then(done, function(err) {
           expect(userState.isLoggedIn()).to.be.false;
+          broadcastSpy.should.not.have.been.calledWith("risevision.user.authorized");
           expect(err).to.equal("gapi loader failed");
           
           done();
@@ -281,9 +291,11 @@ describe("Services: auth & user state", function() {
       failGapiLoader = false;
       failAuthorize = true;
     
-      inject(function(userState){    
+      inject(function(userState,$rootScope){
+        var broadcastSpy = sinon.spy($rootScope, "$broadcast");
         userState.authenticate().then(done, function(err) {
           expect(userState.isLoggedIn()).to.be.false;
+          broadcastSpy.should.not.have.been.calledWith("risevision.user.authorized");
           expect(err).to.equal("authorize failure");
           
           done();
@@ -297,9 +309,11 @@ describe("Services: auth & user state", function() {
       failAuthorize = false;
       failOAuthUser = true;
     
-      inject(function(userState){    
+      inject(function(userState,$rootScope){
+        var broadcastSpy = sinon.spy($rootScope, "$broadcast");
         userState.authenticate().then(done, function(err) {
           expect(userState.isLoggedIn()).to.be.false;
+          broadcastSpy.should.not.have.been.calledWith("risevision.user.authorized");
           expect(err).to.equal("oauth failure");
                     
           done();
@@ -309,45 +323,40 @@ describe("Services: auth & user state", function() {
     });
   });
   
-  xdescribe("force authentication: ", function() {
-    beforeEach(module(function ($provide) {
-      $window = {
-        location: {
-          value: "",
-          replace: function() {
-            
-          },
-          getHref: function() {
-            return this.value;
-          },
-          setHref: function(newValue) {
-            this.value = newValue;
-          }
+  describe("force authentication: ", function() {
+
+    beforeEach( module( function($provide) {
+      $provide.service("$q", function() {return Q;});
+      $provide.value("$location", {
+        search: function () {
+          return {inRVA : ""};
+        },
+        path: function () {
+          return "";
+        },
+        protocol: function () {
+          return "protocol";
         }
-      };
-          
-      Object.defineProperty($window.location, "href", {
-        get: function() {return this.getHref(); },
-        set: function(y) { this.setHref(y); }
       });
-      
-      $provide.value("$window", $window);
     }));
     
-    var userState;
-    
-    beforeEach(function() {
-      inject(function($injector){
-        userState = $injector.get("userState");
-      });
-    });
-    
-    xit("should redirect", function(done) {
-      userState.authenticate(true).then(done, done);
-      
-      expect(userState.isLoggedIn()).to.be.false;
-      expect($window.location).to.equal("user is not authenticated");
 
+    it("should be authenticated with force", function(done) {
+      inject(function(userState,$rootScope){
+        gapi.setPendingSignInUser("michael.sanchez@awesome.io");
+        gapi.auth.authorize({immediate: true}, function() {});
+        var broadcastSpy = sinon.spy($rootScope, "$broadcast");
+        userState.authenticate(true).then(function() {
+          expect(userState.isLoggedIn()).to.be.true;
+          expect(userState.isRiseVisionUser()).to.be.true;
+          broadcastSpy.should.have.been.calledWith("risevision.user.authorized");
+          broadcastSpy.should.have.been.calledWith("risevision.user.userSignedIn");
+          expect(userState.getUsername()).to.equal("michael.sanchez@awesome.io");
+
+          done();
+        })
+          .then(null,done);
+      });
     });
   });
 });
