@@ -131,12 +131,6 @@ app.run(["$templateCache", function($templateCache) {
     "      <span class=\"item-name\">User Settings</span>\n" +
     "    </a>\n" +
     "  </li>\n" +
-    "  <li ng-show=\"false\">\n" +
-    "    <a href=\"\" class=\"action\" ng-click=\"paymentMethods()\">\n" +
-    "      <i class=\"fa fa-usd\"></i>\n" +
-    "      <span class=\"item-name\">Payment Methods</span>\n" +
-    "    </a>\n" +
-    "  </li>\n" +
     "\n" +
     "  <li class=\"dropdown-footer text-right\" ng-show=\"isLoggedIn\">\n" +
     "    <button class=\"sign-out-button btn btn-sm btn-default\" ng-click=\"logout()\">Sign Out <i class=\"fa fa-sign-out\"></i>\n" +
@@ -785,139 +779,6 @@ try { app = angular.module("risevision.common.header.templates"); }
 catch(err) { app = angular.module("risevision.common.header.templates", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
-  $templateCache.put("credit-cards-modal.html",
-    "<div class=\"modal-header\">\n" +
-    "  <button type=\"button\" class=\"close\" ng-click=\"closeModal()\">\n" +
-    "    <i class=\"fa fa-times\"></i>\n" +
-    "  </button>\n" +
-    "  <h2 id=\"pay-now-label\" class=\"modal-title\">Credit Cards</h2>\n" +
-    "</div>\n" +
-    "<div class=\"modal-body\" ng-scroll-event=\"handleScroll($event, isEndEvent)\">\n" +
-    "  <form role=\"form\">\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"card-number\">Card Number</label>\n" +
-    "      <input id=\"card-number\" data-stripe=\"number\" class=\"form-control\" type=\"text\" ng-model=\"card.number\"/>\n" +
-    "    </div>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"card-name\">Cardholder Name</label>\n" +
-    "      <input id=\"card-name\" data-stripe=\"name\" class=\"form-control\" type=\"text\" ng-model=\"card.name\"/>\n" +
-    "    </div>\n" +
-    "    <div class=\"row form-group\">\n" +
-    "      <div class=\"col-md-3\">\n" +
-    "        <label for=\"expiry-month\">Exp. Month</label>\n" +
-    "        <select id=\"expiry-month\" data-stripe=\"exp-month\" class=\"form-control selectpicker\" ng-model=\"card.expMonth\">\n" +
-    "          <option value=\"1\">01</option>\n" +
-    "          <option value=\"2\">02</option>\n" +
-    "          <option value=\"3\">03</option>\n" +
-    "          <option value=\"4\" selected>04</option>\n" +
-    "          <option value=\"5\">05</option>\n" +
-    "          <option value=\"6\">06</option>\n" +
-    "          <option value=\"7\">07</option>\n" +
-    "          <option value=\"8\">08</option>\n" +
-    "          <option value=\"9\">09</option>\n" +
-    "          <option value=\"10\">10</option>\n" +
-    "          <option value=\"11\">11</option>\n" +
-    "          <option value=\"12\">12</option>\n" +
-    "        </select>\n" +
-    "      </div>\n" +
-    "      <div class=\"col-md-3\">\n" +
-    "        <label for=\"expiry-year\">Exp. Year</label>\n" +
-    "        <select id=\"expiry-year\" data-stripe=\"exp-year\" class=\"form-control selectpicker\" ng-model=\"card.expYear\">\n" +
-    "          <option value=\"2014\" selected>2014</option>\n" +
-    "          <option value=\"2015\">2015</option>\n" +
-    "          <option value=\"2016\">2016</option>\n" +
-    "          <option value=\"2017\">2017</option>\n" +
-    "          <option value=\"2018\">2018</option>\n" +
-    "          <option value=\"2019\">2019</option>\n" +
-    "          <option value=\"2020\">2020</option>\n" +
-    "          <option value=\"2021\">2021</option>\n" +
-    "          <option value=\"2022\">2022</option>\n" +
-    "          <option value=\"2023\">2023</option>\n" +
-    "          <option value=\"2024\">2024</option>\n" +
-    "        </select>\n" +
-    "      </div>\n" +
-    "      <div class=\"col-md-3\">\n" +
-    "        <label for=\"cvc\">Security Code</label>\n" +
-    "        <input id=\"cvc\" data-stripe=\"cvc\" class=\"form-control\" type=\"text\" size=\"4\" ng-model=\"card.cvc\">\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "    <!-- Address -->\n" +
-    "    <h3>Billing Address</h3>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"street\">Street</label>\n" +
-    "      <input id=\"street\" type=\"text\" class=\"form-control\" ng-model=\"addr.address1\" />\n" +
-    "    </div>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"unit\">Street (Line 2)</label>\n" +
-    "      <input id=\"unit\" type=\"text\" class=\"form-control\" ng-model=\"addr.address2\" />\n" +
-    "    </div>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"city\">City</label>\n" +
-    "      <input id=\"city\" type=\"text\" class=\"form-control\" ng-model=\"addr.city\" />\n" +
-    "    </div>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"country\">Country</label>\n" +
-    "      <select id=\"country\" class=\"form-control selectpicker\" ng-model=\"addr.country\" ng-options=\"c.code as c.name for c in countries\">\n" +
-    "        <option value=\"\">&lt; Select Country &gt;</option>\n" +
-    "      </select>\n" +
-    "    </div>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"province\">State / Province</label>\n" +
-    "      <!-- <input id=\"province\" type=\"text\" class=\"form-control\" ng-model=\"addr.province\" ng-hide=\"addr.country == 'US' || addr.country == 'CA'\" /> -->\n" +
-    "      <select class=\"form-control selectpicker\" ng-model=\"addr.province\" ng-options=\"c[1] as c[0] for c in regionsCA\" ng-show=\"addr.country == 'CA'\">\n" +
-    "        <option value=\"\">&lt; Select Province &gt;</option>\n" +
-    "      </select>\n" +
-    "      <!-- <select class=\"form-control selectpicker\" ng-model=\"addr.province\" ng-options=\"c[1] as c[0] for c in regionsUS\" ng-show=\"addr.country == 'US'\">\n" +
-    "        <option value=\"\">&lt; Select State &gt;</option>\n" +
-    "      </select> -->\n" +
-    "    </div>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"zip\">Zip / Postal Code</label>\n" +
-    "      <input id=\"zip\" type=\"text\" class=\"form-control\" ng-model=\"addr.postalCode\" />\n" +
-    "    </div>\n" +
-    "    <!-- End Address-->\n" +
-    "    <div class=\"form-group danger\" ng-show=\"isDeletingCard\">\n" +
-    "      Warning! If you delete this credit card from your account all subscription renewals paid on this card will fail at the time of renewal resulting in potential loss of service. Please confirm you wish to proceed with deleting this card by typing \"DELETE\" into the box below and clicking on the Confirm Deletion button.\n" +
-    "      <div class=\"row\">\n" +
-    "        <div class=\"col-sm-4\">\n" +
-    "          <input type=\"text\" class=\"form-control\" />\n" +
-    "        </div>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "  </form>\n" +
-    "</div>\n" +
-    "<div class=\"modal-footer\">\n" +
-    "  <div class=\"row\">\n" +
-    "    <div class=\"col-sm-3\">\n" +
-    "      <a href=\"https://stripe.com/\" target=\"_blank\">\n" +
-    "        <img src=\"img/powered-by-stripe.png\" class=\"stripe\" width=\"119\" height=\"26\" alt=\"Powered by Stripe\">\n" +
-    "      </a>\n" +
-    "    </div>\n" +
-    "    <div class=\"col-sm-9\">\n" +
-    "      <button type=\"button\" class=\"btn btn-success btn-fixed-width\" data-dismiss=\"modal\" ng-click=\"closeModal()\">Save\n" +
-    "        <i class=\"fa fa-white fa-check icon-right\"></i>\n" +
-    "      </button>\n" +
-    "      <button type=\"button\" class=\"btn btn-danger btn-fixed-width\" ng-show=\"!isDeletingCard\" ng-click=\"deleteCard()\">\n" +
-    "        Delete <i class=\"fa fa-white fa-trash-o icon-right\"></i>\n" +
-    "      </button>\n" +
-    "      <button type=\"button\" class=\"btn btn-danger btn-confirm-delete\" data-dismiss=\"modal\" ng-show=\"isDeletingCard\" ng-click=\"closeModal()\">\n" +
-    "        Confirm Deletion <i class=\"fa fa-white fa-warning icon-right\"></i>\n" +
-    "      </button>\n" +
-    "      <button type=\"button\" class=\"btn btn-default btn-fixed-width\" data-dismiss=\"modal\" ng-click=\"closeModal()\">Cancel\n" +
-    "        <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
-    "      </button>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "</div>\n" +
-    "");
-}]);
-})();
-
-(function(module) {
-try { app = angular.module("risevision.common.header.templates"); }
-catch(err) { app = angular.module("risevision.common.header.templates", []); }
-app.run(["$templateCache", function($templateCache) {
-  "use strict";
   $templateCache.put("global-alerts.html",
     "<div class=\"container\">\n" +
     "  <div class=\"row\">\n" +
@@ -1005,64 +866,6 @@ app.run(["$templateCache", function($templateCache) {
     "  <button type=\"button\" class=\"btn btn-default btn-fixed-width close-move-company-button\" data-dismiss=\"modal\" ng-click=\"closeModal()\">\n" +
     "    {{dismissButtonText}} <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
     "  </button>\n" +
-    "</div>\n" +
-    "");
-}]);
-})();
-
-(function(module) {
-try { app = angular.module("risevision.common.header.templates"); }
-catch(err) { app = angular.module("risevision.common.header.templates", []); }
-app.run(["$templateCache", function($templateCache) {
-  "use strict";
-  $templateCache.put("payment-methods-modal.html",
-    "<div class=\"modal-header\">\n" +
-    "  <button type=\"button\" class=\"close\" ng-click=\"closeModal()\">\n" +
-    "    <i class=\"fa fa-times\"></i>\n" +
-    "  </button>\n" +
-    "  <h2 id=\"user-settings-label\" class=\"modal-title\">Payment Methods</h2>\n" +
-    "</div>\n" +
-    "<div class=\"modal-body\">\n" +
-    "  <div class=\"container-fluid\">\n" +
-    "    <div class=\"list-group\">\n" +
-    "      <div class=\"row list-group-item\">\n" +
-    "        <div class=\"col-sm-10\">\n" +
-    "          Visa - 123\n" +
-    "          <span class=\"expiry\">Expires - 02/15</span>\n" +
-    "        </div>\n" +
-    "        <div class=\"col-sm-2 edit\">\n" +
-    "          <a href=\"\" ng-click=\"creditCards()\">\n" +
-    "            Edit\n" +
-    "          </a>\n" +
-    "        </div>\n" +
-    "      </div>\n" +
-    "      <div class=\"row list-group-item\">\n" +
-    "        <div class=\"col-sm-10\">\n" +
-    "          Amex - 123\n" +
-    "          <span class=\"expiry\">Expires - 02/15</span>\n" +
-    "        </div>\n" +
-    "        <div class=\"col-sm-2 edit\">\n" +
-    "          <a href=\"\" ng-click=\"creditCards()\">\n" +
-    "            Edit\n" +
-    "          </a>\n" +
-    "        </div>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "</div>\n" +
-    "<div class=\"modal-footer\">\n" +
-    "  <div class=\"row\">\n" +
-    "    <div class=\"col-sm-3 stripe\">\n" +
-    "      <a href=\"https://stripe.com/\" target=\"_blank\">\n" +
-    "        <img src=\"img/powered-by-stripe.png\" width=\"119\" height=\"26\" alt=\"Powered by Stripe\">\n" +
-    "      </a>\n" +
-    "    </div>\n" +
-    "    <div class=\"col-sm-9\">\n" +
-    "      <button type=\"button\" class=\"btn btn-default\" ng-click=\"closeModal()\">\n" +
-    "        Cancel <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
-    "      </button>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
     "</div>\n" +
     "");
 }]);
@@ -1866,15 +1669,6 @@ angular.module("risevision.common.header")
           }
         });
       };
-      // Show Payment Methods Modal
-      $scope.paymentMethods = function (size) {
-        // var modalInstance =
-        $modal.open({
-          template: $templateCache.get("payment-methods-modal.html"),
-          controller: "PaymentMethodsModalCtrl",
-          size: size
-        });
-      };
 
       $loading.startGlobal("auth-buttons-silent");
       oauth2APILoader() //force loading oauth api on startup
@@ -2121,33 +1915,6 @@ angular.module("risevision.common.header")
 
   }
 ]);
-
-angular.module("risevision.common.header")
-
-.controller("PaymentMethodsModalCtrl", ["$scope", "$modalInstance", "$modal",
-  "$templateCache",
-  function ($scope, $modalInstance, $modal, $templateCache) {
-    $scope.closeModal = function () {
-      $modalInstance.dismiss("cancel");
-    };
-    // Show Payment Methods Modal
-    $scope.creditCards = function (size) {
-      // var modalInstance =
-      $modal.open({
-        template: $templateCache.get("credit-cards-modal.html"),
-        controller: "CreditCardsModalCtrl",
-        size: size
-      });
-    };
-  }
-])
-  .controller("CreditCardsModalCtrl", ["$scope", "$modalInstance",
-    function ($scope, $modalInstance) {
-      $scope.closeModal = function () {
-        $modalInstance.dismiss("cancel");
-      };
-    }
-  ]);
 
 angular.module("risevision.common.header")
   .controller("RegistrationModalCtrl", [

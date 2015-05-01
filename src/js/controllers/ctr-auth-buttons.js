@@ -159,15 +159,6 @@ angular.module("risevision.common.header")
           }
         });
       };
-      // Show Payment Methods Modal
-      $scope.paymentMethods = function (size) {
-        // var modalInstance =
-        $modal.open({
-          template: $templateCache.get("payment-methods-modal.html"),
-          controller: "PaymentMethodsModalCtrl",
-          size: size
-        });
-      };
 
       $loading.startGlobal("auth-buttons-silent");
       oauth2APILoader() //force loading oauth api on startup
