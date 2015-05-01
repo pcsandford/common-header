@@ -2,8 +2,8 @@
 
   "use strict";
   angular.module("risevision.common.account", [
-    "risevision.common.gapi", "risevision.core.oauth2",
-    "risevision.common.company",
+    "risevision.common.gapi",
+    "risevision.core.userprofile",
     "risevision.core.cache"
   ])
 
@@ -30,8 +30,8 @@
   ])
 
   .factory("agreeToTermsAndUpdateUser", ["$q", "$log",
-    "createCompany", "agreeToTerms", "updateUser",
-    function ($q, $log, createCompany, agreeToTerms, updateUser) {
+    "agreeToTerms", "updateUser",
+    function ($q, $log, agreeToTerms, updateUser) {
       return function (username, basicProfile) {
         $log.debug("registerAccount called.", username, basicProfile);
         var deferred = $q.defer();
@@ -50,8 +50,8 @@
   ])
 
   .factory("registerAccount", ["$q", "$log",
-    "createCompany", "addAccount", "updateUser",
-    function ($q, $log, createCompany, addAccount, updateUser) {
+    "addAccount", "updateUser",
+    function ($q, $log, addAccount, updateUser) {
       return function (username, basicProfile) {
         $log.debug("registerAccount called.", username, basicProfile);
         var deferred = $q.defer();
