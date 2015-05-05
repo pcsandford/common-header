@@ -3904,6 +3904,8 @@ angular.module("risevision.common.geodata", [])
             pendingSelectedCompany = null;
 
             deferred.resolve(null);
+            $rootScope.$broadcast(
+              "risevision.company.selectedCompanyChanged");
           });
 
         return deferred.promise;
@@ -3918,6 +3920,8 @@ angular.module("risevision.common.geodata", [])
               objectHelper.clearAndCopy(company, _state.selectedCompany);
 
               deferred.resolve();
+              $rootScope.$broadcast(
+                "risevision.company.selectedCompanyChanged");
             })
             .then(null, function (resp) {
               $log.error("Failed to load selected company.", resp);
@@ -3928,6 +3932,8 @@ angular.module("risevision.common.geodata", [])
           _companyState.resetCompany();
 
           deferred.resolve();
+          $rootScope.$broadcast(
+            "risevision.company.selectedCompanyChanged");
         }
 
         return deferred.promise;
