@@ -63,7 +63,8 @@ describe("Services: company state", function() {
       companyState.init();
 
       setTimeout(function() {
-        broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
+        broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
+        broadcastSpy.should.have.been.calledOnce;
         done();
       }, 10);
     });
@@ -96,9 +97,11 @@ describe("Services: company state", function() {
     
     it("should switch company", function(done) {
       companyState.switchCompany("RV_subcompany_id");
-      broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
       setTimeout(function() {
+        broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
+        broadcastSpy.should.have.been.calledTwice;
         expect(apiCount).to.equal(2);
+
         expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
         expect(companyState.getSelectedCompanyId()).to.equal("RV_subcompany_id");
         expect(companyState.getSelectedCompanyName()).to.equal("Sub Company");
@@ -110,14 +113,19 @@ describe("Services: company state", function() {
     
     it("should reset company", function(done) {
       companyState.switchCompany("RV_subcompany_id");
-      broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
       setTimeout(function() {
         expect(companyState.getSelectedCompanyId()).to.equal("RV_subcompany_id");
         expect(companyState.isSubcompanySelected()).to.be.true;
         
-        companyState.resetCompany();
+        broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
+        broadcastSpy.should.have.been.calledTwice;
         
+        companyState.resetCompany();
+
+        broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
+        broadcastSpy.should.have.been.calledThrice;
         expect(apiCount).to.equal(2);
+        
         expect(companyState.getSelectedCompanyId()).to.equal("RV_parent_id");
         expect(companyState.isSubcompanySelected()).to.be.false;
         
@@ -127,7 +135,8 @@ describe("Services: company state", function() {
     
     it("should not make an extra api call if parent is used", function() {
       companyState.switchCompany("RV_parent_id");
-      broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
+      broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
+      broadcastSpy.should.have.been.calledTwice;
       expect(apiCount).to.equal(1);
       expect(companyState.getSelectedCompanyId()).to.equal("RV_parent_id");
       expect(companyState.isSubcompanySelected()).to.be.false;
@@ -143,6 +152,7 @@ describe("Services: company state", function() {
       companyState.updateCompanySettings(companyWithNewSettings);
       setTimeout(function() {
           broadcastSpy.should.have.been.calledWith("risevision.company.updated");
+          broadcastSpy.should.have.been.calledTwice;
           expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
           expect(companyState.getSelectedCompanyId()).to.equal("RV_parent_id");
           expect(companyState.getSelectedCompanyName()).to.equal("Parent Company new name");
@@ -169,7 +179,9 @@ describe("Services: company state", function() {
       
       companyState.init();
       setTimeout(function() {
-        broadcastSpy.should.have.been.calledWith("risevision.company.selectedCompanyChanged");
+        broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
+        broadcastSpy.should.have.been.calledOnce;
+
         expect(apiCount).to.equal(2);
         expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
         expect(companyState.getSelectedCompanyId()).to.equal("RV_subcompany_id");
