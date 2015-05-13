@@ -3904,8 +3904,6 @@ angular.module("risevision.common.geodata", [])
             pendingSelectedCompany = null;
 
             deferred.resolve(null);
-            $rootScope.$broadcast(
-              "risevision.company.selectedCompanyChanged");
           });
 
         return deferred.promise;
@@ -3932,8 +3930,6 @@ angular.module("risevision.common.geodata", [])
           _companyState.resetCompany();
 
           deferred.resolve();
-          $rootScope.$broadcast(
-            "risevision.company.selectedCompanyChanged");
         }
 
         return deferred.promise;
@@ -3954,6 +3950,9 @@ angular.module("risevision.common.geodata", [])
         },
         resetCompany: function () {
           objectHelper.clearAndCopy(_state.userCompany, _state.selectedCompany);
+
+          $rootScope.$broadcast(
+            "risevision.company.selectedCompanyChanged");
         },
         resetCompanyState: _resetCompanyState,
         getUserCompanyId: function () {
