@@ -73,6 +73,7 @@ describe("Services: company state", function() {
       expect(companyState.init).to.be.ok;
       expect(companyState.switchCompany).to.be.ok;
       expect(companyState.updateCompanySettings).to.be.ok;
+      expect(companyState.updateUserCompanySettings).to.be.ok;
       ["init", "switchCompany", "updateCompanySettings", "resetCompany",
       "resetCompanyState", "getUserCompanyId", "getSelectedCompanyId", 
       "getSelectedCompanyName", "getSelectedCompanyCountry",
@@ -149,10 +150,12 @@ describe("Services: company state", function() {
           "name": "Parent Company new name",
           "country": "US"
       };
+      broadcastSpy.reset();
       companyState.updateCompanySettings(companyWithNewSettings);
       setTimeout(function() {
           broadcastSpy.should.have.been.calledWith("risevision.company.updated");
-          broadcastSpy.should.have.been.calledTwice;
+          expect(broadcastSpy.args[0][1].companyId).to.equal("RV_parent_id");
+          broadcastSpy.should.have.been.calledOnce;
           expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
           expect(companyState.getSelectedCompanyId()).to.equal("RV_parent_id");
           expect(companyState.getSelectedCompanyName()).to.equal("Parent Company new name");
@@ -161,6 +164,41 @@ describe("Services: company state", function() {
           done();
       },10);
     });
+
+    it("should update selected company settings without loosing fields", function(done) {
+      var companyWithNewSettings = {
+          "id": "RV_parent_id",
+          "parentId": "fb788f1f",
+          "name": "Parent Company new name",
+          "country": "US"
+      };
+      companyState.updateCompanySettings(companyWithNewSettings);
+      var copyOfCompany = companyState.getCopyOfSelectedCompany(true);
+      copyOfCompany.country = "CA";
+      companyState.updateCompanySettings(copyOfCompany);
+      setTimeout(function() {
+          expect(companyState.getSelectedCompanyId()).to.equal("RV_parent_id");
+          expect(companyState.getSelectedCompanyCountry()).to.equal("CA");
+          done();
+      },10);
+    });
+
+    it("should update user company settings without loosing fields", function(done) {
+      var companyWithNewSettings = {
+          "id": "RV_parent_id",
+          "parentId": "fb788f1f",
+          "name": "Parent Company new name",
+          "country": "US"
+      };
+      companyState.updateUserCompanySettings(companyWithNewSettings);
+      var copyOfCompany = companyState.getCopyOfUserCompany(true);
+      companyState.updateUserCompanySettings(copyOfCompany);
+      setTimeout(function() {
+          expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
+          done();
+      },10);
+    });
+
   });
   
   describe("selected company: ", function() {

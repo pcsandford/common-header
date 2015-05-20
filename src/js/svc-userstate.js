@@ -467,6 +467,7 @@
         getSelectedCompanyId: companyState.getSelectedCompanyId,
         getSelectedCompanyName: companyState.getSelectedCompanyName,
         updateCompanySettings: companyState.updateCompanySettings,
+        updateUserCompanySettings: companyState.updateUserCompanySettings,
         getSelectedCompanyCountry: companyState.getSelectedCompanyCountry,
         getUsername: function () {
           return (_state.user && _state.user.username) || null;
