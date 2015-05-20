@@ -310,10 +310,8 @@ gulp.task("test:e2e", function (cb) {
   runSequence("server", "test:e2e:core", "server-close", cb);
 });
 
-
-gulp.task("metrics", factory.metrics());
 gulp.task("test", ["lint"], function (cb) {
-  runSequence("test:unit", "test:e2e", "metrics", cb);
+  runSequence("test:unit", "test:e2e", cb);
 });
 
 gulp.task("watch", ["test:unit-watch"]);
