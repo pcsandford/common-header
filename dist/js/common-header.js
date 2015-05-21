@@ -2498,7 +2498,7 @@ angular.module("risevision.common.header")
 
 .controller("AddUserModalCtrl", ["$scope", "addUser", "$modalInstance",
   "companyId", "userState",
-  "userRoleMap", "humanReadableError", "$loading", "$timeout",
+  "userRoleMap", "humanReadableError", "$loading",
   function ($scope, addUser, $modalInstance, companyId, userState,
     userRoleMap, humanReadableError, $loading) {
     $scope.user = {
@@ -2594,10 +2594,10 @@ angular.module("risevision.common.header")
 .controller("UserSettingsModalCtrl", [
   "$scope", "$modalInstance", "updateUser", "getUserProfile", "deleteUser",
   "addUser", "username", "userRoleMap", "$log", "$loading", "userState",
-  "uiFlowManager", "humanReadableError",
+  "uiFlowManager", "humanReadableError", "$rootScope",
   function ($scope, $modalInstance, updateUser, getUserProfile, deleteUser,
     addUser, username, userRoleMap, $log, $loading, userState,
-    uiFlowManager, humanReadableError) {
+    uiFlowManager, humanReadableError, $rootScope) {
     $scope.user = {};
     $scope.$watch("loading", function (loading) {
       if (loading) {
@@ -2672,7 +2672,9 @@ angular.module("risevision.common.header")
           }
         ).finally(function () {
           if (username === userState.getUsername()) {
-            userState.refreshProfile();
+            userState.refreshProfile().then(function () {
+              $rootScope.$broadcast("risevision.user.updated");
+            });
           }
           $scope.loading = false;
         });
@@ -4659,11 +4661,14 @@ angular.module("risevision.ui-flow", ["LocalStorageModule"])
     .constant("COMPANY_WRITABLE_FIELDS", [
       "name", "street", "unit", "city", "province", "country",
       "postalCode", "timeZoneOffset", "telephone", "fax", "companyStatus",
-      "notificationEmails", "mailSyncEnabled", "sellerId", "isTest"
+      "notificationEmails", "mailSyncEnabled", "sellerId", "isTest",
+      "shipToUseCompanyAddress", "shipToName", "shipToStreet", "shipToUnit",
+      "shipToCity", "shipToProvince", "shipToPostalCode", "shipToCountry"
     ])
     .constant("COMPANY_SEARCH_FIELDS", [
       "name", "id", "street", "unit", "city", "province", "country",
-      "postalCode", "telephone", "fax"
+      "postalCode", "telephone", "fax",
+      "shipToName", "shipToStreet", "shipToCity", "shipToPostalCode"
     ])
 
     .factory("createCompany", ["$q", "coreAPILoader", "COMPANY_WRITABLE_FIELDS",
