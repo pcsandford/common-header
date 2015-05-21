@@ -175,9 +175,8 @@ describe("Services: company state", function() {
     });
     
     it("should initialize with selected company", function(done) {
-      subCompany = true;
-      
       companyState.init();
+      
       setTimeout(function() {
         broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
         broadcastSpy.should.have.been.calledOnce;
@@ -189,6 +188,27 @@ describe("Services: company state", function() {
         expect(companyState.isSubcompanySelected()).to.be.true;
         
         done();
+      },10);
+    });
+    
+    it("should not reset sub-company if init is called twice", function(done) {
+      companyState.init();
+      
+      setTimeout(function() {
+        companyState.init();
+        
+        setTimeout(function() {
+          broadcastSpy.should.have.been.calledWithExactly("risevision.company.selectedCompanyChanged");
+          broadcastSpy.should.have.been.calledTwice;
+
+          expect(apiCount).to.equal(4);
+          expect(companyState.getUserCompanyId()).to.equal("RV_parent_id");
+          expect(companyState.getSelectedCompanyId()).to.equal("RV_subcompany_id");
+          expect(companyState.getSelectedCompanyName()).to.equal("Sub Company");
+          expect(companyState.isSubcompanySelected()).to.be.true;
+          
+          done();
+        },10);
       },10);
     });
   });
