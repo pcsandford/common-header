@@ -89,7 +89,21 @@
               objectHelper.clearAndCopy(company, _state.userCompany);
             }
 
-            $rootScope.$broadcast("risevision.company.updated");
+            $rootScope.$broadcast("risevision.company.updated", {
+              "companyId": company.id
+            });
+          }
+        },
+        updateUserCompanySettings: function (company) {
+          if (company && _state.userCompany) {
+            objectHelper.clearAndCopy(company, _state.userCompany);
+            if (_state.userCompany.id === _state.selectedCompany.id) {
+              objectHelper.clearAndCopy(company, _state.selectedCompany);
+            }
+
+            $rootScope.$broadcast("risevision.company.updated", {
+              "companyId": company.id
+            });
           }
         },
         resetCompany: function () {
@@ -117,11 +131,19 @@
           return (_state.selectedCompany && _state.selectedCompany.country) ||
             null;
         },
-        getCopyOfUserCompany: function () {
-          return objectHelper.follow(_state.userCompany);
+        getCopyOfUserCompany: function (noFollow) {
+          if (noFollow) {
+            return angular.extend({}, _state.userCompany);
+          } else {
+            return objectHelper.follow(_state.userCompany);
+          }
         },
-        getCopyOfSelectedCompany: function () {
-          return objectHelper.follow(_state.selectedCompany);
+        getCopyOfSelectedCompany: function (noFollow) {
+          if (noFollow) {
+            return angular.extend({}, _state.selectedCompany);
+          } else {
+            return objectHelper.follow(_state.selectedCompany);
+          }
         },
         isSubcompanySelected: function () {
           return _state.selectedCompany && _state.selectedCompany.id !==
