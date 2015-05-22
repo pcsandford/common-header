@@ -3893,9 +3893,13 @@ angular.module("risevision.common.geodata", [])
 
         //populate userCompany
         getCompany().then(function (company) {
+          var selectedCompanyId = _companyState.getSelectedCompanyId() ?
+            _companyState.getSelectedCompanyId() :
+            pendingSelectedCompany;
+
           objectHelper.clearAndCopy(company, _state.userCompany);
 
-          return _switchCompany(pendingSelectedCompany);
+          return _switchCompany(selectedCompanyId);
         })
           .then(null, function () {
             _companyState.resetCompany();
@@ -5808,7 +5812,7 @@ angular.module("risevision.store.data-gadgets", [])
           },
           template: $templateCache.get("last-modified/last-modified.html"),
           link: function ($scope) {
-            $scope.$watch("changedBy", function(newVal) {
+            $scope.$watch("changedBy", function (newVal) {
               $scope.changedBy = newVal ? newVal : "N/A";
             });
           } //link()
@@ -5835,16 +5839,13 @@ angular.module("risevision.store.data-gadgets", [])
 }());
 
 (function(module) {
-try { app = angular.module("risevision.common.components.last-modified"); }
-catch(err) { app = angular.module("risevision.common.components.last-modified", []); }
-app.run(["$templateCache", function($templateCache) {
-  "use strict";
-  $templateCache.put("last-modified/last-modified.html",
-    "<span class=\"text-muted\">\n" +
-    "  <small>\n" +
-    "    Saved {{changeDate | date:'d-MMM-yyyy h:mm a'}} by {{changedBy | username}}\n" +
-    "  </small>\n" +
-    "</span>\n" +
-    "");
+try {
+  module = angular.module('risevision.common.components.last-modified');
+} catch (e) {
+  module = angular.module('risevision.common.components.last-modified', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('last-modified/last-modified.html',
+    '<span class="text-muted"><small>Saved {{changeDate | date:\'d-MMM-yyyy h:mm a\'}} by {{changedBy | username}}</small></span>');
 }]);
 })();
