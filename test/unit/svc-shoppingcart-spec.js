@@ -40,6 +40,19 @@ describe("Services: Shopping Cart", function() {
     });
   });
 
+  it("should set address fields", function (){
+    inject(function(shoppingCart) {
+      shoppingCart.get();
+      shoppingCart.setAddressFields("abc", true);
+      expect(shoppingCart.getShipToAttention()).to.equal("abc");
+      expect(shoppingCart.getUseBillToAddress()).to.equal(true);
+
+      shoppingCart.setAddressFields("", false);
+      expect(shoppingCart.getShipToAttention()).to.equal("");
+      expect(shoppingCart.getUseBillToAddress()).to.equal(false);
+    });
+  });
+
   it("should remove items from cart", function () {
     inject(function(shoppingCart) {
       shoppingCart.get();
@@ -56,19 +69,18 @@ describe("Services: Shopping Cart", function() {
       shoppingCart.removeItem({productId: "cdcds", orderedPricing: [100]}, 2, 0);
       expect(shoppingCart.getItemCount()).to.equal(0);
     });
+  });
 
-    it("should clear cart", function () {
-      inject(function(shoppingCart) {
-        shoppingCart.initialize();
-        shoppingCart.addItem({productId: "aabbccccdd", orderedPricing: [100]}, 2, 0);
-        shoppingCart.addItem({productId: "cdcds", orderedPricing: [100]}, 2, 0);
-        shoppingCart.addItem({productId: "vdvdv", orderedPricing: [100]}, 2, 0);
-        expect(shoppingCart.getItemCount()).to.equal(3);
-        shoppingCart.clear();
-        expect(shoppingCart.getItemCount()).to.equal(0);
-      });
+  it("should clear cart", function () {
+    inject(function(shoppingCart) {
+      shoppingCart.get();
+      shoppingCart.addItem({productId: "aabbccccdd", orderedPricing: [100]}, 2, 0);
+      shoppingCart.addItem({productId: "cdcds", orderedPricing: [100]}, 2, 0);
+      shoppingCart.addItem({productId: "vdvdv", orderedPricing: [100]}, 2, 0);
+      expect(shoppingCart.getItemCount()).to.equal(3);
+      shoppingCart.clear();
+      expect(shoppingCart.getItemCount()).to.equal(0);
     });
-
   });
 
 });
