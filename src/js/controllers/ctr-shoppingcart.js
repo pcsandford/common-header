@@ -22,7 +22,7 @@ angular.module("risevision.common.header")
       },
       function (isRvUser) {
         $scope.isRiseVisionUser = isRvUser;
-        shoppingCart.initialize();
+        shoppingCart.get();
       });
 
   }
