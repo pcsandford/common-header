@@ -25,7 +25,7 @@ angular.module("risevision.common.header")
         $modalInstance.dismiss("cancel");
       };
 
-      function loadCompanies() {
+      $scope.loadCompanies = function () {
         if (!$scope.companies.endOfList) {
           $scope.loading = true;
           companyService.getCompanies(
@@ -39,30 +39,19 @@ angular.module("risevision.common.header")
             $scope.loading = false;
           });
         }
-      }
+      };
 
       if ($scope.companies.list.length === 0) {
-        loadCompanies();
+        $scope.loadCompanies();
       }
 
       $scope.doSearch = function () {
         $scope.companies.clear();
-        loadCompanies();
+        $scope.loadCompanies();
       };
 
       $scope.setCompany = function (company) {
         $modalInstance.close(company.id);
-      };
-
-      $scope.handleScroll = function (event, isEndEvent) {
-        // $log.debug(event.target.scrollTop + " / " + event.target.scrollHeight + " / " + isEndEvent);
-        if (isEndEvent) {
-          if ((event.target.scrollHeight - event.target.clientHeight - event.target
-            .scrollTop) < 20) {
-            //load more rows if less than 20px left to the bottom
-            loadCompanies();
-          }
-        }
       };
 
     }
