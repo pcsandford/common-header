@@ -23,32 +23,6 @@ describe("Services: util", function() {
       done();
     });
   });
-
-  describe("BaseList: ",function(){
-    var BaseList;
-    
-    beforeEach(function() {
-      inject(function($injector){
-        BaseList = $injector.get("BaseList");
-      });
-    });
-
-    it("should exist", function(done) {
-      expect(BaseList).to.be.ok;
-      expect(BaseList).to.be.a("function");
-      
-      var baseList = new BaseList(10);
-      
-      ["clear", "append", "concat", "add", "remove"].forEach(
-      function (method) {
-        expect(baseList).to.have.property(method);
-        expect(baseList[method]).to.be.a("function");
-      });
-
-      done();
-    });
-    
-  });
   
   it("dateIsInRange: ",function(done){
     var dateStr1 = "2014-05-14T00:00:00.000";

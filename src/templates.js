@@ -540,7 +540,7 @@ app.run(["$templateCache", function($templateCache) {
     "		</div>\n" +
     "		<!-- List of Companies -->\n" +
     "		<div class=\"list-group scrollable-list\"\n" +
-    "		  rv-scroll-event=\"handleScroll($event, isEndEvent)\"\n" +
+    "		  scrolling-list=\"loadCompanies()\"\n" +
     "		  rv-spinner rv-spinner-key=\"company-selector-modal-list\"\n" +
     "			rv-spinner-start-active=\"1\"\n" +
     "		>\n" +
