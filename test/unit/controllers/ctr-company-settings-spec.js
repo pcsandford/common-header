@@ -45,12 +45,22 @@ describe("controller: company settings", function() {
         return deferred.promise;
       };
     });
+    $provide.service("segmentAnalytics", function() { 
+      return {
+        track: function(name) {
+          trackerCalled = name;
+        },
+        load: function() {}
+      };
+    });
     
   }));
-  var $scope, userProfile, userCompany, savedCompany, company, userState, $modalInstance, createCompany;
+  var $scope, userProfile, userCompany, savedCompany, company, userState, $modalInstance, createCompany,
+  trackerCalled;
   var isStoreAdmin = true;
   beforeEach(function(){
     createCompany = true;
+    trackerCalled = undefined;
     userProfile = {
       id : "RV_user_id",
       firstName : "first",
@@ -91,6 +101,9 @@ describe("controller: company settings", function() {
         },
         getSelectedCompanyId : function(){
           return "some_company_id";
+        },
+        getSelectedCompanyName: function() {
+          return "company_name";
         },
         _restoreState : function(){
           
@@ -164,6 +177,7 @@ describe("controller: company settings", function() {
       expect($scope.loading).to.be.true;
       setTimeout(function() {
         expect($scope.loading).to.be.false;
+        expect(trackerCalled).to.equal("Company Updated");
         expect($modalInstance._closed).to.be.true;
         
         expect($scope.company).to.have.property("name");

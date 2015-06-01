@@ -5,11 +5,12 @@ angular.module("risevision.common.header")
   "TIMEZONES",
   "getCompany", "regenerateCompanyField", "$window", "$loading",
   "humanReadableError",
-  "userState", "deleteCompany",
+  "userState", "deleteCompany", "segmentAnalytics",
   function ($scope, $modalInstance, updateCompany, companyId,
     countries, REGIONS_CA, REGIONS_US, TIMEZONES, getCompany,
     regenerateCompanyField,
-    $window, $loading, humanReadableError, userState, deleteCompany) {
+    $window, $loading, humanReadableError, userState, deleteCompany,
+    segmentAnalytics) {
 
     $scope.company = {
       id: companyId
@@ -58,6 +59,12 @@ angular.module("risevision.common.header")
       updateCompany($scope.company.id, company)
         .then(
           function () {
+            segmentAnalytics.track("Company Updated", {
+              companyId: userState.getSelectedCompanyId(),
+              companyName: userState.getSelectedCompanyName(),
+              isUserCompany: !userState.isSubcompanySelected()
+            });
+
             userState.updateCompanySettings($scope.company);
             $modalInstance.close("success");
           })
@@ -76,6 +83,12 @@ angular.module("risevision.common.header")
         deleteCompany($scope.company.id)
           .then(
             function () {
+              segmentAnalytics.track("Company Deleted", {
+                companyId: userState.getSelectedCompanyId(),
+                companyName: userState.getSelectedCompanyName(),
+                isUserCompany: !userState.isSubcompanySelected()
+              });
+
               if (userState.getUserCompanyId() === $scope.company.id) {
                 userState.signOut();
               } else if (userState.getSelectedCompanyId() === $scope.company.id) {

@@ -1,10 +1,10 @@
 angular.module("risevision.common.header")
 
 .controller("AddUserModalCtrl", ["$scope", "addUser", "$modalInstance",
-  "companyId", "userState",
-  "userRoleMap", "humanReadableError", "$loading",
+  "companyId", "userState", "userRoleMap", "humanReadableError", "$loading",
+  "segmentAnalytics",
   function ($scope, addUser, $modalInstance, companyId, userState,
-    userRoleMap, humanReadableError, $loading) {
+    userRoleMap, humanReadableError, $loading, segmentAnalytics) {
     $scope.isAdd = true;
 
     //push roles into array
@@ -42,6 +42,11 @@ angular.module("risevision.common.header")
         $scope.loading = true;
         addUser(companyId, $scope.user.username, $scope.user).then(
           function () {
+            segmentAnalytics.track("User Created", {
+              userId: $scope.user.username,
+              companyId: companyId
+            });
+
             $modalInstance.close("success");
           },
           function (error) {
@@ -95,10 +100,10 @@ angular.module("risevision.common.header")
 .controller("UserSettingsModalCtrl", [
   "$scope", "$modalInstance", "updateUser", "getUserProfile", "deleteUser",
   "addUser", "username", "userRoleMap", "$log", "$loading", "userState",
-  "uiFlowManager", "humanReadableError", "$rootScope",
+  "uiFlowManager", "humanReadableError", "$rootScope", "segmentAnalytics",
   function ($scope, $modalInstance, updateUser, getUserProfile, deleteUser,
     addUser, username, userRoleMap, $log, $loading, userState,
-    uiFlowManager, humanReadableError, $rootScope) {
+    uiFlowManager, humanReadableError, $rootScope, segmentAnalytics) {
     $scope.user = {};
     $scope.$watch("loading", function (loading) {
       if (loading) {
@@ -144,6 +149,12 @@ angular.module("risevision.common.header")
       if (confirm("Are you sure you want to delete this user?")) {
         deleteUser($scope.username)
           .then(function () {
+            segmentAnalytics.track("User Deleted", {
+              userId: $scope.username,
+              companyId: userState.getSelectedCompanyId(),
+              isSelf: $scope.username === userState.getUsername()
+            });
+
             if ($scope.username === userState.getUsername()) {
               userState.signOut().then().finally(function () {
                 uiFlowManager.invalidateStatus("registrationComplete");
@@ -165,6 +176,12 @@ angular.module("risevision.common.header")
         $scope.loading = true;
         updateUser(username, $scope.user).then(
           function () {
+            segmentAnalytics.track("User Updated", {
+              userId: $scope.username,
+              companyId: userState.getSelectedCompanyId(),
+              isSelf: $scope.username === userState.getUsername()
+            });
+
             $modalInstance.close("success");
           },
           function (error) {

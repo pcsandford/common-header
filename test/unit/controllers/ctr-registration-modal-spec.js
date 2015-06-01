@@ -32,6 +32,12 @@ describe("controller: registration modal", function() {
         _restoreState : function(){
           
         },
+        getUserCompanyId : function(){
+          return "some_company_id";
+        },
+        getUserCompanyName: function() {
+          return "company_name";
+        },
         refreshProfile: function() {
           var deferred = Q.defer();
           
@@ -73,13 +79,22 @@ describe("controller: registration modal", function() {
         }
       };
     });
+    $provide.service("segmentAnalytics", function() { 
+      return {
+        track: function(name) {
+          trackerCalled = name;
+        },
+        load: function() {}
+      };
+    });
         
   }));
   var $scope, userProfile, userState, $modalInstance, cookieStored, newUser;
-  var registerUser, account;
+  var registerUser, account, trackerCalled;
   
   beforeEach(function() {
     registerUser = true;
+    trackerCalled = undefined;
     userProfile = {
       id : "RV_user_id",
       firstName : "first",
@@ -148,6 +163,7 @@ describe("controller: registration modal", function() {
       var profileSpy = sinon.spy(userState, "refreshProfile");
       setTimeout(function() {
         expect(newUser).to.be.true;
+        expect(trackerCalled).to.equal("User Registered");
         expect($scope.registering).to.be.false;
         expect($modalInstance._closed).to.be.true;
 
@@ -165,6 +181,7 @@ describe("controller: registration modal", function() {
       var profileSpy = sinon.spy(userState, "refreshProfile");
       setTimeout(function(){
         expect(newUser).to.be.true;
+        expect(trackerCalled).to.not.be.ok;
         expect($scope.registering).to.be.false;
         expect($modalInstance._closed).to.be.false;
 
@@ -195,6 +212,7 @@ describe("controller: registration modal", function() {
       var profileSpy = sinon.spy(userState, "refreshProfile");
       setTimeout(function() {
         expect(newUser).to.be.false;
+        expect(trackerCalled).to.equal("User Registered");
         expect($scope.registering).to.be.false;
         expect($modalInstance._closed).to.be.true;
 
@@ -212,6 +230,7 @@ describe("controller: registration modal", function() {
       var profileSpy = sinon.spy(userState, "refreshProfile");
       setTimeout(function(){
         expect(newUser).to.be.false;
+        expect(trackerCalled).to.not.be.ok;
         expect($scope.registering).to.be.false;
         expect($modalInstance._closed).to.be.false;
 
