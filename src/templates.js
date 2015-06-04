@@ -14,7 +14,7 @@ app.run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "    \n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"http://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://rva.risevision.com/#PRESENTATIONS\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseEditor\"></svg-icon>\n" +
     "        <span>Editor</span>\n" +
     "      </a>\n" +
@@ -23,14 +23,14 @@ app.run(["$templateCache", function($templateCache) {
     "  </li>\n" +
     "  <li>\n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://storage.risevision.com/\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://storage.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseStorage\"></svg-icon>\n" +
     "        <span>Storage</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
     "    \n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://rva.risevision.com/#DISPLAYS\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://rva.risevision.com/#DISPLAYS\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseDisplays\"></svg-icon>\n" +
     "        <span>Displays</span>\n" +
     "      </a>\n" +
@@ -39,7 +39,7 @@ app.run(["$templateCache", function($templateCache) {
     "  </li>\n" +
     "  <li>\n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://rva.risevision.com/#SCHEDULES\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://rva.risevision.com/#SCHEDULES\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseSchedules\"></svg-icon>\n" +
     "        <span>Schedules</span>\n" +
     "      </a>\n" +
@@ -60,7 +60,7 @@ app.run(["$templateCache", function($templateCache) {
     "      </a>\n" +
     "    </div>\n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"http://help.risevision.com/\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://help.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseDocumentation\"></svg-icon>\n" +
     "        <span>Documentation</span>\n" +
     "      </a>\n" +
@@ -68,13 +68,13 @@ app.run(["$templateCache", function($templateCache) {
     "  </li>\n" +
     "  <li>\n" +
     "    <div class=\"menu-box pull-left\">\n" +
-    "      <a href=\"http://developer.risevision.com/\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://developer.risevision.com/\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseDevelopers\"></svg-icon>\n" +
     "        <span>Developer</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
     "    <div class=\"menu-box pull-right\">\n" +
-    "      <a href=\"http://www.risevision.com/about-us/#\" target=\"_blank\" link-cid>\n" +
+    "      <a href=\"https://www.risevision.com/about-us/#\" target=\"_blank\" link-cid>\n" +
     "        <svg-icon p=\"riseLogo\"></svg-icon>\n" +
     "        <span>About</span>\n" +
     "      </a>\n" +
