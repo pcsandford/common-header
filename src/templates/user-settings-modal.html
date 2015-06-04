@@ -106,7 +106,7 @@ rv-spinner-start-active="1">
       <label>
         Last Login
       </label>
-      <div>{{user.lastLogin | humanReadableDateTime}}</div>
+      <div>{{user.lastLogin | date:'d-MMM-yyyy h:mm a'}}</div>
     </div>
     <div class="form-group" ng-if="!editingYourself && !isAdd">
       <label for="user-settings-status">

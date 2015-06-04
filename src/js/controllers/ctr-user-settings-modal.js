@@ -1,19 +1,4 @@
 angular.module("risevision.common.header")
-  .filter("humanReadableDateTime", [
-
-    function () {
-      return function (d) {
-        if (d) {
-          d = new Date(d);
-          return (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear() +
-            " at " + d.toLocaleTimeString() + " EST"; //always assume EST
-        } else {
-          return "";
-        }
-      };
-
-    }
-  ])
 
 .controller("AddUserModalCtrl", ["$scope", "addUser", "$modalInstance",
   "companyId", "userState",
