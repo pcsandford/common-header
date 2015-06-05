@@ -56,11 +56,6 @@
         element(by.id("user-settings-email")).clear();
         element(by.id("user-settings-email")).sendKeys("testmail@testmail.com");
 
-        if ( !element(by.id("user-settings-newsletter")).isSelected() )
-        {
-           element(by.id("user-settings-newsletter")).click();
-        }
-
         if ( !element(by.id("user-settings-ce")).isSelected() )
         {
            element(by.id("user-settings-ce")).click();

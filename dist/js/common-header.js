@@ -1252,14 +1252,6 @@ app.run(["$templateCache", function($templateCache) {
     "        <p ng-show=\"forms.userSettingsForm.email.$invalid && !forms.userSettingsForm.email.$pristine\"\n" +
     "          class=\"help-block validation-error-message-email\">A valid email address is required.</p>\n" +
     "    </div>\n" +
-    "    <div class=\"checkbox\">\n" +
-    "      <label>\n" +
-    "        <input type=\"checkbox\"\n" +
-    "          id=\"user-settings-newsletter\"\n" +
-    "          ng-model=\"user.mailSyncEnabled\">\n" +
-    "          Subscribe To Email Updates\n" +
-    "      </label>\n" +
-    "    </div>\n" +
     "    <div class=\"form-group\">\n" +
     "      <label>\n" +
     "        Roles\n" +
@@ -2476,9 +2468,6 @@ angular.module("risevision.common.header")
   "userRoleMap", "humanReadableError", "$loading",
   function ($scope, addUser, $modalInstance, companyId, userState,
     userRoleMap, humanReadableError, $loading) {
-    $scope.user = {
-      mailSyncEnabled: false
-    };
     $scope.isAdd = true;
 
     //push roles into array
