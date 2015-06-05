@@ -5,9 +5,6 @@ angular.module("risevision.common.header")
   "userRoleMap", "humanReadableError", "$loading",
   function ($scope, addUser, $modalInstance, companyId, userState,
     userRoleMap, humanReadableError, $loading) {
-    $scope.user = {
-      mailSyncEnabled: false
-    };
     $scope.isAdd = true;
 
     //push roles into array
