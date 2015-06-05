@@ -1279,7 +1279,7 @@ app.run(["$templateCache", function($templateCache) {
     "      <label>\n" +
     "        Last Login\n" +
     "      </label>\n" +
-    "      <div>{{user.lastLogin | humanReadableDateTime}}</div>\n" +
+    "      <div>{{user.lastLogin | date:'d-MMM-yyyy h:mm a'}}</div>\n" +
     "    </div>\n" +
     "    <div class=\"form-group\" ng-if=\"!editingYourself && !isAdd\">\n" +
     "      <label for=\"user-settings-status\">\n" +
@@ -2470,21 +2470,6 @@ angular.module("risevision.common.header")
 ]);
 
 angular.module("risevision.common.header")
-  .filter("humanReadableDateTime", [
-
-    function () {
-      return function (d) {
-        if (d) {
-          d = new Date(d);
-          return (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear() +
-            " at " + d.toLocaleTimeString() + " EST"; //always assume EST
-        } else {
-          return "";
-        }
-      };
-
-    }
-  ])
 
 .controller("AddUserModalCtrl", ["$scope", "addUser", "$modalInstance",
   "companyId", "userState",
