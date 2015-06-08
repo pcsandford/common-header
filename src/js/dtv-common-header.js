@@ -22,7 +22,8 @@ angular.module("risevision.common.header", [
   "ui.bootstrap", "ngSanitize", "ngCsv", "ngTouch",
   "risevision.common.components.last-modified",
   "risevision.common.components.scrolling-list",
-  "risevision.common.svg"
+  "risevision.common.svg",
+  "risevision.common.analytics"
 ])
 
 .factory("bindToScopeWithWatch", [
@@ -110,22 +111,30 @@ angular.module("risevision.common.header", [
     };
   }
 ])
-  .run(["$rootScope", "userState", "selectedCompanyUrlHandler",
-    function ($rootScope, userState, selectedCompanyUrlHandler) {
-      $rootScope.$watch(function () {
-          return userState.getSelectedCompanyId();
-        },
-        function (newCompanyId) {
-          if (newCompanyId) {
-            selectedCompanyUrlHandler.updateUrl();
-          }
-        });
 
-      //detect selectCompany changes on route UI
-      $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-      $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-    }
-  ])
+.run(["$rootScope", "userState", "selectedCompanyUrlHandler",
+  function ($rootScope, userState, selectedCompanyUrlHandler) {
+    $rootScope.$watch(function () {
+        return userState.getSelectedCompanyId();
+      },
+      function (newCompanyId) {
+        if (newCompanyId) {
+          selectedCompanyUrlHandler.updateUrl();
+        }
+      });
+
+    //detect selectCompany changes on route UI
+    $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+    $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+  }
+])
+
+.run(["segmentAnalytics", "analyticsEvents",
+  function (segmentAnalytics) {
+    // calling "analyticsEvents" service to initialize
+    segmentAnalytics.load("AFtY3tN10BQj6RbnfpDDp9Hx8N1modKN");
+  }
+])
 
 .directive("ngEnter", function () {
   return function (scope, element, attrs) {

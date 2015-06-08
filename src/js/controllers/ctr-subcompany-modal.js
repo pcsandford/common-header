@@ -3,9 +3,10 @@ angular.module("risevision.common.header")
     "$templateCache", "createCompany", "countries", "REGIONS_CA",
     "REGIONS_US",
     "TIMEZONES", "userState", "$loading", "humanReadableError",
+    "segmentAnalytics",
     function ($scope, $modalInstance, $modal, $templateCache,
       createCompany, countries, REGIONS_CA, REGIONS_US, TIMEZONES, userState,
-      $loading, humanReadableError) {
+      $loading, humanReadableError, segmentAnalytics) {
 
       $scope.company = {};
       $scope.countries = countries;
@@ -29,7 +30,12 @@ angular.module("risevision.common.header")
       $scope.save = function () {
         $scope.loading = true;
         createCompany(userState.getSelectedCompanyId(),
-          $scope.company).then(function () {
+          $scope.company).then(function (company) {
+          segmentAnalytics.track("Company Created", {
+            companyId: company.id,
+            companyName: company.name
+          });
+
           $modalInstance.close("success");
         }, function (err) {
           alert("Error: " + humanReadableError(err));

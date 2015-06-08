@@ -1331,7 +1331,8 @@ angular.module("risevision.common.header", [
   "ui.bootstrap", "ngSanitize", "ngCsv", "ngTouch",
   "risevision.common.components.last-modified",
   "risevision.common.components.scrolling-list",
-  "risevision.common.svg"
+  "risevision.common.svg",
+  "risevision.common.analytics"
 ])
 
 .factory("bindToScopeWithWatch", [
@@ -1419,22 +1420,30 @@ angular.module("risevision.common.header", [
     };
   }
 ])
-  .run(["$rootScope", "userState", "selectedCompanyUrlHandler",
-    function ($rootScope, userState, selectedCompanyUrlHandler) {
-      $rootScope.$watch(function () {
-          return userState.getSelectedCompanyId();
-        },
-        function (newCompanyId) {
-          if (newCompanyId) {
-            selectedCompanyUrlHandler.updateUrl();
-          }
-        });
 
-      //detect selectCompany changes on route UI
-      $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-      $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
-    }
-  ])
+.run(["$rootScope", "userState", "selectedCompanyUrlHandler",
+  function ($rootScope, userState, selectedCompanyUrlHandler) {
+    $rootScope.$watch(function () {
+        return userState.getSelectedCompanyId();
+      },
+      function (newCompanyId) {
+        if (newCompanyId) {
+          selectedCompanyUrlHandler.updateUrl();
+        }
+      });
+
+    //detect selectCompany changes on route UI
+    $rootScope.$on("$stateChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+    $rootScope.$on("$routeChangeSuccess", selectedCompanyUrlHandler.updateSelectedCompanyFromUrl);
+  }
+])
+
+.run(["segmentAnalytics", "analyticsEvents",
+  function (segmentAnalytics) {
+    // calling "analyticsEvents" service to initialize
+    segmentAnalytics.load("AFtY3tN10BQj6RbnfpDDp9Hx8N1modKN");
+  }
+])
 
 .directive("ngEnter", function () {
   return function (scope, element, attrs) {
@@ -1914,10 +1923,10 @@ angular.module("risevision.common.header")
     "$scope", "$modalInstance",
     "$loading", "registerAccount", "$log", "cookieStore",
     "userState", "pick", "uiFlowManager", "humanReadableError",
-    "agreeToTermsAndUpdateUser", "account",
+    "agreeToTermsAndUpdateUser", "account", "segmentAnalytics",
     function ($scope, $modalInstance, $loading, registerAccount, $log,
       cookieStore, userState, pick, uiFlowManager, humanReadableError,
-      agreeToTermsAndUpdateUser, account) {
+      agreeToTermsAndUpdateUser, account, segmentAnalytics) {
 
       var newUser = !account;
 
@@ -1988,6 +1997,12 @@ angular.module("risevision.common.header")
             function () {
               userState.refreshProfile().then()
                 .finally(function () {
+                  segmentAnalytics.track("User Registered", {
+                    "companyId": userState.getUserCompanyId(),
+                    "companyName": userState.getUserCompanyName(),
+                    "isNewCompany": newUser
+                  });
+
                   $modalInstance.close("success");
                   $loading.stop("registration-modal");
                 });
@@ -2078,11 +2093,12 @@ angular.module("risevision.common.header")
   "TIMEZONES",
   "getCompany", "regenerateCompanyField", "$window", "$loading",
   "humanReadableError",
-  "userState", "deleteCompany",
+  "userState", "deleteCompany", "segmentAnalytics",
   function ($scope, $modalInstance, updateCompany, companyId,
     countries, REGIONS_CA, REGIONS_US, TIMEZONES, getCompany,
     regenerateCompanyField,
-    $window, $loading, humanReadableError, userState, deleteCompany) {
+    $window, $loading, humanReadableError, userState, deleteCompany,
+    segmentAnalytics) {
 
     $scope.company = {
       id: companyId
@@ -2131,6 +2147,12 @@ angular.module("risevision.common.header")
       updateCompany($scope.company.id, company)
         .then(
           function () {
+            segmentAnalytics.track("Company Updated", {
+              companyId: userState.getSelectedCompanyId(),
+              companyName: userState.getSelectedCompanyName(),
+              isUserCompany: !userState.isSubcompanySelected()
+            });
+
             userState.updateCompanySettings($scope.company);
             $modalInstance.close("success");
           })
@@ -2149,6 +2171,12 @@ angular.module("risevision.common.header")
         deleteCompany($scope.company.id)
           .then(
             function () {
+              segmentAnalytics.track("Company Deleted", {
+                companyId: userState.getSelectedCompanyId(),
+                companyName: userState.getSelectedCompanyName(),
+                isUserCompany: !userState.isSubcompanySelected()
+              });
+
               if (userState.getUserCompanyId() === $scope.company.id) {
                 userState.signOut();
               } else if (userState.getSelectedCompanyId() === $scope.company.id) {
@@ -2220,9 +2248,10 @@ angular.module("risevision.common.header")
     "$templateCache", "createCompany", "countries", "REGIONS_CA",
     "REGIONS_US",
     "TIMEZONES", "userState", "$loading", "humanReadableError",
+    "segmentAnalytics",
     function ($scope, $modalInstance, $modal, $templateCache,
       createCompany, countries, REGIONS_CA, REGIONS_US, TIMEZONES, userState,
-      $loading, humanReadableError) {
+      $loading, humanReadableError, segmentAnalytics) {
 
       $scope.company = {};
       $scope.countries = countries;
@@ -2246,7 +2275,12 @@ angular.module("risevision.common.header")
       $scope.save = function () {
         $scope.loading = true;
         createCompany(userState.getSelectedCompanyId(),
-          $scope.company).then(function () {
+          $scope.company).then(function (company) {
+          segmentAnalytics.track("Company Created", {
+            companyId: company.id,
+            companyName: company.name
+          });
+
           $modalInstance.close("success");
         }, function (err) {
           alert("Error: " + humanReadableError(err));
@@ -2464,10 +2498,10 @@ angular.module("risevision.common.header")
 angular.module("risevision.common.header")
 
 .controller("AddUserModalCtrl", ["$scope", "addUser", "$modalInstance",
-  "companyId", "userState",
-  "userRoleMap", "humanReadableError", "$loading",
+  "companyId", "userState", "userRoleMap", "humanReadableError", "$loading",
+  "segmentAnalytics",
   function ($scope, addUser, $modalInstance, companyId, userState,
-    userRoleMap, humanReadableError, $loading) {
+    userRoleMap, humanReadableError, $loading, segmentAnalytics) {
     $scope.isAdd = true;
 
     //push roles into array
@@ -2505,6 +2539,11 @@ angular.module("risevision.common.header")
         $scope.loading = true;
         addUser(companyId, $scope.user.username, $scope.user).then(
           function () {
+            segmentAnalytics.track("User Created", {
+              userId: $scope.user.username,
+              companyId: companyId
+            });
+
             $modalInstance.close("success");
           },
           function (error) {
@@ -2558,10 +2597,10 @@ angular.module("risevision.common.header")
 .controller("UserSettingsModalCtrl", [
   "$scope", "$modalInstance", "updateUser", "getUserProfile", "deleteUser",
   "addUser", "username", "userRoleMap", "$log", "$loading", "userState",
-  "uiFlowManager", "humanReadableError", "$rootScope",
+  "uiFlowManager", "humanReadableError", "$rootScope", "segmentAnalytics",
   function ($scope, $modalInstance, updateUser, getUserProfile, deleteUser,
     addUser, username, userRoleMap, $log, $loading, userState,
-    uiFlowManager, humanReadableError, $rootScope) {
+    uiFlowManager, humanReadableError, $rootScope, segmentAnalytics) {
     $scope.user = {};
     $scope.$watch("loading", function (loading) {
       if (loading) {
@@ -2607,6 +2646,12 @@ angular.module("risevision.common.header")
       if (confirm("Are you sure you want to delete this user?")) {
         deleteUser($scope.username)
           .then(function () {
+            segmentAnalytics.track("User Deleted", {
+              userId: $scope.username,
+              companyId: userState.getSelectedCompanyId(),
+              isSelf: $scope.username === userState.getUsername()
+            });
+
             if ($scope.username === userState.getUsername()) {
               userState.signOut().then().finally(function () {
                 uiFlowManager.invalidateStatus("registrationComplete");
@@ -2628,6 +2673,12 @@ angular.module("risevision.common.header")
         $scope.loading = true;
         updateUser(username, $scope.user).then(
           function () {
+            segmentAnalytics.track("User Updated", {
+              userId: $scope.username,
+              companyId: userState.getSelectedCompanyId(),
+              isSelf: $scope.username === userState.getUsername()
+            });
+
             $modalInstance.close("success");
           },
           function (error) {
@@ -3886,6 +3937,100 @@ angular.module("risevision.common.geodata", [])
       };
 
       return _companyState;
+    }
+  ]);
+
+})(angular);
+
+(function (angular) {
+
+  "use strict";
+
+  angular.module("risevision.common.analytics", [])
+    .factory("segmentAnalytics", ["$rootScope", "$window", "$log",
+      function ($rootScope, $window, $log) {
+        var service = {};
+
+        $window.analytics = $window.analytics || [];
+        var analytics = $window.analytics;
+
+        analytics.factory = function (t) {
+          return function () {
+            var e = Array.prototype.slice.call(arguments);
+            e.unshift(t);
+            $window.analytics.push(e);
+
+            $log.debug("Segment Tracker", e);
+
+            return $window.analytics;
+          };
+        };
+        analytics.methods = ["trackSubmit", "trackClick", "trackLink",
+          "trackForm",
+          "pageview", "identify", "group", "track", "ready", "alias",
+          "page",
+          "once", "off", "on"
+        ];
+        for (var i = 0; i < analytics.methods.length; i++) {
+          var method = analytics.methods[i];
+          service[method] = analytics.factory(method);
+        }
+
+        /**
+         * @description
+         * Load Segment.io analytics script
+         * @param apiKey The key API to use
+         */
+        service.load = function (apiKey) {
+          var e = document.createElement("script");
+          e.type = "text/javascript";
+          e.async = !0;
+          e.src = ("https:" === document.location.protocol ? "https://" :
+            "http://") + "cdn.segment.com/analytics.js/v1/" + apiKey +
+            "/analytics.min.js";
+          var n = document.getElementsByTagName("script")[0];
+          n.parentNode.insertBefore(e, n);
+        };
+
+        return service;
+      }
+    ])
+
+  .factory("analyticsEvents", ["$rootScope", "segmentAnalytics",
+    "userState", "$location",
+    function ($rootScope, segmentAnalytics, userState, $location) {
+      var service = {};
+
+      var _identify = function () {
+        var profile = userState.getCopyOfProfile();
+        segmentAnalytics.identify(userState.getUsername(), {
+          email: profile.email,
+          firstName: profile.firstName ? profile.firstName : "",
+          lastName: profile.lastName ? profile.lastName : "",
+          companyId: userState.getUserCompanyId(),
+          companyName: userState.getUserCompanyName(),
+          company: {
+            id: userState.getUserCompanyId(),
+            name: userState.getUserCompanyName()
+          }
+        });
+      };
+
+      $rootScope.$on("risevision.user.authorized", function () {
+        if (userState.getUsername()) {
+          _identify();
+        }
+      });
+
+      // Listening to $viewContentLoaded event to track pageview
+      $rootScope.$on("$viewContentLoaded", function () {
+        if (segmentAnalytics.location !== $location.path()) {
+          segmentAnalytics.location = $location.path();
+          segmentAnalytics.pageview(segmentAnalytics.location);
+        }
+      });
+
+      return service;
     }
   ]);
 

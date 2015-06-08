@@ -3,10 +3,10 @@ angular.module("risevision.common.header")
     "$scope", "$modalInstance",
     "$loading", "registerAccount", "$log", "cookieStore",
     "userState", "pick", "uiFlowManager", "humanReadableError",
-    "agreeToTermsAndUpdateUser", "account",
+    "agreeToTermsAndUpdateUser", "account", "segmentAnalytics",
     function ($scope, $modalInstance, $loading, registerAccount, $log,
       cookieStore, userState, pick, uiFlowManager, humanReadableError,
-      agreeToTermsAndUpdateUser, account) {
+      agreeToTermsAndUpdateUser, account, segmentAnalytics) {
 
       var newUser = !account;
 
@@ -77,6 +77,12 @@ angular.module("risevision.common.header")
             function () {
               userState.refreshProfile().then()
                 .finally(function () {
+                  segmentAnalytics.track("User Registered", {
+                    "companyId": userState.getUserCompanyId(),
+                    "companyName": userState.getUserCompanyName(),
+                    "isNewCompany": newUser
+                  });
+
                   $modalInstance.close("success");
                   $loading.stop("registration-modal");
                 });
