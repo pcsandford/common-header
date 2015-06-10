@@ -527,19 +527,12 @@ app.run(["$templateCache", function($templateCache) {
     "			Select Sub-Company\n" +
     "		</h2>\n" +
     "	</div>\n" +
-    "	<div class=\"modal-body jfk-scrollbar\">\n" +
+    "	<div class=\"modal-body\">\n" +
     "	  <!-- Search -->\n" +
-    "		<div class=\"input-group company-search add-bottom\">\n" +
-    "			<input id=\"csSearch\" type=\"text\" class=\"form-control\"\n" +
-    "				placeholder=\"Search Companies\"\n" +
-    "				ng-model=\"search.searchString\"\n" +
-    "				ng-enter=\"doSearch()\">\n" +
-    "		    <span class=\"input-group-addon primary-bg\" ng-click=\"doSearch()\">\n" +
-    "		      <i class=\"fa fa-search\"></i>\n" +
-    "		    </span>\n" +
-    "		</div>\n" +
+    "		<search-filter filter-config=\"filterConfig\" search=\"search\" do-search=\"doSearch\"></search-filter> \n" +
+    "\n" +
     "		<!-- List of Companies -->\n" +
-    "		<div class=\"list-group scrollable-list\"\n" +
+    "		<div class=\"list-group scrollable-list half-top\"\n" +
     "		  scrolling-list=\"loadCompanies()\"\n" +
     "		  rv-spinner rv-spinner-key=\"company-selector-modal-list\"\n" +
     "			rv-spinner-start-active=\"1\"\n" +

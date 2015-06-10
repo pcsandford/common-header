@@ -4,11 +4,14 @@ angular.module("risevision.common.header")
     function ($scope, $modalInstance, companyService,
       companyId, BaseList, $loading) {
 
-      var DB_MAX_COUNT = 20; //number of records to load at a time
+      var DB_MAX_COUNT = 40; //number of records to load at a time
 
       $scope.companies = new BaseList(DB_MAX_COUNT);
       $scope.search = {
-        searchString: ""
+        query: ""
+      };
+      $scope.filterConfig = {
+        placeholder: "Search Companies"
       };
 
       $scope.$watch("loading", function (loading) {
@@ -29,7 +32,7 @@ angular.module("risevision.common.header")
         if (!$scope.companies.endOfList) {
           $scope.loading = true;
           companyService.getCompanies(
-            companyId, $scope.search.searchString,
+            companyId, $scope.search.query,
             $scope.companies.cursor, DB_MAX_COUNT, null).then(function (
             result) {
             if (result && result.items) {

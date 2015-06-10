@@ -21,6 +21,7 @@ angular.module("risevision.common.header", [
   "checklist-model",
   "ui.bootstrap", "ngSanitize", "ngCsv", "ngTouch",
   "risevision.common.components.last-modified",
+  "risevision.common.components.search-filter",
   "risevision.common.components.scrolling-list",
   "risevision.common.svg",
   "risevision.common.analytics"
